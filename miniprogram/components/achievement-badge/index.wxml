@@ -1,0 +1,24 @@
+<view class="ab" bindtap="onTap">
+  <view class="ab__art {{unlocked ? '' : 'ab__art--lock'}}">
+    <!-- 解锁=彩色奖牌/奖杯切图；未解锁=灰盾 -->
+    <image
+      class="ab__img"
+      src="{{unlocked ? art : '/images/badges/badge_shield_silver.png'}}"
+      mode="aspectFit"
+    ></image>
+
+    <!-- 中心可叠数字（如「21」） -->
+    <text wx:if="{{unlocked && badgeNum}}" class="ab__num">{{badgeNum}}</text>
+
+    <!-- 未解锁：右下锁标 -->
+    <view wx:if="{{!unlocked}}" class="ab__lock">
+      <view class="ab__lock-body"></view>
+      <view class="ab__lock-shackle"></view>
+    </view>
+  </view>
+
+  <text class="ab__title {{unlocked ? '' : 'ab__title--lock'}}">{{title}}</text>
+
+  <!-- 未解锁进度提示（如 3/5）；解锁态不显示 -->
+  <text wx:if="{{!unlocked && progressText}}" class="ab__progress">{{progressText}}</text>
+</view>

@@ -1,0 +1,160 @@
+<!-- 数据页（design §6.4）：像素风。热力图 / PR墙 / 趋势图 三子视图 -->
+<!-- 顶部状态栏留白由本页 padding-top 统一处理（标题不再叠加 page-header 的内部留白，避免双重下移） -->
+<view class="page" style="padding-top: {{statusBarHeight}}px;">
+  <!-- 全屏像素风背景（铺底，沉到内容下方） -->
+  <image class="app-bg app-bg--tab" src="/images/bg/background.jpg" mode="aspectFit"></image>
+
+  <!-- 标题：✦ 训练数据 ✦（plus_* 像素装饰与标题同处一行，整体居中、统一对齐） -->
+  <view class="title-wrap">
+    <image class="title-deco" src="/images/ui/decoration/ui_decoration_plus_left.png" mode="aspectFit"></image>
+    <text class="title-text">训练数据</text>
+    <image class="title-deco" src="/images/ui/decoration/ui_decoration_plus_right.png" mode="aspectFit"></image>
+  </view>
+
+  <view class="seg-wrap">
+    <segmented options="{{subviews}}" value="{{subview}}" bindchange="onSubviewChange"></segmented>
+  </view>
+
+  <view wx:if="{{error}}" class="empty">
+    <image class="empty__char" src="/images/characters/male_face_tired.png" mode="aspectFit"></image>
+    <text class="empty__text">训练数据加载失败</text>
+    <view class="year-switch__arrow" bindtap="loadStats">重试</view>
+  </view>
+
+  <scroll-view wx:else scroll-y class="body" enhanced show-scrollbar="{{false}}">
+
+    <!-- ===== 热力图 ===== -->
+    <block wx:if="{{subview === 'heatmap'}}">
+      <view class="year-switch">
+        <view class="year-switch__arrow" hover-class="year-switch__arrow--press" bindtap="onYearPrev">‹</view>
+        <text class="year-switch__year">{{year}}</text>
+        <view class="year-switch__arrow" hover-class="year-switch__arrow--press" bindtap="onYearNext">›</view>
+      </view>
+
+      <view class="card heatmap-card">
+        <heatmap year="{{year}}" level-map="{{heatmapData}}" bindcelltap="onCellTap"></heatmap>
+      </view>
+
+      <!-- 当日明细绿色卡（点格子出现，浅绿底） -->
+      <view wx:if="{{dayDetail}}" class="card day-card">
+        <view class="day-card__head">
+          <view class="day-card__date">
+            <view class="day-card__cal">
+              <image class="day-card__cal-img" src="/images/ui/icons/ui_icon_calendar.png" mode="aspectFit"></image>
+            </view>
+            <view class="day-card__title">
+              <text class="day-card__day">{{dayDetail.dateText}}</text>
+              <text class="day-card__week">{{dayDetail.weekText}}</text>
+            </view>
+          </view>
+          <view class="num-row">
+            <text class="num-row__label">总训练量</text>
+            <text class="num-row__num">{{dayDetail.volumeText}}</text>
+            <text class="num-row__unit">kg</text>
+          </view>
+        </view>
+        <view class="day-card__list">
+          <view
+            wx:for="{{dayDetail.items}}"
+            wx:key="id"
+            class="day-row"
+            data-id="{{item.id}}"
+            bindtap="goSessionDetail"
+          >
+            <view class="day-row__equip">
+              <image class="day-row__equip-img" src="{{item.equipmentSrc}}" mode="aspectFit"></image>
+            </view>
+            <view class="day-row__main">
+              <text class="day-row__name">{{item.name}}</text>
+              <text class="day-row__sub">{{item.summary}}</text>
+            </view>
+            <view class="day-row__vol">
+              <text class="day-row__vol-num">{{item.volumeText}}</text>
+              <text class="day-row__vol-unit">kg</text>
+            </view>
+            <image class="day-row__arrow" src="/images/ui/icons/ui_icon_arrow_right.png" mode="aspectFit"></image>
+          </view>
+        </view>
+      </view>
+
+      <view wx:else class="empty">
+        <image class="empty__char" src="/images/characters/male_standing_front.png" mode="aspectFit"></image>
+        <text class="empty__text">这一年还没有训练记录</text>
+      </view>
+    </block>
+
+    <!-- ===== PR 墙 ===== -->
+    <block wx:elif="{{subview === 'pr'}}">
+      <view class="chips-wrap">
+        <filter-chips items="{{bodyParts}}" active="{{activePart}}" bindselect="onPartSelect"></filter-chips>
+      </view>
+
+      <view wx:if="{{prList.length}}" class="pr-grid">
+        <view wx:for="{{prList}}" wx:key="id" class="pr-grid__cell">
+          <pr-card
+            name="{{item.name}}"
+            value="{{item.value}}"
+            unit="{{item.unit}}"
+            date="{{item.date}}"
+            tone="{{item.tone}}"
+            is-top="{{item.isTop}}"
+            equipment-src="{{item.equipmentSrc}}"
+            badge-src="{{item.badgeSrc}}"
+          ></pr-card>
+        </view>
+      </view>
+
+      <view wx:else class="empty">
+        <image class="empty__char" src="/images/badges/badge_trophy_gold.png" mode="aspectFit"></image>
+        <text class="empty__text">还没有 PR，去训练里创造一个</text>
+      </view>
+    </block>
+
+    <!-- ===== 趋势图 ===== -->
+    <block wx:elif="{{subview === 'trend'}}">
+      <view class="range-wrap">
+        <segmented options="{{rangeOptions}}" value="{{trendRange}}" bindchange="onRangeChange"></segmented>
+      </view>
+
+      <view wx:if="{{hasSessions}}" class="card trend-card">
+        <trend-chart
+          points="{{trendPoints}}"
+          x-labels="{{trendXLabels}}"
+          unit="kg"
+          delta-text="{{trendDeltaText}}"
+        ></trend-chart>
+      </view>
+      <view wx:else class="card trend-empty">
+        <text class="trend-empty__text">还没有训练数据，先去记录一次吧</text>
+      </view>
+
+      <!-- 三张概览卡（stat-card 已是像素组件，直接用） -->
+      <view class="overview">
+        <view class="overview__cell">
+          <stat-card iconSrc="/images/ui/equipment/ui_equipment_dumbbell.png" value="{{overview.avg}}" unit="kg" label="周均训练量" tone="green"></stat-card>
+        </view>
+        <view class="overview__cell">
+          <stat-card iconSrc="/images/badges/badge_trophy_gold.png" value="{{overview.peak}}" unit="kg" label="最高单周" tone="amber"></stat-card>
+        </view>
+        <view class="overview__cell">
+          <stat-card iconSrc="/images/ui/icons/ui_icon_experience_star.png" value="{{overview.delta}}" unit="" label="环比" tone="blue"></stat-card>
+        </view>
+      </view>
+
+      <!-- 按部位分布（progress-bar 禁改，直接用） -->
+      <view wx:if="{{distribution.length}}" class="card dist-card">
+        <view class="dist-card__head">
+          <text class="section-title">按部位分布</text>
+        </view>
+        <view wx:for="{{distribution}}" wx:key="part" class="dist-row">
+          <text class="dist-row__label">{{item.part}}</text>
+          <view class="dist-row__bar">
+            <progress-bar percent="{{item.percent}}" color="{{item.color}}" show-label="{{true}}"></progress-bar>
+          </view>
+        </view>
+      </view>
+    </block>
+
+    <view class="tab-safe"></view>
+  </scroll-view>
+</view>

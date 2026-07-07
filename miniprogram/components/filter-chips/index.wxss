@@ -1,0 +1,32 @@
+/* 像素 chip（design §5 / §6.4）：选中绿底白字+描边，未选白底描边。横向可滚动。 */
+.chips {
+  white-space: nowrap;
+  width: 100%;
+}
+.chips ::-webkit-scrollbar { display: none; width: 0; height: 0; }
+.chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 60rpx;
+  padding: 0 var(--sp-3);
+  margin-right: var(--sp-2);
+  margin-bottom: 8rpx;        /* 留出硬阴影空间，避免被裁 */
+  box-sizing: border-box;
+  background: var(--surface);
+  color: var(--text-2);
+  font-size: 26rpx;
+  font-weight: 700;
+  border: var(--px-border);
+  border-radius: var(--px-radius);
+  box-shadow: var(--px-shadow);
+}
+.chip:last-child { margin-right: 0; }
+.chip--on {
+  background: var(--c-primary);
+  color: var(--text-on);
+}
+.chip--press {
+  box-shadow: var(--px-shadow-press);
+  transform: translate(4rpx, 4rpx);
+}

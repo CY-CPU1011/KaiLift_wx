@@ -1,0 +1,182 @@
+/* 训练分享图 —— 像素风，全 token，rpx，无硬编码颜色 */
+
+.page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  /* 透明底，透出全屏 .app-bg 像素背景 */
+  background: transparent;
+  box-sizing: border-box;
+}
+
+/* 全屏背景（铺底，沉到内容下方） */
+.app-bg {
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+}
+
+/* ---- 导航栏（仿 session-detail，像素风方块返回键） ---- */
+.nav {
+  position: relative;
+  height: 88rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 var(--sp-4);
+}
+
+.nav__back {
+  position: absolute;
+  left: var(--sp-4);
+  width: 64rpx;
+  height: 64rpx;
+  line-height: 56rpx;
+  text-align: center;
+  font-size: 48rpx;
+  color: var(--text-1);
+  background: var(--surface);
+  border: var(--px-border);
+  border-radius: var(--px-radius);
+  box-shadow: var(--px-shadow);
+  box-sizing: border-box;
+}
+
+.nav__title {
+  font-size: 34rpx;
+  font-weight: 800;
+  color: var(--text-1);
+}
+
+.nav__cap {
+  position: absolute;
+  right: var(--sp-4);
+  width: 64rpx;
+}
+
+/* ---- 离屏 canvas：移出可视区（不能 display:none，2d 渲染需在屏） ---- */
+/* 高度取足够大的上限（弹性海报最高约 1018px，5 条主要动作时），实际导出区域由
+   canvasToTempFilePath 的 width/height 精确截取，CSS 尺寸仅作渲染容器、留足余量即可。 */
+.offscreen-canvas {
+  position: fixed;
+  left: -9999rpx;
+  top: 0;
+  width: 600px;
+  height: 1100px;
+}
+
+/* ---- 状态态 ---- */
+.state {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--sp-6) var(--sp-4);
+}
+
+.state__title {
+  font-size: 34rpx;
+  font-weight: 800;
+  color: var(--text-1);
+}
+
+.state__sub {
+  margin-top: var(--sp-2);
+  font-size: 26rpx;
+  color: var(--text-2);
+}
+
+.state__btn {
+  margin-top: var(--sp-4);
+  width: 280rpx;
+}
+
+/* ---- 内容 ---- */
+.body {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  padding: var(--sp-3) var(--sp-4) 0;
+  box-sizing: border-box;
+}
+
+/* 预览区 */
+.preview {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--sp-2) 0;
+}
+
+.preview__img {
+  width: 540rpx;
+  border: var(--px-border);
+  border-radius: var(--px-radius);
+  box-shadow: var(--px-shadow);
+  box-sizing: border-box;
+}
+
+.preview__ph {
+  width: 540rpx;
+  height: 810rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--surface);
+  border: var(--px-border);
+  border-radius: var(--px-radius);
+  box-shadow: var(--px-shadow);
+  box-sizing: border-box;
+}
+
+.preview__ph-text {
+  font-size: 30rpx;
+  font-weight: 700;
+  color: var(--text-3);
+  letter-spacing: 2rpx;
+}
+
+/* 底部三按钮 */
+.actions {
+  display: flex;
+  gap: var(--sp-2);
+  padding: var(--sp-3) 0 calc(var(--sp-4) + env(safe-area-inset-bottom));
+}
+
+.actions__btn {
+  flex: 1;
+}
+
+/* 通用像素方块按钮（与 workout.wxss 同配方） */
+.btn-px {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  height: 88rpx;
+  border: var(--px-border);
+  border-radius: var(--px-radius);
+  box-shadow: var(--px-shadow);
+  font-size: 30rpx;
+  font-weight: 700;
+}
+
+.btn-px--press {
+  box-shadow: var(--px-shadow-press);
+  transform: translate(4rpx, 4rpx);
+}
+
+.btn-px--primary { background: var(--c-primary); color: var(--text-on); }
+.btn-px--ghost { background: var(--surface); color: var(--text-1); }
+.btn-px--text { background: var(--surface); color: var(--text-2); font-weight: 500; }
+
+.btn-px.is-disabled {
+  opacity: 0.5;
+}

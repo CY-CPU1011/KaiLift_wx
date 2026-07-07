@@ -1,0 +1,19 @@
+<view class="lr" bindtap="onTap" hover-class="lr--hover">
+  <view class="lr__icon">
+    <image
+      wx:if="{{iconSrc}}"
+      class="lr__icon-img"
+      src="{{iconSrc}}"
+      mode="aspectFit"
+    ></image>
+    <text wx:else class="lr__icon-text">{{icon}}</text>
+    <view wx:if="{{dot}}" class="lr__dot"></view>
+  </view>
+  <text class="lr__title">{{title}}</text>
+  <text wx:if="{{value}}" class="lr__value">{{value}}</text>
+  <image
+    class="lr__arrow"
+    src="/images/ui/icons/ui_icon_arrow_right.png"
+    mode="aspectFit"
+  ></image>
+</view>

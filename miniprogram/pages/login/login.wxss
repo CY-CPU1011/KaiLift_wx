@@ -1,0 +1,193 @@
+/* 登录 / 注册页 —— 像素风（design §2.2 / §5）。全 token、rpx、硬描边 + 硬偏移阴影、无 blur。 */
+
+.login {
+  position: relative;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: var(--bg-gradient);
+  padding: 0 var(--sp-4);
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+/* —— 角落像素装饰（低饱和、置底、不接事件） —— */
+.deco {
+  position: fixed;
+  z-index: -1;
+  opacity: 0.5;
+  pointer-events: none;
+}
+.deco--cloud-tr { top: 120rpx; right: 8rpx; width: 150rpx; height: 90rpx; }
+.deco--cloud-tc { top: 200rpx; left: 24rpx; width: 120rpx; height: 72rpx; }
+.deco--land-bl { bottom: 0; left: 0; width: 220rpx; height: 132rpx; opacity: 0.4; }
+.deco--land-br { bottom: 0; right: 0; width: 220rpx; height: 132rpx; opacity: 0.4; }
+
+/* ---- 品牌 Hero ---- */
+.hero {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding-top: var(--sp-6);
+}
+
+/* 薄荷像素方块框（design §5）：描边 + 硬偏移阴影 */
+.hero__art {
+  width: 360rpx;
+  height: 380rpx;
+  margin-bottom: var(--sp-5);
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  background: var(--bg-mint);
+  border: var(--px-border);
+  border-radius: var(--px-radius);
+  box-shadow: var(--px-shadow);
+  box-sizing: border-box;
+  overflow: hidden;
+}
+.hero__char {
+  width: 300rpx;
+  height: 360rpx;
+  /* 像素图：避免拉伸糊边 */
+  image-rendering: pixelated;
+}
+
+.hero__brand {
+  font-size: 52rpx;
+  font-weight: 800;
+  color: var(--text-1);
+  letter-spacing: 2rpx;
+}
+
+.hero__slogan {
+  margin-top: var(--sp-2);
+  font-size: 28rpx;
+  font-weight: 500;
+  color: var(--text-2);
+}
+
+/* ---- 登录面板 ---- */
+.panel {
+  padding: var(--sp-5) 0 var(--sp-6);
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+}
+
+.panel__title {
+  font-size: 34rpx;
+  font-weight: 700;
+  color: var(--text-1);
+  text-align: center;
+  margin-bottom: var(--sp-4);
+}
+
+/* ---- 主按钮：全宽像素方块（与 voice-button[home] 统一） ---- */
+.btn-px {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 96rpx;
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0 var(--sp-4);
+  background: var(--c-primary);
+  border: var(--px-border);
+  border-radius: var(--px-radius);
+  box-shadow: var(--px-shadow);
+  font-size: 32rpx;
+  font-weight: 700;
+  color: var(--text-on);
+  line-height: normal;
+}
+.btn-px::after { border: none; }
+/* 按下：硬阴影变小 + 下沉 */
+.btn-px--press {
+  box-shadow: var(--px-shadow-press);
+  transform: translate(4rpx, 4rpx);
+}
+.btn-px[disabled] {
+  background: var(--c-primary);
+  color: var(--text-on);
+  opacity: 0.6;
+}
+.btn-px__mic {
+  width: 40rpx;
+  height: 40rpx;
+  margin-right: var(--sp-2);
+  image-rendering: pixelated;
+}
+.btn-px__label { color: var(--text-on); }
+
+/* ---- 文字链接 ---- */
+.link {
+  margin-top: var(--sp-4);
+  text-align: center;
+  font-size: 26rpx;
+  font-weight: 500;
+  color: var(--text-3);
+}
+.link--press { opacity: 0.6; }
+
+/* ---- 头像选择按钮：像素方块 ---- */
+.avatar-btn {
+  width: 168rpx;
+  height: 168rpx;
+  padding: 0;
+  margin: 0 auto var(--sp-4);
+  background: var(--surface);
+  border: var(--px-border);
+  border-radius: var(--px-radius);
+  box-shadow: var(--px-shadow);
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.avatar-btn::after { border: none; }
+.avatar-btn--press {
+  box-shadow: var(--px-shadow-press);
+  transform: translate(4rpx, 4rpx);
+}
+.avatar-btn__img {
+  width: 100%;
+  height: 100%;
+}
+.avatar-btn__ph {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+.avatar-btn__plus {
+  font-size: 56rpx;
+  font-weight: 800;
+  color: var(--c-primary);
+  line-height: 1;
+}
+.avatar-btn__hint {
+  margin-top: var(--sp-1);
+  font-size: 24rpx;
+  color: var(--text-3);
+}
+
+/* ---- 昵称输入：像素方块（描边平底，区别于「凸起」的按钮） ---- */
+.field {
+  background: var(--surface);
+  border: var(--px-border);
+  border-radius: var(--px-radius);
+  padding: 0 var(--sp-4);
+  margin-bottom: var(--sp-5);
+}
+.field__input {
+  height: 92rpx;
+  font-size: 30rpx;
+  color: var(--text-1);
+}
+.field__ph {
+  color: var(--text-3);
+}

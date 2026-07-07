@@ -1,0 +1,52 @@
+<!-- 训练分享图 —— 自定义导航栏 + 离屏 canvas 合成 + 预览 + 三按钮 -->
+<view class="page" style="padding-top: {{statusBarHeight}}px;">
+  <!-- 全屏像素风背景（铺底，沉到内容下方） -->
+  <image class="app-bg" src="/images/bg/background.jpg" mode="aspectFit"></image>
+
+  <!-- 自定义导航栏 -->
+  <view class="nav">
+    <view class="nav__back" bindtap="onBack">‹</view>
+    <text class="nav__title">训练分享图</text>
+    <view class="nav__cap"></view>
+  </view>
+
+  <!-- 离屏 canvas（2d 不能 display:none，移出可视区） -->
+  <canvas type="2d" id="shareCanvas" class="offscreen-canvas"></canvas>
+
+  <!-- 错误态 -->
+  <view wx:if="{{error}}" class="state">
+    <text class="state__title">分享图生成失败</text>
+    <text class="state__sub">找不到这次训练记录，或合成出错</text>
+    <view class="btn-px btn-px--primary state__btn" hover-class="btn-px--press" bindtap="onRetry">重试</view>
+  </view>
+
+  <!-- 正常态：预览 + 操作 -->
+  <view wx:else class="body">
+    <!-- 预览区 -->
+    <view class="preview">
+      <image wx:if="{{posterPath}}" class="preview__img" src="{{posterPath}}" mode="widthFix"></image>
+      <view wx:else class="preview__ph">
+        <text class="preview__ph-text">生成中…</text>
+      </view>
+    </view>
+
+    <!-- 底部三按钮 -->
+    <view class="actions">
+      <view
+        class="btn-px btn-px--ghost actions__btn {{loading ? 'is-disabled' : ''}}"
+        hover-class="btn-px--press"
+        bindtap="onRegenerate"
+      >重新生成</view>
+      <view
+        class="btn-px btn-px--primary actions__btn {{(!posterPath || saving) ? 'is-disabled' : ''}}"
+        hover-class="btn-px--press"
+        bindtap="onSave"
+      >{{saving ? '保存中…' : '保存到相册'}}</view>
+      <view
+        class="btn-px btn-px--text actions__btn"
+        hover-class="btn-px--press"
+        bindtap="onBack"
+      >返回</view>
+    </view>
+  </view>
+</view>

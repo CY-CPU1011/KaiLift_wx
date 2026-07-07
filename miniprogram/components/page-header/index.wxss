@@ -1,0 +1,53 @@
+.ph {
+  width: 100%;
+  box-sizing: border-box;
+}
+.ph__bar {
+  min-height: 88rpx;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--sp-2) var(--sp-4);
+}
+/* 预留右上胶囊宽度（约 87px + 边距 → ~200rpx 安全） */
+.ph__bar--capsule { padding-right: 200rpx; }
+.ph__bar--greeting { padding-top: var(--sp-5); }
+
+.ph__title {
+  font-size: 52rpx;
+  font-weight: 700;
+  color: var(--text-1);
+}
+
+/* 问候型：问候语靠左、日期靠右，两者底边对齐。 */
+.ph__greeting {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-end;
+  justify-content: space-between;
+  min-height: 110rpx;
+  width: 100%;
+}
+.ph__date-row {
+  display: flex;
+  align-items: center;
+}
+.ph__hello {
+  font-size: 48rpx;
+  font-weight: 700;
+  color: var(--text-1);
+  line-height: 1.2;
+}
+.ph__cal {
+  width: 40rpx;
+  height: 40rpx;
+  margin-right: var(--sp-1);
+  flex: none;
+  image-rendering: pixelated;
+}
+.ph__date {
+  font-size: 26rpx;
+  font-weight: 500;
+  color: var(--text-2);
+  line-height: 40rpx;
+}

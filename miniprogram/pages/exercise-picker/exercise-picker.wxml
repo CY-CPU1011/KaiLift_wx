@@ -1,0 +1,75 @@
+<view class="page-bg picker">
+  <!-- 全屏像素风背景（铺底，沉到内容下方） -->
+  <image class="app-bg" src="/images/bg/background.jpg" mode="aspectFit"></image>
+
+  <view style="height: {{statusBarHeight}}px;"></view>
+
+  <!-- 顶部 -->
+  <view class="head">
+    <view class="back" hover-class="back-hover" bindtap="onClose">‹</view>
+    <view class="head-title">选择动作</view>
+    <view class="back-placeholder"></view>
+  </view>
+
+  <!-- 搜索框 -->
+  <view class="search">
+    <view class="search-icon">🔍</view>
+    <input
+      class="search-input"
+      value="{{keyword}}"
+      placeholder="搜索动作名称"
+      confirm-type="search"
+      bindinput="onSearchInput"
+    />
+    <view wx:if="{{keyword}}" class="search-clear" catchtap="onClearSearch">✕</view>
+  </view>
+
+  <!-- 部位筛选 -->
+  <scroll-view class="parts" scroll-x="true">
+    <view
+      wx:for="{{parts}}"
+      wx:key="*this"
+      class="part-chip {{activePart === item ? 'part-chip-on' : ''}}"
+      data-part="{{item}}"
+      bindtap="onPickPart"
+    >{{item}}</view>
+  </scroll-view>
+
+  <!-- 列表 -->
+  <view class="list">
+    <view wx:if="{{loading}}" class="hint">加载中…</view>
+
+    <block wx:elif="{{items.length}}">
+      <view
+        wx:for="{{items}}"
+        wx:key="id"
+        class="ex-row"
+        hover-class="ex-row-hover"
+        data-name="{{item.name}}"
+        bindtap="onPick"
+      >
+        <img-ph label="{{item.name}}" width="80rpx" height="80rpx"></img-ph>
+        <view class="ex-info">
+          <view class="ex-name">{{item.name}}</view>
+          <view class="ex-meta">
+            <text wx:if="{{item.bodyPart}}" class="ex-part">{{item.bodyPart}}</text>
+            <text wx:if="{{!item.isSystem}}" class="ex-custom">自定义</text>
+          </view>
+        </view>
+        <view class="ex-pick">选择</view>
+      </view>
+    </block>
+
+    <!-- 空状态 + 创建入口 -->
+    <view wx:else class="empty">
+      <view class="empty-text">没有找到匹配的动作</view>
+      <view wx:if="{{keyword}}" class="create-btn" catchtap="onCreate">＋ 创建「{{keyword}}」</view>
+      <view wx:else class="empty-sub">输入名称即可搜索或创建自定义动作</view>
+    </view>
+  </view>
+
+  <!-- 始终可用的创建条（有关键词时） -->
+  <view wx:if="{{keyword && items.length}}" class="create-bar safe-bottom" catchtap="onCreate">
+    ＋ 创建自定义动作「{{keyword}}」
+  </view>
+</view>

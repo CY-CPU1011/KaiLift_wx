@@ -1,0 +1,104 @@
+/* 像素方块卡（design §5 / §2.2）：浅色 tone 底 + 描边 + 硬偏移阴影 */
+.sc {
+  position: relative;
+  overflow: hidden;
+  height: 100%;
+  box-sizing: border-box;
+  padding: var(--sp-3);
+  border: var(--px-border);
+  border-radius: var(--px-radius);
+  box-shadow: var(--px-shadow);
+  background: var(--surface);
+}
+
+/* 按 tone 取浅底 + 强调色（强调数字/进度） */
+.sc--green { background: var(--c-primary-soft); --tone: var(--c-primary-strong); }
+.sc--amber { background: var(--c-amber-soft); --tone: var(--c-amber); }
+.sc--blue { background: var(--c-blue-soft); --tone: var(--c-blue); }
+.sc--pink { background: var(--c-pink-soft); --tone: var(--c-pink); }
+.sc--purple { background: var(--c-purple-soft); --tone: var(--c-purple); }
+
+.sc__icon { margin-bottom: var(--sp-2); }
+.sc__icon-img {
+  display: block;
+  width: 56rpx;
+  height: 56rpx;
+  image-rendering: pixelated;
+}
+
+/* CSS 钟（时长卡，§4.4 切图缺口的替代） */
+.sc__clock {
+  position: relative;
+  width: 56rpx;
+  height: 56rpx;
+  box-sizing: border-box;
+  border: 5rpx solid var(--tone, var(--text-1));
+  border-radius: 50%;
+}
+.sc__clock-h,
+.sc__clock-m {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  background: var(--tone, var(--text-1));
+  transform-origin: left center;
+}
+.sc__clock-h {
+  width: 14rpx;
+  height: 5rpx;
+  transform: translate(0, -50%) rotate(-90deg);
+}
+.sc__clock-m {
+  width: 20rpx;
+  height: 5rpx;
+  transform: translate(0, -50%) rotate(20deg);
+}
+
+.sc__main { position: relative; z-index: 1; }
+.sc__num { display: flex; align-items: baseline; }
+.sc__num-big {
+  font-size: 56rpx;
+  font-weight: 800;
+  line-height: 1;
+  color: var(--text-1);
+}
+.sc__num-unit {
+  margin-left: 6rpx;
+  font-size: 24rpx;
+  font-weight: 500;
+  color: var(--text-2);
+}
+.sc__label {
+  display: block;
+  margin-top: var(--sp-1);
+  font-size: 24rpx;
+  font-weight: 500;
+  color: var(--text-2);
+}
+
+/* 可选进度条 */
+.sc__progress {
+  margin-top: var(--sp-3);
+  height: 12rpx;
+  border-radius: var(--r-pill);
+  background: rgba(20, 29, 31, 0.06);
+  overflow: hidden;
+}
+.sc__progress-fill {
+  height: 100%;
+  border-radius: var(--r-pill);
+  background: var(--tone, var(--c-primary));
+  transition: width 200ms ease;
+}
+
+/* 水印（stats 概览卡变体）：大数字居中、右下低透明度水印 */
+.sc--wm { text-align: center; }
+.sc--wm .sc__num { justify-content: center; }
+.sc__watermark {
+  position: absolute;
+  right: -16rpx;
+  bottom: -16rpx;
+  opacity: 0.16;
+  z-index: 0;
+  pointer-events: none;
+}

@@ -1,0 +1,146 @@
+[
+  {
+    "name": "badge_medal_gold_flame",
+    "description_zh": "火焰奖牌-金",
+    "file": "badge_medal_gold_flame.png",
+    "source": "奖牌徽章.png",
+    "source_crop": [
+      180,
+      8,
+      466,
+      360
+    ],
+    "width": 263,
+    "height": 348,
+    "format": "PNG",
+    "transparent": true
+  },
+  {
+    "name": "badge_medal_silver_flame",
+    "description_zh": "火焰奖牌-银",
+    "file": "badge_medal_silver_flame.png",
+    "source": "奖牌徽章.png",
+    "source_crop": [
+      584,
+      8,
+      855,
+      360
+    ],
+    "width": 262,
+    "height": 348,
+    "format": "PNG",
+    "transparent": true
+  },
+  {
+    "name": "badge_medal_bronze_flame",
+    "description_zh": "火焰奖牌-铜",
+    "file": "badge_medal_bronze_flame.png",
+    "source": "奖牌徽章.png",
+    "source_crop": [
+      975,
+      8,
+      1255,
+      360
+    ],
+    "width": 263,
+    "height": 348,
+    "format": "PNG",
+    "transparent": true
+  },
+  {
+    "name": "badge_pr_squat",
+    "description_zh": "深蹲个人纪录徽章",
+    "file": "badge_pr_squat.png",
+    "source": "奖牌徽章.png",
+    "source_crop": [
+      176,
+      367,
+      480,
+      671
+    ],
+    "width": 294,
+    "height": 299,
+    "format": "PNG",
+    "transparent": true
+  },
+  {
+    "name": "badge_pr_bench_press",
+    "description_zh": "卧推个人纪录徽章",
+    "file": "badge_pr_bench_press.png",
+    "source": "奖牌徽章.png",
+    "source_crop": [
+      578,
+      367,
+      874,
+      671
+    ],
+    "width": 290,
+    "height": 299,
+    "format": "PNG",
+    "transparent": true
+  },
+  {
+    "name": "badge_pr_deadlift",
+    "description_zh": "硬拉个人纪录徽章",
+    "file": "badge_pr_deadlift.png",
+    "source": "奖牌徽章.png",
+    "source_crop": [
+      967,
+      367,
+      1270,
+      671
+    ],
+    "width": 292,
+    "height": 299,
+    "format": "PNG",
+    "transparent": true
+  },
+  {
+    "name": "badge_shield_gold_green",
+    "description_zh": "金绿盾牌徽章",
+    "file": "badge_shield_gold_green.png",
+    "source": "奖牌徽章.png",
+    "source_crop": [
+      132,
+      677,
+      510,
+      1018
+    ],
+    "width": 373,
+    "height": 328,
+    "format": "PNG",
+    "transparent": true
+  },
+  {
+    "name": "badge_trophy_gold",
+    "description_zh": "金色奖杯",
+    "file": "badge_trophy_gold.png",
+    "source": "奖牌徽章.png",
+    "source_crop": [
+      543,
+      676,
+      895,
+      1018
+    ],
+    "width": 326,
+    "height": 324,
+    "format": "PNG",
+    "transparent": true
+  },
+  {
+    "name": "badge_shield_silver",
+    "description_zh": "银色盾牌徽章",
+    "file": "badge_shield_silver.png",
+    "source": "奖牌徽章.png",
+    "source_crop": [
+      920,
+      676,
+      1305,
+      1024
+    ],
+    "width": 370,
+    "height": 328,
+    "format": "PNG",
+    "transparent": true
+  }
+]

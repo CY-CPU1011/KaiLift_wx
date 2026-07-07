@@ -1,0 +1,203 @@
+<view class="profile">
+  <!-- 全屏像素风背景（铺底，沉到内容下方） -->
+  <image class="app-bg app-bg--tab" src="/images/bg/background.jpg" mode="aspectFit"></image>
+
+  <!-- 1. 标题：我的（顶部状态栏留白由 page-header 内部统一处理） -->
+  <page-header mode="title" title="我的"></page-header>
+
+  <view wx:if="{{error}}" class="block">
+    <view class="settings px-box">
+      <view class="settings__row">
+        <list-row
+          iconSrc="/images/ui/icons/ui_icon_speaker_muted.png"
+          title="数据加载失败"
+          value="点击重试"
+          bindtap="loadProfile"
+        ></list-row>
+      </view>
+    </view>
+  </view>
+
+  <!-- 2. 资料卡（design §6.5）：头像 + Lv./EXP + 段位奖牌。
+       等级/EXP/段位由后端 GET /achievements 驱动（utils/achievement），不再本地推导。 -->
+  <view class="block">
+    <view class="profile-card px-box">
+      <!-- 左：像素头像 + 编辑角标 -->
+      <view class="pc__avatar" bindtap="onOpenEdit">
+        <image
+          class="pc__avatar-img"
+          src="{{avatarUrl || '/images/characters/male_avatar_portrait.png'}}"
+          mode="aspectFill"
+        ></image>
+        <view wx:if="{{!isGuest}}" class="pc__edit">
+          <image class="pc__edit-img" src="/images/ui/icons/ui_icon_edit_pencil.png" mode="aspectFit"></image>
+        </view>
+      </view>
+
+      <!-- 中：昵称 + Lv. + EXP + 进度条 -->
+      <view class="pc__main">
+        <view class="pc__name-row">
+          <text class="pc__name">{{nickname}}</text>
+          <view class="pc__lv">Lv.{{level.lv}}</view>
+        </view>
+        <view class="pc__exp-row">
+          <image class="pc__exp-star" src="/images/ui/icons/ui_icon_experience_star.png" mode="aspectFit"></image>
+          <text class="pc__exp-text">{{level.isMax ? '满级 · MAX' : 'EXP ▸ ' + level.exp + ' / ' + level.expMax}}</text>
+        </view>
+        <progress-bar
+          class="pc__bar"
+          percent="{{level.percent}}"
+          segments="{{12}}"
+          show-label="{{false}}"
+        ></progress-bar>
+      </view>
+
+      <!-- 右：段位奖牌。点击弹段位阶梯。 -->
+      <view class="pc__trophy" bindtap="onOpenRank">
+        <image class="pc__trophy-img" src="{{rank ? rank.icon : '/images/badges/ranks/chuqi.png'}}" mode="aspectFit"></image>
+      </view>
+    </view>
+  </view>
+
+  <view wx:if="{{isGuest}}" class="block">
+    <view class="login-cta px-box">
+      <view class="login-cta__main">
+        <text class="login-cta__title">登录后同步训练记录</text>
+        <text class="login-cta__sub">训练、数据和成就会保存到你的账号</text>
+      </view>
+      <button
+        class="login-cta__btn"
+        hover-class="login-cta__btn--press"
+        loading="{{logging}}"
+        disabled="{{logging}}"
+        bindtap="onLogin"
+      >微信登录</button>
+    </view>
+  </view>
+
+  <!-- 3. 累计三卡（PRD §3.9：累计训练 / 总训练量 / 动作种类） -->
+  <view class="block overview">
+    <stat-card
+      class="overview__item"
+      iconSrc="/images/ui/icons/ui_icon_calendar.png"
+      value="{{stats.count}}"
+      unit="次"
+      label="累计训练"
+      tone="green"
+    ></stat-card>
+    <stat-card
+      class="overview__item"
+      iconSrc="/images/ui/equipment/ui_equipment_barbell.png"
+      value="{{volumeText}}"
+      unit="{{unitText}}"
+      label="总训练量"
+      tone="amber"
+    ></stat-card>
+    <stat-card
+      class="overview__item"
+      iconSrc="/images/ui/equipment/ui_equipment_dumbbell.png"
+      value="{{stats.exerciseTypes}}"
+      unit="种"
+      label="动作种类"
+      tone="blue"
+    ></stat-card>
+  </view>
+
+  <!-- 4. 成就墙（精简预览；完整 5 类 23 枚见成就墙页） -->
+  <view class="sec-head">
+    <text class="sec-head__title">成就墙<text class="sec-head__count">{{achvCount.unlocked}}/{{achvCount.total}}</text></text>
+    <text class="sec-head__more" bindtap="onAchievementMore">查看全部 ›</text>
+  </view>
+  <view class="block">
+    <scroll-view wx:if="{{achievements.length}}" class="badges" scroll-x="{{true}}" enable-flex="{{true}}">
+      <view class="badges__item" wx:for="{{achievements}}" wx:key="key">
+        <achievement-badge
+          unlocked="{{item.unlocked}}"
+          art="{{item.art}}"
+          badge-num="{{item.badgeNum}}"
+          progress-text="{{item.progressText}}"
+          title="{{item.title}}"
+          bindtap="onAchievementMore"
+        ></achievement-badge>
+      </view>
+    </scroll-view>
+    <view wx:else class="badges-empty">成就数据待同步</view>
+  </view>
+
+  <!-- 5. 设置入口（像素行 + 像素分隔线，由 .settings 容器统一描边） -->
+  <view class="block">
+    <view class="settings px-box">
+      <view
+        class="settings__row {{index === settings.length - 1 ? '' : 'settings__row--sep'}}"
+        wx:for="{{settings}}"
+        wx:key="key"
+      >
+        <list-row
+          iconSrc="{{item.iconSrc}}"
+          title="{{item.title}}"
+          value="{{item.value}}"
+          dot="{{item.dot}}"
+          data-key="{{item.key}}"
+          bindtap="onSettingTap"
+        ></list-row>
+      </view>
+    </view>
+  </view>
+
+  <view class="profile__pad"></view>
+
+  <!-- 段位阶梯弹窗（点资料卡段位奖牌弹出） -->
+  <rank-ladder
+    visible="{{rankModalVisible}}"
+    ladder="{{ladder}}"
+    tip-text="{{rank.nextText}}"
+    bind:close="onCloseRank"
+  ></rank-ladder>
+
+  <!-- 编辑资料 sheet（像素化） -->
+  <view wx:if="{{showEdit}}" class="sheet-mask" catchtap="onCloseEdit">
+    <view class="sheet" catchtap="noop">
+      <view class="sheet__title">编辑资料</view>
+
+      <button
+        class="sheet__avatar"
+        open-type="chooseAvatar"
+        bindchooseavatar="onChooseAvatar"
+      >
+        <block wx:if="{{editAvatarUrl}}">
+          <image class="sheet__avatar-img" src="{{editAvatarUrl}}" mode="aspectFill"></image>
+        </block>
+        <block wx:else>
+          <view class="sheet__avatar-ph">
+            <text class="sheet__plus">+</text>
+            <text class="sheet__hint">选择头像</text>
+          </view>
+        </block>
+      </button>
+
+      <view class="sheet__field">
+        <input
+          class="sheet__input"
+          type="nickname"
+          placeholder="点击填写昵称"
+          placeholder-class="sheet__ph"
+          value="{{editNickname}}"
+          bindblur="onEditNickname"
+          bindconfirm="onEditNickname"
+          bindinput="onEditNickname"
+        />
+      </view>
+
+      <view class="sheet__actions">
+        <button class="sheet__btn sheet__btn--ghost" hover-class="sheet__btn--press" bindtap="onCloseEdit">取消</button>
+        <button
+          class="sheet__btn sheet__btn--primary"
+          hover-class="sheet__btn--press"
+          loading="{{saving}}"
+          disabled="{{saving}}"
+          bindtap="onSaveEdit"
+        >保存</button>
+      </view>
+    </view>
+  </view>
+</view>

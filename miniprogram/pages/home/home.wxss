@@ -1,0 +1,99 @@
+/* 首页（design §6.1/§6.2）。像素风：纯色底（统一 --bg-page，无角落装饰）。仅 rpx + token。 */
+/* 不设背景：全局 page 已是 --bg-page，保持四个 tab 页背景完全一致 */
+.home {
+  min-height: 100vh;
+  box-sizing: border-box;
+}
+
+/* 卡片/组件区块统一左右安全边距（与 page-header、section-title 同为 --sp-4） */
+.block {
+  margin: 0 var(--sp-4) var(--sp-3);
+}
+
+/* —— 最近一次训练卡（像素方块） —— */
+.last {
+  display: flex;
+  align-items: center;
+  padding: var(--sp-3);
+}
+.last--press {
+  box-shadow: var(--px-shadow-press);
+  transform: translate(4rpx, 4rpx);
+}
+.last__thumb {
+  width: 104rpx;
+  height: 104rpx;
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--c-primary-soft);
+  border: var(--px-border);
+  border-radius: var(--px-radius);
+  box-sizing: border-box;
+}
+.last__thumb-img {
+  width: 80rpx;
+  height: 80rpx;
+  image-rendering: pixelated;
+}
+.last__body {
+  flex: 1;
+  min-width: 0;
+  margin-left: var(--sp-3);
+}
+.last__meta {
+  font-size: 30rpx;
+  font-weight: 700;
+  color: var(--text-1);
+}
+.last__detail {
+  margin-top: var(--sp-1);
+  font-size: 26rpx;
+  color: var(--text-2);
+}
+.last__empty {
+  font-size: 28rpx;
+  color: var(--text-3);
+}
+.last__arrow {
+  flex: none;
+  margin-left: var(--sp-2);
+  width: 40rpx;
+  height: 40rpx;
+  image-rendering: pixelated;
+}
+
+/* —— 本周概览三卡 —— */
+.overview {
+  display: flex;
+  gap: var(--sp-2);
+}
+.overview__item {
+  flex: 1;
+  min-width: 0;
+}
+
+/* —— 底部语音主按钮区块 —— */
+.voice {
+  margin-top: var(--sp-4);
+}
+
+/* 底部留白：避让固定的自定义 tabBar（高度 + 安全区），确保内容不被遮挡 */
+.home__pad {
+  height: calc(160rpx + env(safe-area-inset-bottom));
+}
+
+.home-error {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20rpx 24rpx;
+  color: var(--text-2);
+  background: #fff8e8;
+}
+
+.home-error__retry {
+  color: var(--c-primary);
+  font-weight: 700;
+}

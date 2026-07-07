@@ -1,0 +1,39 @@
+<view class="tc">
+  <view class="tc__head">
+    <text class="tc__title">训练量趋势<text wx:if="{{unit}}" class="tc__unit">（{{unit}}）</text></text>
+    <text wx:if="{{deltaText}}" class="tc__delta">{{deltaText}}</text>
+  </view>
+
+  <!-- 像素网格底 + 纯 view 折线（点 + 旋转线段连线 + 末点高亮）。 -->
+  <view class="tc__plot" style="height:{{chartH}}rpx;">
+    <!-- 像素网格底（横线 4 条） -->
+    <view class="tc__grid">
+      <view class="tc__gridline"></view>
+      <view class="tc__gridline"></view>
+      <view class="tc__gridline"></view>
+      <view class="tc__gridline"></view>
+    </view>
+
+    <block wx:if="{{hasData}}">
+      <!-- 连线段 -->
+      <view
+        wx:for="{{segments}}"
+        wx:key="index"
+        class="tc__seg"
+        style="left:{{item.leftPct}}%;top:{{item.topPct}}%;width:{{item.widthPct}}%;transform:rotate({{item.angle}}deg);"
+      ></view>
+      <!-- 数据点（像素方块） -->
+      <view
+        wx:for="{{nodes}}"
+        wx:key="index"
+        class="tc__dot {{item.last ? 'tc__dot--last' : ''}}"
+        style="left:{{item.xPct}}%;top:{{item.yPct}}%;"
+      ></view>
+    </block>
+    <view wx:else class="tc__empty"><text>暂无趋势数据</text></view>
+  </view>
+
+  <view class="tc__xaxis">
+    <text wx:for="{{xLabels}}" wx:key="index" class="tc__xlabel">{{item}}</text>
+  </view>
+</view>

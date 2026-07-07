@@ -1,0 +1,173 @@
+/* 动作详情页 —— 全 token，rpx，无硬编码颜色。像素风。 */
+
+.page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: transparent;
+  box-sizing: border-box;
+}
+
+/* ---- 自定义导航栏 ---- */
+.nav {
+  position: relative;
+  height: 88rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 120rpx;
+}
+.nav__back {
+  position: absolute;
+  left: var(--sp-4);
+  width: 64rpx;
+  height: 64rpx;
+  line-height: 60rpx;
+  text-align: center;
+  font-size: 48rpx;
+  color: var(--text-1);
+  background: var(--surface);
+  border-radius: var(--r-pill);
+  box-shadow: var(--shadow-card);
+}
+.nav__title {
+  font-size: 34rpx;
+  font-weight: 600;
+  color: var(--text-1);
+  max-width: 440rpx;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.nav__cap { position: absolute; right: var(--sp-4); width: 120rpx; }
+
+/* ---- 区块 / 区块标题 ---- */
+.block { margin: 0 var(--sp-4) var(--sp-3); }
+.sec-head { display: flex; align-items: baseline; margin: var(--sp-3) var(--sp-4) var(--sp-2); }
+.sec-head__title { font-size: 34rpx; font-weight: 800; color: var(--text-1); }
+
+/* ---- 状态态（整页 / 局部） ---- */
+.state {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--sp-6) 0;
+}
+.mini-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: var(--sp-4);
+}
+.state__text { font-size: 28rpx; color: var(--text-3); }
+.state__btn {
+  margin-top: var(--sp-4);
+  padding: 0 var(--sp-5);
+  height: 72rpx;
+  line-height: 72rpx;
+  font-size: 28rpx;
+  font-weight: 700;
+  color: var(--text-on);
+  background: var(--c-primary);
+  border: var(--px-border);
+  border-radius: var(--px-radius);
+  box-shadow: var(--px-shadow);
+}
+.state__btn:active { box-shadow: var(--px-shadow-press); transform: translate(4rpx, 4rpx); }
+.state__btn--sm { margin-top: var(--sp-3); height: 64rpx; line-height: 64rpx; font-size: 26rpx; }
+
+/* ---- 头部 ---- */
+.head { padding: var(--sp-3); }
+.head__name-row { display: flex; align-items: center; gap: var(--sp-2); }
+.head__name { font-size: 40rpx; font-weight: 800; color: var(--text-1); }
+.head__custom {
+  flex: none;
+  font-size: 22rpx;
+  color: var(--c-blue);
+  background: var(--c-blue-soft);
+  padding: 2rpx 12rpx;
+  border-radius: var(--r-pill);
+}
+.head__part {
+  display: inline-block;
+  margin-top: var(--sp-2);
+  font-size: 24rpx;
+  color: var(--c-primary-strong);
+  background: var(--c-primary-soft);
+  padding: 4rpx 16rpx;
+  border-radius: var(--r-pill);
+}
+.head__bare { display: block; margin-top: var(--sp-2); font-size: 24rpx; color: var(--text-3); }
+
+/* ---- 资料 meta ---- */
+.meta { padding: 0 var(--sp-3); }
+.meta__row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  padding: var(--sp-2) 0;
+}
+.meta__row--sep { border-bottom: 2rpx solid var(--bg-scene); }
+.meta__label { flex: none; font-size: 28rpx; color: var(--text-2); margin-right: var(--sp-3); }
+.meta__value { flex: 1; text-align: right; font-size: 28rpx; font-weight: 600; color: var(--text-1); }
+
+/* ---- 动作要领 ---- */
+.steps { padding: var(--sp-3); }
+.steps__item { display: flex; align-items: flex-start; margin-bottom: var(--sp-3); }
+.steps__item:last-child { margin-bottom: 0; }
+.steps__num {
+  flex: none;
+  width: 44rpx;
+  height: 44rpx;
+  line-height: 44rpx;
+  text-align: center;
+  margin-right: var(--sp-3);
+  font-size: 26rpx;
+  font-weight: 800;
+  color: var(--text-on);
+  background: var(--c-primary);
+  border-radius: var(--r-pill);
+}
+.steps__text { flex: 1; font-size: 28rpx; line-height: 1.6; color: var(--text-1); }
+
+/* ---- PR ---- */
+.pr { padding: var(--sp-3); }
+.pr__title { font-size: 28rpx; font-weight: 800; color: var(--text-1); }
+.pr__grid { display: flex; flex-wrap: wrap; justify-content: space-between; margin-top: var(--sp-2); }
+.pr__item {
+  width: 31%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: var(--sp-2) 8rpx;
+  background: var(--bg-mint);
+  border-radius: var(--r-sm);
+}
+.pr__label { font-size: 22rpx; color: var(--text-2); }
+.pr__value { margin-top: 6rpx; font-size: 34rpx; font-weight: 800; color: var(--c-primary-strong); }
+.pr__sub { margin-top: 4rpx; font-size: 22rpx; color: var(--text-3); }
+.pr__date { margin-top: 4rpx; font-size: 20rpx; color: var(--text-3); }
+.pr__empty { display: block; margin-top: var(--sp-3); text-align: center; font-size: 26rpx; color: var(--text-3); }
+
+/* ---- 历史 ---- */
+.hist { padding: var(--sp-3); }
+.hist__title { font-size: 28rpx; font-weight: 800; color: var(--text-1); }
+.hist__sess { margin-top: var(--sp-3); }
+.hist__sess:first-of-type { margin-top: var(--sp-2); }
+.hist__date { display: block; font-size: 26rpx; font-weight: 700; color: var(--text-2); margin-bottom: var(--sp-1); }
+.hist__set { display: flex; align-items: center; gap: var(--sp-2); padding: 6rpx 0; }
+.hist__set-text { font-size: 28rpx; color: var(--text-1); }
+.hist__set-type {
+  font-size: 22rpx;
+  color: var(--text-2);
+  background: var(--bg-scene);
+  padding: 2rpx 12rpx;
+  border-radius: var(--r-pill);
+}
+.hist__set-pr {
+  font-size: 22rpx;
+  font-weight: 700;
+  color: var(--c-amber);
+}

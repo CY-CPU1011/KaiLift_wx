@@ -1,0 +1,288 @@
+/* 训练详情 —— 全 token，rpx，无硬编码颜色 */
+
+.page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  /* 透明底，透出全屏 .app-bg 像素背景 */
+  background: transparent;
+  box-sizing: border-box;
+}
+
+/* ---- 导航栏 ---- */
+.nav {
+  position: relative;
+  height: 88rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 var(--sp-4);
+}
+
+.nav__back {
+  position: absolute;
+  left: var(--sp-4);
+  width: 64rpx;
+  height: 64rpx;
+  line-height: 60rpx;
+  text-align: center;
+  font-size: 48rpx;
+  color: var(--text-1);
+  background: var(--surface);
+  border-radius: var(--r-pill);
+  box-shadow: var(--shadow-card);
+}
+
+.nav__title {
+  font-size: 34rpx;
+  font-weight: 600;
+  color: var(--text-1);
+}
+
+.nav__cap {
+  position: absolute;
+  right: var(--sp-4);
+  width: 180rpx;
+}
+
+/* ---- 状态态 ---- */
+.state {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--sp-6) 0;
+}
+
+.state--inline {
+  flex: none;
+  padding: var(--sp-5) 0;
+}
+
+.state__text {
+  margin-top: var(--sp-3);
+  font-size: 28rpx;
+  color: var(--text-3);
+}
+
+.state__btn {
+  margin-top: var(--sp-4);
+  padding: 0 var(--sp-5);
+  height: 72rpx;
+  line-height: 72rpx;
+  border-radius: var(--r-pill);
+  background: var(--c-primary);
+  color: var(--text-on);
+  font-size: 28rpx;
+  box-shadow: var(--shadow-float);
+}
+
+/* ---- 内容 ---- */
+.body {
+  flex: 1;
+  min-height: 0;
+  padding: var(--sp-2) var(--sp-4) 0;
+  box-sizing: border-box;
+}
+
+.card {
+  background: var(--surface);
+  border-radius: var(--r-card);
+  box-shadow: var(--shadow-card);
+  padding: var(--sp-4);
+  margin-bottom: var(--sp-3);
+}
+
+/* Signature 数字 + 单位 */
+.num-row {
+  display: flex;
+  align-items: baseline;
+}
+
+.num-row__num {
+  font-size: 56rpx;
+  font-weight: 700;
+  color: var(--text-1);
+  line-height: 1;
+}
+
+.num-row__unit {
+  font-size: 24rpx;
+  font-weight: 500;
+  color: var(--text-2);
+  margin-left: 4rpx;
+}
+
+/* ---- 头部卡 ---- */
+.head-card__top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.head-card__name {
+  font-size: 40rpx;
+  font-weight: 700;
+  color: var(--text-1);
+}
+
+.head-card__day {
+  display: block;
+  margin-top: var(--sp-2);
+  font-size: 28rpx;
+  color: var(--text-2);
+}
+
+.badge {
+  font-size: 24rpx;
+  font-weight: 500;
+  padding: 6rpx 20rpx;
+  border-radius: var(--r-pill);
+}
+
+.badge--completed {
+  background: var(--c-primary-soft);
+  color: var(--c-primary-strong);
+}
+
+.badge--active {
+  background: var(--c-blue-soft);
+  color: var(--c-blue);
+}
+
+.badge--cancelled {
+  background: var(--bg-page);
+  color: var(--text-3);
+}
+
+/* ---- 概览 ---- */
+.summary {
+  display: flex;
+  align-items: center;
+}
+
+.summary__cell {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.summary__label {
+  margin-top: var(--sp-1);
+  font-size: 26rpx;
+  color: var(--text-2);
+}
+
+.summary__divider {
+  width: 2rpx;
+  height: 64rpx;
+  background: var(--bg-page);
+}
+
+/* ---- 动作卡 ---- */
+.ex-card__head {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+}
+
+.ex-card__title {
+  display: flex;
+  flex-direction: column;
+}
+
+.ex-card__name {
+  font-size: 32rpx;
+  font-weight: 600;
+  color: var(--text-1);
+}
+
+.ex-card__sub {
+  font-size: 26rpx;
+  color: var(--text-2);
+  margin-top: 4rpx;
+}
+
+.ex-card__sets {
+  margin-top: var(--sp-3);
+}
+
+.set-row {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  padding: var(--sp-2) 0;
+  border-top: 2rpx solid var(--bg-page);
+}
+
+.set-row__order {
+  width: 48rpx;
+  font-size: 28rpx;
+  color: var(--text-3);
+}
+
+.set-row__load {
+  flex: 1;
+  font-size: 30rpx;
+  font-weight: 500;
+  color: var(--text-1);
+}
+
+.set-row__type {
+  font-size: 26rpx;
+  color: var(--text-2);
+}
+
+.set-row__pr {
+  font-size: 22rpx;
+  font-weight: 600;
+  color: var(--text-on);
+  background: var(--c-pink);
+  padding: 4rpx 14rpx;
+  border-radius: var(--r-pill);
+}
+
+/* ---- 生成分享图（像素方块主绿，仿 workout .btn-px--primary） ---- */
+.share-btn {
+  margin: var(--sp-4) 0 0;
+  height: 88rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  background: var(--c-primary);
+  color: var(--text-on);
+  border: var(--px-border);
+  border-radius: var(--px-radius);
+  box-shadow: var(--px-shadow);
+  font-size: 30rpx;
+  font-weight: 700;
+}
+
+.share-btn--press {
+  box-shadow: var(--px-shadow-press);
+  transform: translate(4rpx, 4rpx);
+}
+
+/* ---- 删除 ---- */
+.delete-btn {
+  margin: var(--sp-4) 0 var(--sp-3);
+  height: 88rpx;
+  line-height: 88rpx;
+  text-align: center;
+  border-radius: var(--r-pill);
+  background: var(--c-pink-soft);
+  color: var(--c-pink);
+  font-size: 30rpx;
+  font-weight: 600;
+}
+
+.delete-btn.is-disabled {
+  opacity: 0.5;
+}
+
+.safe-bottom {
+  height: calc(var(--sp-4) + env(safe-area-inset-bottom));
+}

@@ -1,0 +1,13 @@
+<view class="img-ph" style="width:{{w}}rpx;height:{{h}}rpx;border-radius:{{round}};">
+  <image
+    wx:if="{{src && ready && !failed}}"
+    class="img-ph__img"
+    src="{{src}}"
+    mode="{{mode}}"
+    style="border-radius:{{round}};"
+    binderror="onError"
+  />
+  <view wx:else class="img-ph__ph" style="border-radius:{{round}};">
+    <text class="img-ph__label">{{label}}</text>
+  </view>
+</view>

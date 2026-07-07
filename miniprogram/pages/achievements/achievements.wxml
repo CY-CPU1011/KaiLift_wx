@@ -1,0 +1,96 @@
+<!-- 成就墙 —— 资料卡（段位/等级/EXP）+ 5 类 23 枚成就墙。二级页，自定义导航带返回。 -->
+<view class="page" style="padding-top: {{statusBarHeight}}px;">
+  <!-- 全屏像素风背景（铺底，沉到内容下方；二级页无 tabBar，用整屏 .app-bg） -->
+  <image class="app-bg" src="/images/bg/background.jpg" mode="aspectFit"></image>
+
+  <!-- 自定义导航栏（带返回） -->
+  <view class="nav">
+    <view class="nav__back" bindtap="onBack">‹</view>
+    <text class="nav__title">成就墙</text>
+    <view class="nav__cap"></view>
+  </view>
+
+  <!-- 加载态（初次） -->
+  <view wx:if="{{loading}}" class="state">
+    <text class="state__text">加载中…</text>
+  </view>
+
+  <!-- 错误态（可点重试） -->
+  <view wx:elif="{{error}}" class="state">
+    <text class="state__text">数据加载失败</text>
+    <view class="state__btn" bindtap="loadAchievements">重试</view>
+  </view>
+
+  <block wx:else>
+    <!-- 资料卡：段位奖牌 + Lv. + EXP 文案 + 进度条 + 距下一段位 -->
+    <view class="block">
+      <view class="ac-card px-box">
+        <!-- 左：段位奖牌。点击弹段位阶梯。 -->
+        <view class="ac-card__medal" bindtap="openRankModal">
+          <image class="ac-card__medal-img" src="{{rank.icon}}" mode="aspectFit"></image>
+        </view>
+
+        <!-- 右：段位名 + Lv. + EXP 文案 + 进度条 + 距下一段位 -->
+        <view class="ac-card__main">
+          <view class="ac-card__name-row">
+            <text class="ac-card__rank-name">{{rank.name}}</text>
+            <view class="ac-card__lv">Lv.{{level.lv}}</view>
+          </view>
+
+          <view class="ac-card__exp-row">
+            <image class="ac-card__exp-star" src="/images/ui/icons/ui_icon_experience_star.png" mode="aspectFit"></image>
+            <text class="ac-card__exp-text" wx:if="{{level.isMax}}">满级 · MAX</text>
+            <text class="ac-card__exp-text" wx:else>EXP {{level.exp}} / {{level.expMax}}</text>
+          </view>
+
+          <progress-bar
+            class="ac-card__bar"
+            percent="{{level.percent}}"
+            segments="{{12}}"
+            show-label="{{false}}"
+          ></progress-bar>
+
+          <!-- 距下一段位（满段隐藏：nextText 为空串） -->
+          <text wx:if="{{rank.nextText}}" class="ac-card__next">{{rank.nextText}}</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 一行计数 -->
+    <view class="block">
+      <view class="ac-count px-box">
+        <text class="ac-count__text">已点亮 <text class="ac-count__num">{{unlockedCount}}</text> / {{totalCount}}</text>
+      </view>
+    </view>
+
+    <!-- 5 个分区：每区一标题 + flex wrap 徽章网格（徽章组件自带 150rpx 宽，自动换行） -->
+    <block wx:for="{{categories}}" wx:key="key" wx:for-item="cat">
+      <view class="sec-head">
+        <text class="sec-head__title">{{cat.label}}</text>
+      </view>
+      <view class="block">
+        <view class="ac-grid">
+          <view class="ac-grid__item" wx:for="{{cat.items}}" wx:key="key" wx:for-item="badge">
+            <achievement-badge
+              unlocked="{{badge.unlocked}}"
+              art="{{badge.art}}"
+              title="{{badge.title}}"
+              badge-num="{{badge.badgeNum}}"
+              progress-text="{{badge.progressText}}"
+            ></achievement-badge>
+          </view>
+        </view>
+      </view>
+    </block>
+
+    <view class="safe-bottom"></view>
+  </block>
+
+  <!-- 段位阶梯弹窗（点资料卡段位奖牌弹出） -->
+  <rank-ladder
+    visible="{{rankModalVisible}}"
+    ladder="{{ladder}}"
+    tip-text="{{rank.nextText}}"
+    bind:close="closeRankModal"
+  ></rank-ladder>
+</view>

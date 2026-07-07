@@ -1,0 +1,11 @@
+{
+  "navigationStyle": "custom",
+  "usingComponents": {
+    "page-header": "/components/page-header/index",
+    "stat-card": "/components/stat-card/index",
+    "achievement-badge": "/components/achievement-badge/index",
+    "list-row": "/components/list-row/index",
+    "progress-bar": "/components/progress-bar/index",
+    "rank-ladder": "/components/rank-ladder/index"
+  }
+}

@@ -1,0 +1,57 @@
+/* ProgressBar（design §5 / §2.2）。通用像素分段填充条：
+   外描边方框 + 绿色实心填充 + 等分刻度线（一格格观感）。
+   通用：percent / color / showLabel / segments，不写死 EXP 专用。 */
+.pb {
+  display: flex;
+  align-items: center;
+}
+
+/* 像素轨道：硬描边方框（不用圆角药丸） */
+.pb__track {
+  position: relative;
+  flex: 1;
+  height: 24rpx;
+  box-sizing: border-box;
+  background: var(--surface);
+  border: var(--px-border);
+  border-radius: var(--px-radius);
+  overflow: hidden;
+}
+
+/* 实心绿色填充（默认主绿；可被 color 覆盖） */
+.pb__fill {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  background: var(--c-primary);
+  transition: width 200ms ease;
+}
+
+/* 等分刻度：在填充之上叠竖线，把进度切成「一格格」像素观感 */
+.pb__ticks {
+  position: absolute;
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  pointer-events: none;
+}
+.pb__tick {
+  flex: 1;
+  border-right: 3rpx solid var(--c-ink);
+  opacity: 0.28;
+}
+.pb__tick:last-child {
+  border-right: none;
+}
+
+.pb__label {
+  margin-left: var(--sp-2);
+  min-width: 64rpx;
+  text-align: right;
+  font-size: 24rpx;
+  font-weight: 700;
+  color: var(--text-2);
+}

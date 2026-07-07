@@ -1,0 +1,116 @@
+<!-- 动作详情 + 我的数据。二级页，自定义导航带返回。 -->
+<view class="page" style="padding-top: {{statusBarHeight}}px;">
+  <!-- 全屏像素风背景（铺底，沉到内容下方） -->
+  <image class="app-bg" src="/images/bg/background.jpg" mode="aspectFit"></image>
+
+  <!-- 自定义导航栏（带返回） -->
+  <view class="nav">
+    <view class="nav__back" bindtap="onBack">‹</view>
+    <text class="nav__title">{{navTitle}}</text>
+    <view class="nav__cap"></view>
+  </view>
+
+  <!-- 详情加载态 -->
+  <view wx:if="{{loading}}" class="state">
+    <text class="state__text">加载中…</text>
+  </view>
+
+  <!-- 详情错误态（整页重试） -->
+  <view wx:elif="{{error}}" class="state">
+    <text class="state__text">动作加载失败</text>
+    <view class="state__btn" bindtap="onRetryDetail">重试</view>
+  </view>
+
+  <block wx:else>
+    <!-- 头部：名称 + 部位 + 自定义标 -->
+    <view class="block">
+      <view class="head px-box">
+        <view class="head__name-row">
+          <text class="head__name">{{detail.name}}</text>
+          <text wx:if="{{detail.isCustom}}" class="head__custom">自定义</text>
+        </view>
+        <text wx:if="{{detail.bodyPart}}" class="head__part">{{detail.bodyPart}}</text>
+        <text wx:if="{{detail.isBare}}" class="head__bare">这是自定义动作，暂无详细资料</text>
+      </view>
+    </view>
+
+    <!-- 资料：主/次肌群、难度、器械、分类、机制、发力（仅有值的字段） -->
+    <view wx:if="{{detail.metas.length}}" class="block">
+      <view class="meta px-box">
+        <view
+          class="meta__row {{index === detail.metas.length - 1 ? '' : 'meta__row--sep'}}"
+          wx:for="{{detail.metas}}"
+          wx:key="label"
+        >
+          <text class="meta__label">{{item.label}}</text>
+          <text class="meta__value">{{item.value}}</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 动作要领：有序步骤（v1 不渲染图片，无要领则整块隐藏） -->
+    <block wx:if="{{detail.hasInstructions}}">
+      <view class="sec-head"><text class="sec-head__title">动作要领</text></view>
+      <view class="block">
+        <view class="steps px-box">
+          <view class="steps__item" wx:for="{{detail.instructions}}" wx:key="*this">
+            <text class="steps__num">{{index + 1}}</text>
+            <text class="steps__text">{{item}}</text>
+          </view>
+        </view>
+      </view>
+    </block>
+
+    <!-- 我的数据：PR + 历史 -->
+    <view class="sec-head"><text class="sec-head__title">我的数据</text></view>
+
+    <view wx:if="{{myStatus === 'loading'}}" class="block">
+      <view class="mini-state px-box"><text class="state__text">加载中…</text></view>
+    </view>
+
+    <view wx:elif="{{myStatus === 'error'}}" class="block">
+      <view class="mini-state px-box">
+        <text class="state__text">记录加载失败</text>
+        <view class="state__btn state__btn--sm" bindtap="onRetryHistory">重试</view>
+      </view>
+    </view>
+
+    <block wx:else>
+      <!-- PR -->
+      <view class="block">
+        <view class="pr px-box">
+          <text class="pr__title">个人纪录 · PR</text>
+          <view wx:if="{{myData.hasRecords}}" class="pr__grid">
+            <view class="pr__item" wx:for="{{myData.records}}" wx:key="key">
+              <text class="pr__label">{{item.label}}</text>
+              <text class="pr__value">{{item.valueText}}</text>
+              <text class="pr__sub">{{item.subText}}</text>
+              <text class="pr__date">{{item.dateText}}</text>
+            </view>
+          </view>
+          <text wx:else class="pr__empty">还没有该动作的纪录，练一次就有啦</text>
+        </view>
+      </view>
+
+      <!-- 历史 -->
+      <view class="block">
+        <view class="hist px-box">
+          <text class="hist__title">训练历史</text>
+          <block wx:if="{{myData.hasHistory}}">
+            <view class="hist__sess" wx:for="{{myData.sessions}}" wx:key="key" wx:for-item="sess">
+              <text class="hist__date">{{sess.dateText}}</text>
+              <view class="hist__set" wx:for="{{sess.sets}}" wx:key="key" wx:for-item="st">
+                <text class="hist__set-text">{{st.text}}</text>
+                <text wx:if="{{st.typeLabel}}" class="hist__set-type">{{st.typeLabel}}</text>
+                <text wx:if="{{st.isPR}}" class="hist__set-pr">★ PR</text>
+              </view>
+            </view>
+          </block>
+          <text wx:else class="pr__empty">还没有训练历史</text>
+        </view>
+      </view>
+    </block>
+
+    <view class="safe-bottom"></view>
+  </block>
+</view>

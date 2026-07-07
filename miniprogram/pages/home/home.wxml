@@ -1,0 +1,102 @@
+<view class="home">
+  <!-- 全屏像素风背景（铺底，沉到内容下方） -->
+  <image class="app-bg app-bg--tab" src="/images/bg/background.jpg" mode="aspectFit"></image>
+
+  <!-- 1. 标题行：问候靠左，日期放在微信胶囊下方并与卡片右边缘对齐。 -->
+  <page-header
+    mode="greeting"
+    name="{{helloLine}}"
+    dateText="{{dateText}}"
+  ></page-header>
+
+  <view wx:if="{{error}}" class="block">
+    <view class="home-error px-box">
+      <text>数据加载失败，请检查网络</text>
+      <text class="home-error__retry" bindtap="loadHome">重试</text>
+    </view>
+  </view>
+
+  <!-- 2. 本月训练天数卡（决策#1：记录本月已训练多少天，取代 21 天计划） -->
+  <view class="block">
+    <streak-banner
+      monthDays="{{monthDays}}"
+      bindaction="onPlanAction"
+    ></streak-banner>
+  </view>
+
+  <!-- 3. 本周轨迹（标题在组件内，避免重复） -->
+  <view class="block">
+    <week-tracker
+      days="{{week.days}}"
+      completed="{{week.completed}}"
+      total="{{week.total}}"
+    ></week-tracker>
+  </view>
+
+  <!-- 4. 最近一次训练 -->
+  <view class="section-title">最近一次训练</view>
+  <view class="block">
+    <view class="last px-box" hover-class="last--press" bindtap="onTapLastWorkout">
+      <view class="last__thumb">
+        <image class="last__thumb-img" src="/images/ui/equipment/ui_equipment_bench.png" mode="aspectFit"></image>
+      </view>
+
+      <view class="last__body">
+        <block wx:if="{{lastWorkout.empty}}">
+          <view class="last__empty">{{lastWorkout.meta}}</view>
+        </block>
+        <block wx:else>
+          <view class="last__meta">{{lastWorkout.relativeDay}} · {{lastWorkout.title}}</view>
+          <view class="last__detail">{{lastWorkout.meta}}</view>
+        </block>
+      </view>
+
+      <image class="last__arrow" src="/images/ui/icons/ui_icon_arrow_right.png" mode="aspectFit"></image>
+    </view>
+  </view>
+
+  <!-- 5. 本周概览（决策#5：本周；次绿/量蓝/时长琥珀） -->
+  <view class="section-title">本周概览</view>
+  <view class="block overview">
+    <stat-card
+      class="overview__item"
+      iconSrc="/images/ui/icons/ui_icon_calendar.png"
+      value="{{overview.count}}"
+      unit="次"
+      label="训练次数"
+      tone="green"
+    ></stat-card>
+    <stat-card
+      class="overview__item"
+      iconSrc="/images/ui/equipment/ui_equipment_barbell.png"
+      value="{{overviewVolumeText}}"
+      unit="kg"
+      label="总训练量"
+      tone="blue"
+    ></stat-card>
+    <stat-card
+      class="overview__item"
+      iconShape="clock"
+      value="{{overview.durationHours}}"
+      unit="h"
+      label="训练时长"
+      tone="amber"
+    ></stat-card>
+  </view>
+
+  <!-- 6. 底部全宽语音主按钮（design §6.2#6） -->
+  <view class="block voice">
+    <voice-button
+      variant="home"
+      label="按住说话 · 记录训练"
+      hint="{{isEmpty ? '例如：卧推 100 公斤 5 次' : ''}}"
+      bindtap="onVoiceTap"
+    ></voice-button>
+  </view>
+
+  <!-- 底部安全区留白（避让 tabBar） -->
+  <view class="home__pad safe-bottom"></view>
+
+  <!-- F4 待领奖励补放：复用训练页完赛庆祝覆盖层 -->
+  <finish-reward reward="{{finishReward}}" visible="{{showReward}}" bind:close="onRewardClose" />
+</view>

@@ -1,0 +1,31 @@
+<view class="sb">
+  <view class="sb__banner">
+    <!-- 左：独立像素人物框 -->
+    <view class="sb__hero-frame">
+      <image class="sb__hero-img" src="/images/characters/male_overhead_press.png" mode="aspectFit"></image>
+      <image class="sb__hero-deco sb__hero-deco--top" src="/images/ui/decoration/ui_decoration_plus_right.png" mode="aspectFit"></image>
+      <image class="sb__hero-deco sb__hero-deco--bottom" src="/images/ui/decoration/ui_decoration_plus_left.png" mode="aspectFit"></image>
+    </view>
+
+    <!-- 右：标题 / 进度 / 行动按钮 -->
+    <view class="sb__content">
+      <view class="sb__header">
+        <image class="sb__fire" src="/images/ui/icons/ui_icon_fire.png" mode="aspectFit"></image>
+        <text class="sb__caption">本月打卡战绩</text>
+      </view>
+      <view class="sb__divider"></view>
+
+      <view class="sb__progress">
+        <text class="sb__progress-label">已坚持训练</text>
+        <view class="sb__count">
+          <text class="sb__num-big">{{monthDays}}</text>
+          <text class="sb__num-sub">天</text>
+        </view>
+      </view>
+      <view class="sb__cta" hover-class="sb__cta--press" bindtap="onAction">
+        <text>下一关，出发！</text>
+        <image class="sb__cta-arrow" src="/images/ui/icons/ui_icon_arrow_right.png" mode="aspectFit"></image>
+      </view>
+    </view>
+  </view>
+</view>

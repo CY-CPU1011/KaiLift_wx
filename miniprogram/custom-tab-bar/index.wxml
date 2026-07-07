@@ -1,0 +1,21 @@
+<view class="tabbar" hidden="{{hidden}}">
+  <view class="tabbar__row">
+    <view
+      wx:for="{{list}}"
+      wx:key="text"
+      class="tab {{selected === index ? 'tab--on' : ''}}"
+      data-index="{{index}}"
+      bindtap="onTap"
+    >
+      <view class="tab__cap">
+        <image
+          class="tab__icon"
+          src="/images/ui/nav/ui_nav_{{item.nav}}_{{selected === index ? 'active' : 'inactive'}}.png"
+          mode="aspectFit"
+        ></image>
+      </view>
+      <text class="tab__text">{{item.text}}</text>
+    </view>
+  </view>
+  <view class="safe-area"></view>
+</view>

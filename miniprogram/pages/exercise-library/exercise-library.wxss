@@ -1,0 +1,144 @@
+/* 动作库浏览页 —— 全 token，rpx，无硬编码颜色。像素风。 */
+
+.page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: transparent;
+  box-sizing: border-box;
+  padding-bottom: 40rpx;
+}
+
+/* ---- 自定义导航栏（与 achievements 二级页一致） ---- */
+.nav {
+  position: relative;
+  height: 88rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 var(--sp-4);
+}
+.nav__back {
+  position: absolute;
+  left: var(--sp-4);
+  width: 64rpx;
+  height: 64rpx;
+  line-height: 60rpx;
+  text-align: center;
+  font-size: 48rpx;
+  color: var(--text-1);
+  background: var(--surface);
+  border-radius: var(--r-pill);
+  box-shadow: var(--shadow-card);
+}
+.nav__title { font-size: 34rpx; font-weight: 600; color: var(--text-1); }
+.nav__cap { position: absolute; right: var(--sp-4); width: 180rpx; }
+
+/* ---- 搜索 ---- */
+.search {
+  display: flex;
+  align-items: center;
+  margin: var(--sp-2) var(--sp-4) 0;
+  height: 84rpx;
+  background: var(--surface);
+  border-radius: var(--r-pill);
+  padding: 0 var(--sp-3);
+  box-shadow: var(--shadow-card);
+}
+.search-icon { font-size: 30rpx; opacity: 0.5; margin-right: var(--sp-2); }
+.search-input { flex: 1; font-size: 30rpx; color: var(--text-1); }
+.search-clear { font-size: 28rpx; color: var(--text-3); padding: var(--sp-1); }
+
+/* ---- 筛选行（filter-chips 自带横滚样式，这里只补左右安全边距） ---- */
+.filter { display: block; margin-top: var(--sp-2); padding: 0 var(--sp-4); }
+.filter--sub { margin-top: 4rpx; }
+
+/* ---- 离线提示 ---- */
+.offline {
+  margin: var(--sp-2) var(--sp-4) 0;
+  padding: var(--sp-1) var(--sp-3);
+  text-align: center;
+  font-size: 24rpx;
+  color: var(--c-primary-strong);
+  background: var(--c-primary-soft);
+  border-radius: var(--r-pill);
+}
+
+/* ---- 列表 ---- */
+.list { padding: var(--sp-2) var(--sp-4); }
+
+.ex-row {
+  display: flex;
+  align-items: center;
+  background: var(--surface);
+  border-radius: var(--r-md);
+  padding: var(--sp-2) var(--sp-3);
+  margin-bottom: var(--sp-2);
+  box-shadow: var(--shadow-card);
+}
+.ex-row-hover { background: var(--bg-mint); }
+.ex-info { flex: 1; min-width: 0; margin-left: var(--sp-3); }
+.ex-name-row { display: flex; align-items: center; gap: var(--sp-2); }
+.ex-name {
+  font-size: 30rpx;
+  font-weight: 600;
+  color: var(--text-1);
+  max-width: 360rpx;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.ex-custom {
+  flex: none;
+  font-size: 22rpx;
+  color: var(--c-blue);
+  background: var(--c-blue-soft);
+  padding: 2rpx 12rpx;
+  border-radius: var(--r-pill);
+}
+.ex-meta { margin-top: 6rpx; display: flex; align-items: center; gap: var(--sp-2); }
+.ex-tag { font-size: 24rpx; color: var(--text-2); }
+.ex-muscle {
+  font-size: 24rpx;
+  color: var(--text-3);
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.ex-level {
+  flex: none;
+  font-size: 24rpx;
+  color: var(--c-primary-strong);
+  background: var(--c-primary-soft);
+  padding: 4rpx 16rpx;
+  border-radius: var(--r-pill);
+}
+.ex-arrow { flex: none; margin-left: var(--sp-1); font-size: 36rpx; color: var(--text-3); }
+
+/* ---- 状态态（加载 / 空 / 自建） ---- */
+.state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--sp-6) 0;
+}
+.state__text { font-size: 28rpx; color: var(--text-3); }
+.state__sub { margin-top: var(--sp-2); font-size: 26rpx; color: var(--text-3); }
+.state__btn {
+  margin-top: var(--sp-4);
+  padding: 0 var(--sp-5);
+  height: 84rpx;
+  line-height: 84rpx;
+  font-size: 30rpx;
+  font-weight: 700;
+  color: var(--text-on);
+  background: var(--c-primary);
+  border: var(--px-border);
+  border-radius: var(--px-radius);
+  box-shadow: var(--px-shadow);
+}
+.state__btn:active {
+  box-shadow: var(--px-shadow-press);
+  transform: translate(4rpx, 4rpx);
+}

@@ -1,0 +1,32 @@
+/* 像素分段（design §5 / §6.4）：外框描边方块，选中段绿底白字+描边，未选白底。 */
+.seg {
+  display: flex;
+  align-items: stretch;
+  gap: var(--sp-2);
+  box-sizing: border-box;
+}
+.seg__item {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 72rpx;
+  box-sizing: border-box;
+  font-size: 28rpx;
+  font-weight: 700;
+  color: var(--text-2);
+  background: var(--surface);
+  border: var(--px-border);
+  border-radius: var(--px-radius);
+  box-shadow: var(--px-shadow);
+}
+/* 选中：绿底白字 */
+.seg__item--on {
+  background: var(--c-primary);
+  color: var(--text-on);
+}
+/* 按下：硬阴影变小 + 下沉 */
+.seg__item--press {
+  box-shadow: var(--px-shadow-press);
+  transform: translate(4rpx, 4rpx);
+}

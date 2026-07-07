@@ -1,0 +1,32 @@
+<!-- 像素方块 PR 卡：左竖条 + 动作名 + 大数字 + 日期 + 器材图标；可叠 PR 徽章。 -->
+<view class="pr pr--{{tone}}" bindtap="onTap" hover-class="pr--press">
+  <view class="pr__bar"></view>
+
+  <!-- PR 徽章（右上，优先）/ 全局最高皇冠（用奖杯替代，CSS 角标） -->
+  <image
+    wx:if="{{badgeSrc}}"
+    class="pr__badge"
+    src="{{badgeSrc}}"
+    mode="aspectFit"
+  ></image>
+  <view wx:elif="{{isTop}}" class="pr__top">TOP</view>
+
+  <view class="pr__head">
+    <text class="pr__name">{{name}}</text>
+  </view>
+
+  <view class="num-unit pr__num">
+    <text class="num">{{value}}</text>
+    <text class="unit">{{unit}}</text>
+  </view>
+
+  <view class="pr__foot">
+    <text class="pr__date">{{date}}</text>
+    <image
+      wx:if="{{equipmentSrc}}"
+      class="pr__equip"
+      src="{{equipmentSrc}}"
+      mode="aspectFit"
+    ></image>
+  </view>
+</view>

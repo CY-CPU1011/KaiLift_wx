@@ -1,0 +1,64 @@
+/* ListRow（design §5 / §6.5）。像素设置行：左小图标 + 标题 + 右值 + 像素箭头。
+   行间像素分隔线由页面侧用 .px-box 包裹 + 行内底边描边实现。 */
+.lr {
+  position: relative;
+  display: flex;
+  align-items: center;
+  padding: var(--sp-3) var(--sp-3);
+  background: var(--surface);
+  box-sizing: border-box;
+}
+.lr--hover { background: var(--c-primary-soft); }
+
+/* 左小图标：像素方块底盘 */
+.lr__icon {
+  position: relative;
+  flex: none;
+  width: 64rpx;
+  height: 64rpx;
+  margin-right: var(--sp-3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  background: var(--c-primary-soft);
+  border: var(--px-border);
+  border-radius: var(--px-radius);
+}
+.lr__icon-img {
+  width: 44rpx;
+  height: 44rpx;
+  image-rendering: pixelated;
+}
+.lr__icon-text {
+  font-size: 22rpx;
+  font-weight: 700;
+  color: var(--c-primary-strong);
+}
+.lr__dot {
+  position: absolute;
+  top: -6rpx;
+  right: -6rpx;
+  width: 18rpx;
+  height: 18rpx;
+  border-radius: var(--r-pill);
+  background: var(--c-pink);
+  border: 3rpx solid var(--surface);
+}
+.lr__title {
+  flex: 1;
+  font-size: 30rpx;
+  font-weight: 600;
+  color: var(--text-1);
+}
+.lr__value {
+  margin-right: var(--sp-2);
+  font-size: 26rpx;
+  color: var(--text-2);
+}
+.lr__arrow {
+  flex: none;
+  width: 32rpx;
+  height: 32rpx;
+  image-rendering: pixelated;
+}

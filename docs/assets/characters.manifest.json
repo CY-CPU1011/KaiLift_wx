@@ -1,0 +1,162 @@
+[
+  {
+    "name": "male_avatar_portrait",
+    "description_zh": "男性角色头像",
+    "file": "male_avatar_portrait.png",
+    "source": "像素小人_男.png",
+    "source_crop": [
+      29,
+      43,
+      448,
+      472
+    ],
+    "width": 419,
+    "height": 429,
+    "format": "PNG",
+    "transparent": true
+  },
+  {
+    "name": "male_standing_front",
+    "description_zh": "男性角色正面站立",
+    "file": "male_standing_front.png",
+    "source": "像素小人_男.png",
+    "source_crop": [
+      475,
+      31,
+      700,
+      509
+    ],
+    "width": 225,
+    "height": 478,
+    "format": "PNG",
+    "transparent": true
+  },
+  {
+    "name": "male_overhead_press",
+    "description_zh": "男性角色站姿推举",
+    "file": "male_overhead_press.png",
+    "source": "像素小人_男.png",
+    "source_crop": [
+      727,
+      8,
+      1208,
+      515
+    ],
+    "width": 481,
+    "height": 507,
+    "format": "PNG",
+    "transparent": true
+  },
+  {
+    "name": "male_back_squat",
+    "description_zh": "男性角色杠铃深蹲",
+    "file": "male_back_squat.png",
+    "source": "像素小人_男.png",
+    "source_crop": [
+      13,
+      544,
+      451,
+      881
+    ],
+    "width": 438,
+    "height": 337,
+    "format": "PNG",
+    "transparent": true
+  },
+  {
+    "name": "male_bench_press",
+    "description_zh": "男性角色卧推",
+    "file": "male_bench_press.png",
+    "source": "像素小人_男.png",
+    "source_crop": [
+      480,
+      554,
+      923,
+      899
+    ],
+    "width": 443,
+    "height": 345,
+    "format": "PNG",
+    "transparent": true
+  },
+  {
+    "name": "male_celebrating",
+    "description_zh": "男性角色庆祝",
+    "file": "male_celebrating.png",
+    "source": "像素小人_男.png",
+    "source_crop": [
+      953,
+      530,
+      1173,
+      914
+    ],
+    "width": 220,
+    "height": 384,
+    "format": "PNG",
+    "transparent": true
+  },
+  {
+    "name": "male_face_neutral",
+    "description_zh": "男性表情-平静",
+    "file": "male_face_neutral.png",
+    "source": "像素小人_男.png",
+    "source_crop": [
+      28,
+      923,
+      302,
+      1228
+    ],
+    "width": 274,
+    "height": 305,
+    "format": "PNG",
+    "transparent": true
+  },
+  {
+    "name": "male_face_happy",
+    "description_zh": "男性表情-开心",
+    "file": "male_face_happy.png",
+    "source": "像素小人_男.png",
+    "source_crop": [
+      331,
+      921,
+      602,
+      1228
+    ],
+    "width": 271,
+    "height": 307,
+    "format": "PNG",
+    "transparent": true
+  },
+  {
+    "name": "male_face_determined",
+    "description_zh": "男性表情-坚定",
+    "file": "male_face_determined.png",
+    "source": "像素小人_男.png",
+    "source_crop": [
+      627,
+      926,
+      903,
+      1231
+    ],
+    "width": 276,
+    "height": 305,
+    "format": "PNG",
+    "transparent": true
+  },
+  {
+    "name": "male_face_tired",
+    "description_zh": "男性表情-疲惫",
+    "file": "male_face_tired.png",
+    "source": "像素小人_男.png",
+    "source_crop": [
+      928,
+      925,
+      1200,
+      1231
+    ],
+    "width": 272,
+    "height": 306,
+    "format": "PNG",
+    "transparent": true
+  }
+]

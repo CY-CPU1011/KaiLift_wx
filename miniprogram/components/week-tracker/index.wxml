@@ -1,0 +1,19 @@
+<view class="wt">
+  <view class="wt__head">
+    <text class="wt__title">本周轨迹</text>
+    <text class="wt__count">{{completed}} / {{total}} 天</text>
+  </view>
+
+  <view class="wt__days">
+    <view
+      wx:for="{{days}}"
+      wx:key="index"
+      class="wt__day"
+    >
+      <view class="wt__cell {{item.done ? 'wt__cell--done' : ''}} {{item.isToday ? 'wt__cell--today' : ''}}">
+        <view wx:if="{{item.done}}" class="wt__check"></view>
+      </view>
+      <text class="wt__label {{item.isToday ? 'wt__label--today' : ''}}">{{weekCn[index]}}</text>
+    </view>
+  </view>
+</view>

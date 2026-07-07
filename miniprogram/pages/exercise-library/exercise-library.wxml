@@ -1,0 +1,87 @@
+<!-- 动作库浏览 —— 部位 Tab + 搜索 + 二级 muscle 筛选 + 动作卡片。二级页，自定义导航带返回。 -->
+<view class="page" style="padding-top: {{statusBarHeight}}px;">
+  <!-- 全屏像素风背景（铺底，沉到内容下方） -->
+  <image class="app-bg" src="/images/bg/background.jpg" mode="aspectFit"></image>
+
+  <!-- 自定义导航栏（带返回） -->
+  <view class="nav">
+    <view class="nav__back" bindtap="onBack">‹</view>
+    <text class="nav__title">动作库</text>
+    <view class="nav__cap"></view>
+  </view>
+
+  <!-- 搜索框 -->
+  <view class="search">
+    <view class="search-icon">🔍</view>
+    <input
+      class="search-input"
+      value="{{keyword}}"
+      placeholder="搜索动作名称"
+      confirm-type="search"
+      bindinput="onSearchInput"
+    />
+    <view wx:if="{{keyword}}" class="search-clear" catchtap="onClearSearch">✕</view>
+  </view>
+
+  <!-- 一级：部位 Tab -->
+  <filter-chips
+    class="filter"
+    items="{{parts}}"
+    active="{{activePart}}"
+    bindselect="onPickPart"
+  ></filter-chips>
+
+  <!-- 二级：肌群筛选（仅 >1 项时显示，动态去重生成） -->
+  <filter-chips
+    wx:if="{{muscles.length > 1}}"
+    class="filter filter--sub"
+    items="{{muscles}}"
+    active="{{activeMuscle}}"
+    bindselect="onPickMuscle"
+  ></filter-chips>
+
+  <!-- 离线兜底提示（请求失败回退 mock 时） -->
+  <view wx:if="{{usingMock}}" class="offline" bindtap="_load">离线数据 · 点击重试</view>
+
+  <!-- 列表 -->
+  <view class="list">
+    <view wx:if="{{loading}}" class="state">
+      <text class="state__text">加载中…</text>
+    </view>
+
+    <block wx:elif="{{items.length}}">
+      <view
+        wx:for="{{items}}"
+        wx:key="id"
+        class="ex-row"
+        hover-class="ex-row-hover"
+        data-id="{{item.id}}"
+        data-name="{{item.name}}"
+        bindtap="onTapItem"
+      >
+        <img-ph label="{{item.thumb}}" w="{{88}}" h="{{88}}" round="16rpx"></img-ph>
+        <view class="ex-info">
+          <view class="ex-name-row">
+            <text class="ex-name">{{item.name}}</text>
+            <text wx:if="{{item.isCustom}}" class="ex-custom">自定义</text>
+          </view>
+          <view class="ex-meta">
+            <text wx:if="{{item.bodyPart}}" class="ex-tag">{{item.bodyPart}}</text>
+            <text wx:if="{{item.musclesText}}" class="ex-muscle">{{item.musclesText}}</text>
+          </view>
+        </view>
+        <view wx:if="{{item.level}}" class="ex-level">{{item.level}}</view>
+        <view class="ex-arrow">›</view>
+      </view>
+    </block>
+
+    <!-- 空状态 + 自建入口 -->
+    <view wx:else class="state">
+      <text class="state__text">没有找到匹配的动作</text>
+      <view wx:if="{{keyword}}" class="state__btn" catchtap="onCreate">＋ 创建「{{keyword}}」</view>
+      <text wx:else class="state__sub">换个部位或输入关键词试试</text>
+    </view>
+  </view>
+
+  <view class="safe-bottom"></view>
+</view>

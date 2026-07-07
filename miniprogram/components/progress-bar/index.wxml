@@ -1,0 +1,13 @@
+<view class="pb">
+  <view class="pb__track">
+    <view
+      class="pb__fill"
+      style="width:{{clamped}}%;{{color ? 'background:' + color + ';' : ''}}"
+    ></view>
+    <!-- 像素分段刻度：在填充之上叠等分竖线，制造「一格格」观感 -->
+    <view class="pb__ticks">
+      <view class="pb__tick" wx:for="{{tickList}}" wx:key="*this"></view>
+    </view>
+  </view>
+  <text wx:if="{{showLabel}}" class="pb__label">{{clamped}}%</text>
+</view>

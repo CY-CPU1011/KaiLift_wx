@@ -1,0 +1,70 @@
+/**app.wxss**/
+@import "styles/tokens.wxss";
+
+page {
+  background: var(--bg-scene);
+  color: var(--text-1);
+  font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", "Source Han Sans CN", "PingFang SC", sans-serif;
+  font-size: 28rpx;
+}
+
+/* 重置按钮默认样式 */
+button {
+  padding: 0;
+  margin: 0;
+  background: initial;
+  line-height: normal;
+  font-size: inherit;
+}
+button:focus { outline: 0; }
+button::after { border: none; }
+
+/* 通用：全屏像素风背景图（design：clouds 顶 + mountains 底）。
+   WXSS 不支持本地图作 background-image，故用 position:fixed 的 <image> 铺底；
+   z-index:-1 沉到内容下方，pointer-events:none 不拦截手势。页面根容器需透明方可透出。 */
+.app-bg {
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: -1;
+  pointer-events: none;
+}
+
+/* Tab 页的背景向上让出固定导航栏；裁掉的仅是新增天空，底部山景完整露出。 */
+.app-bg--tab {
+  top: auto;
+  bottom: calc(100rpx + env(safe-area-inset-bottom));
+}
+
+/* 通用：页面背景容器（透明，透出全屏 .app-bg 像素背景） */
+.page-bg {
+  min-height: 100vh;
+  background: transparent;
+  box-sizing: border-box;
+}
+
+/* 通用：Signature 大数字 + 贴底单位 */
+.num-unit { display: flex; align-items: baseline; }
+.num-unit .num { font-weight: 800; color: var(--text-1); }
+.num-unit .unit { margin-left: 4rpx; font-size: 0.4em; font-weight: 500; color: var(--text-2); }
+
+/* 通用：区块标题 */
+.section-title { font-size: 34rpx; font-weight: 600; color: var(--text-1); margin: var(--sp-3) var(--sp-4) var(--sp-2); }
+
+/* 通用：卡片（旧·模糊阴影，未改造页兼容用） */
+.card { background: var(--surface); border-radius: var(--r-card); box-shadow: var(--shadow-card); }
+
+/* 通用：像素方块控件（design §5）——描边 + 硬偏移阴影；按下下沉。
+   仅作用于「页面级」元素；组件内部因样式隔离请直接用 --px-* 变量复刻本配方。 */
+.px-box {
+  background: var(--surface);
+  border: var(--px-border);
+  border-radius: var(--px-radius);
+  box-shadow: var(--px-shadow);
+}
+.px-box:active { box-shadow: var(--px-shadow-press); transform: translate(4rpx, 4rpx); }
+
+/* 安全区 */
+.safe-bottom { padding-bottom: calc(env(safe-area-inset-bottom) + 24rpx); }

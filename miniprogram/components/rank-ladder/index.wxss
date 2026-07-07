@@ -1,0 +1,136 @@
+/* 段位阶梯弹窗 —— 像素风覆盖层（硬描边 + 硬偏移阴影，禁 blur）。组件样式隔离，
+   --px-* / --sp-* / 颜色 token 由 app 级 tokens.wxss 提供（CSS 变量穿透隔离），直接复用。
+   层级与 finish-reward 一致取 1300，盖过固定 tabBar / 弹窗。 */
+.rl-mask {
+  position: fixed;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  z-index: 1300;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--sp-4);
+  box-sizing: border-box;
+  background: rgba(20, 29, 31, 0);
+  transition: background 220ms ease;
+}
+.rl-mask--in {
+  background: rgba(20, 29, 31, 0.55);
+}
+
+/* 居中卡：入场缩放 + 淡入；列表过长内部滚动（卡片整体限高） */
+.rl-card {
+  width: 100%;
+  max-width: 560rpx;
+  max-height: 80vh;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  padding: var(--sp-4);
+  background: var(--surface);
+  border: var(--px-border);
+  border-radius: var(--px-radius);
+  box-shadow: var(--px-shadow);
+  opacity: 0;
+  transform: translateY(24rpx) scale(0.92);
+  transition: opacity 220ms ease, transform 260ms cubic-bezier(0.18, 0.89, 0.32, 1.28);
+}
+.rl-card--in {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+
+/* —— 标题 + 距下一档提示 —— */
+.rl-head {
+  text-align: center;
+  margin-bottom: var(--sp-3);
+}
+.rl-head__title {
+  display: block;
+  font-size: 36rpx;
+  font-weight: 800;
+  color: var(--text-1);
+}
+.rl-head__tip {
+  display: block;
+  margin-top: var(--sp-1);
+  font-size: 24rpx;
+  font-weight: 600;
+  color: var(--text-3);
+}
+
+/* —— 阶梯列表（限高，只露约 4~5 档，其余滑动查看；末行可见即提示可滚） —— */
+.rl-list {
+  flex: none;
+  height: 46vh;
+}
+
+/* 单档行：奖牌 + 段位名/解锁条件 + 当前标 */
+.rl-row {
+  display: flex;
+  align-items: center;
+  padding: var(--sp-2) var(--sp-3);
+  margin-bottom: var(--sp-2);
+  background: var(--surface);
+  border: var(--px-border);
+  border-radius: var(--px-radius);
+}
+.rl-row--current {
+  background: var(--c-primary-soft);
+  border-width: 6rpx;
+}
+.rl-row__medal {
+  flex: none;
+  width: 80rpx;
+  height: 80rpx;
+  image-rendering: pixelated;
+}
+.rl-row__main {
+  flex: 1;
+  min-width: 0;
+  margin-left: var(--sp-3);
+}
+.rl-row__name {
+  display: block;
+  font-size: 30rpx;
+  font-weight: 800;
+  color: var(--text-1);
+}
+.rl-row__cond {
+  display: block;
+  margin-top: 2rpx;
+  font-size: 22rpx;
+  font-weight: 600;
+  color: var(--text-3);
+}
+.rl-row__tag {
+  flex: none;
+  padding: 2rpx 12rpx;
+  color: var(--text-on);
+  font-size: 22rpx;
+  font-weight: 800;
+  border: var(--px-border);
+  border-radius: var(--px-radius);
+}
+
+/* —— 关闭按钮（像素主按钮，按下下沉）。与列表拉开间距，避免贴脸。 —— */
+.rl-close {
+  margin-top: var(--sp-5);
+  height: 80rpx;
+  line-height: 80rpx;
+  text-align: center;
+  font-size: 30rpx;
+  font-weight: 800;
+  box-sizing: border-box;
+  background: var(--c-primary);
+  color: var(--text-on);
+  border: var(--px-border);
+  border-radius: var(--px-radius);
+  box-shadow: var(--px-shadow);
+}
+.rl-close--press {
+  box-shadow: var(--px-shadow-press);
+  transform: translate(4rpx, 4rpx);
+}

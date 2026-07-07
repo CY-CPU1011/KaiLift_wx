@@ -1,0 +1,34 @@
+<!-- 段位阶梯弹窗：全部 8 档 + 高亮当前所在档。visible 控显隐，点遮罩/关闭收起。 -->
+<view
+  wx:if="{{visible}}"
+  class="rl-mask {{entered ? 'rl-mask--in' : ''}}"
+  catchtap="onClose"
+>
+  <!-- 居中卡（点卡片本身不关闭，留给遮罩 / 关闭按钮） -->
+  <view class="rl-card {{entered ? 'rl-card--in' : ''}}" catchtap="noop">
+    <!-- 标题 + 距下一档提示（满段隐藏） -->
+    <view class="rl-head">
+      <text class="rl-head__title">段位阶梯</text>
+      <text wx:if="{{tipText}}" class="rl-head__tip">{{tipText}}</text>
+    </view>
+
+    <!-- 8 档阶梯：奖牌 + 段位名 + 解锁等级；当前档高亮（描边/底色用段位主色） -->
+    <scroll-view class="rl-list" scroll-y="{{true}}">
+      <view
+        wx:for="{{ladder}}" wx:key="key"
+        class="rl-row {{item.isCurrent ? 'rl-row--current' : ''}}"
+        style="{{item.isCurrent ? 'border-color:' + item.color : ''}}"
+      >
+        <image class="rl-row__medal" src="{{item.icon}}" mode="aspectFit"></image>
+        <view class="rl-row__main">
+          <text class="rl-row__name">{{item.name}}</text>
+          <text class="rl-row__cond">{{item.condText}}</text>
+        </view>
+        <view wx:if="{{item.isCurrent}}" class="rl-row__tag" style="background:{{item.color}}">当前</view>
+      </view>
+    </scroll-view>
+
+    <!-- 关闭按钮 -->
+    <view class="rl-close" hover-class="rl-close--press" catchtap="onClose">关闭</view>
+  </view>
+</view>

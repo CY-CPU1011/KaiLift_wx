@@ -1,0 +1,98 @@
+/* 像素方块 PR 卡（design §6.4 / §2.2）：描边 + 硬偏移阴影，无 blur。 */
+.pr {
+  position: relative;
+  box-sizing: border-box;
+  padding: var(--sp-3);
+  padding-left: var(--sp-4);
+  background: var(--surface);
+  border: var(--px-border);
+  border-radius: var(--px-radius);
+  box-shadow: var(--px-shadow);
+  overflow: hidden;
+}
+.pr--press {
+  box-shadow: var(--px-shadow-press);
+  transform: translate(4rpx, 4rpx);
+}
+
+/* 部位 tone → 竖条与大数字色 */
+.pr--pink { --tone: var(--c-pink); }
+.pr--blue { --tone: var(--c-blue); }
+.pr--green { --tone: var(--c-primary-strong); }
+.pr--amber { --tone: var(--c-amber); }
+.pr--purple { --tone: var(--c-purple); }
+
+/* 左竖条（方角像素条） */
+.pr__bar {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 14rpx;
+  background: var(--tone, var(--c-pink));
+  border-right: 4rpx solid var(--c-ink);
+}
+
+/* PR 徽章（右上） */
+.pr__badge {
+  position: absolute;
+  top: var(--sp-1);
+  right: var(--sp-1);
+  width: 64rpx;
+  height: 64rpx;
+  image-rendering: pixelated;
+}
+/* 无徽章时的「全局最高」角标（像素小方块） */
+.pr__top {
+  position: absolute;
+  top: var(--sp-1);
+  right: var(--sp-1);
+  padding: 2rpx 8rpx;
+  font-size: 18rpx;
+  font-weight: 800;
+  color: var(--text-on);
+  background: var(--c-amber);
+  border: var(--px-border);
+  border-radius: 6rpx;
+}
+
+.pr__head { padding-right: 72rpx; }
+.pr__name {
+  font-size: 30rpx;
+  font-weight: 700;
+  color: var(--text-1);
+}
+.pr__num {
+  display: flex;
+  align-items: baseline;
+  margin-top: var(--sp-1);
+}
+.pr__num .num {
+  font-size: 80rpx;
+  font-weight: 800;
+  line-height: 1;
+  color: var(--tone, var(--c-pink));
+}
+.pr__num .unit {
+  margin-left: 6rpx;
+  font-size: 26rpx;
+  font-weight: 600;
+  color: var(--text-2);
+}
+
+.pr__foot {
+  margin-top: var(--sp-2);
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+}
+.pr__date {
+  font-size: 22rpx;
+  color: var(--text-3);
+}
+.pr__equip {
+  flex: none;
+  width: 64rpx;
+  height: 52rpx;
+  image-rendering: pixelated;
+}

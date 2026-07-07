@@ -1,0 +1,86 @@
+/* ── 容器 ── */
+.vb { display: flex; }
+.vb--home { flex-direction: column; }
+.vb--workout { flex-direction: column; }
+
+/* ── home：全宽像素方块按钮（design §5 / §2.2） ── */
+.vb__bar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  box-sizing: border-box;
+  padding: var(--sp-3) var(--sp-4);
+  background: var(--c-primary);
+  border: var(--px-border);
+  border-radius: var(--px-radius);
+  box-shadow: var(--px-shadow);
+}
+/* 按下：硬阴影变小 + 下沉 */
+.vb__bar--press {
+  box-shadow: var(--px-shadow-press);
+  transform: translate(4rpx, 4rpx);
+}
+.vb__bar-mic {
+  width: 44rpx;
+  height: 44rpx;
+  margin-right: var(--sp-2);
+  image-rendering: pixelated;
+}
+.vb__bar-label {
+  font-size: 32rpx;
+  font-weight: 700;
+  color: var(--text-on);
+}
+.vb__hint {
+  margin-top: var(--sp-2);
+  align-self: center;
+  font-size: 24rpx;
+  color: var(--text-3);
+}
+
+/* ── workout：全宽像素方块按钮，按住录音（design §6.3-6） ── */
+/* 复用 .vb__bar 的全宽方块外形；下面按 status 调整配色与内部元素 */
+.vb--workout .vb__bar {
+  padding: var(--sp-3);
+}
+/* recording：正在听…（绿 → 描边色更浓，文案「正在听…可取消」由页面传 bubble） */
+.vb--workout .vb__bar--recording { background: var(--c-primary-strong); }
+/* processing：识别中…（琥珀提示处理态） */
+.vb--workout .vb__bar--processing { background: var(--c-amber); }
+
+/* 录音中：像素声波条 */
+.vb__wave {
+  display: flex;
+  align-items: center;
+  height: 44rpx;
+  margin-right: var(--sp-2);
+}
+.vb__wave-bar {
+  width: 8rpx;
+  height: 16rpx;
+  margin: 0 3rpx;
+  background: var(--text-on);
+  animation: vb-wave 900ms ease-in-out infinite;
+}
+.vb__wave-bar:nth-child(2) { animation-delay: 150ms; }
+.vb__wave-bar:nth-child(3) { animation-delay: 300ms; }
+.vb__wave-bar:nth-child(4) { animation-delay: 450ms; }
+@keyframes vb-wave {
+  0%, 100% { height: 16rpx; }
+  50% { height: 40rpx; }
+}
+
+/* 识别中：方块转圈（克制） */
+.vb__spinner {
+  width: 40rpx;
+  height: 40rpx;
+  margin-right: var(--sp-2);
+  border: 6rpx solid rgba(255, 255, 255, 0.4);
+  border-top-color: var(--text-on);
+  border-radius: 50%;
+  animation: vb-spin 800ms linear infinite;
+}
+@keyframes vb-spin {
+  to { transform: rotate(360deg); }
+}

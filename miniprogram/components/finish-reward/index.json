@@ -1,0 +1,6 @@
+{
+  "component": true,
+  "usingComponents": {
+    "progress-bar": "/components/progress-bar/index"
+  }
+}

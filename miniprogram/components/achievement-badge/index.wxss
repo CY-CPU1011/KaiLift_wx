@@ -1,0 +1,107 @@
+/* AchievementBadge（design §5 / §6.5）。像素徽章：
+   解锁=彩色奖牌切图（中心可叠数字）；未解锁=灰盾 + 锁标。 */
+.ab {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 150rpx;
+}
+
+/* 徽章美术容器：方块像素底盘（描边 + 硬阴影） */
+.ab__art {
+  position: relative;
+  width: 132rpx;
+  height: 132rpx;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--c-primary-soft);
+  border: var(--px-border);
+  border-radius: var(--px-radius);
+  box-shadow: var(--px-shadow);
+}
+/* 未解锁：灰底、弱化 */
+.ab__art--lock {
+  background: var(--bg-page);
+}
+
+.ab__img {
+  width: 104rpx;
+  height: 104rpx;
+  image-rendering: pixelated;
+}
+.ab__art--lock .ab__img {
+  opacity: 0.55;
+}
+
+/* 中心叠数字 */
+.ab__num {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  text-align: center;
+  font-size: 36rpx;
+  font-weight: 800;
+  color: var(--text-on);
+  text-shadow: 2rpx 2rpx 0 var(--c-ink);
+}
+
+/* 未解锁锁标（CSS 画，右下角） */
+.ab__lock {
+  position: absolute;
+  right: 6rpx;
+  bottom: 6rpx;
+  width: 34rpx;
+  height: 34rpx;
+}
+.ab__lock-body {
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  transform: translateX(-50%);
+  width: 28rpx;
+  height: 22rpx;
+  box-sizing: border-box;
+  background: var(--text-3);
+  border: 3rpx solid var(--c-ink);
+  border-radius: 4rpx;
+}
+.ab__lock-shackle {
+  position: absolute;
+  left: 50%;
+  top: 0;
+  transform: translateX(-50%);
+  width: 18rpx;
+  height: 16rpx;
+  box-sizing: border-box;
+  border: 3rpx solid var(--c-ink);
+  border-bottom: none;
+  border-radius: 9rpx 9rpx 0 0;
+}
+
+.ab__title {
+  margin-top: var(--sp-2);
+  font-size: 24rpx;
+  font-weight: 600;
+  color: var(--text-1);
+  text-align: center;
+  width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.ab__title--lock {
+  color: var(--text-3);
+  font-weight: 500;
+}
+
+/* 未解锁进度（current/threshold），标题下方小字 */
+.ab__progress {
+  margin-top: 2rpx;
+  font-size: 22rpx;
+  font-weight: 700;
+  color: var(--c-primary-strong);
+}

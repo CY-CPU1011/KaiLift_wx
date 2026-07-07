@@ -1,0 +1,9 @@
+{
+  "navigationStyle": "custom",
+  "enablePullDownRefresh": true,
+  "usingComponents": {
+    "achievement-badge": "/components/achievement-badge/index",
+    "progress-bar": "/components/progress-bar/index",
+    "rank-ladder": "/components/rank-ladder/index"
+  }
+}

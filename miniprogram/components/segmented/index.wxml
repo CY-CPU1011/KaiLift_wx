@@ -1,0 +1,13 @@
+<!-- 像素分段：每段独立方块（描边+硬阴影），选中绿底白字。 -->
+<view class="seg">
+  <view
+    wx:for="{{options}}"
+    wx:key="value"
+    class="seg__item {{value === item.value ? 'seg__item--on' : ''}}"
+    hover-class="seg__item--press"
+    data-value="{{item.value}}"
+    bindtap="onTap"
+  >
+    <text>{{item.label}}</text>
+  </view>
+</view>

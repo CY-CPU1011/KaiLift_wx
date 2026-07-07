@@ -1,0 +1,81 @@
+/* Timer（design §6.3-3 / §2.2）：像素方块卡，描边 + 硬偏移阴影；禁用模糊阴影/大圆角。
+   组件内样式隔离，直接用 --px-* 变量复刻方块配方。 */
+.tm {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  box-sizing: border-box;
+  padding: var(--sp-4) var(--sp-4) var(--sp-3);
+  /* px-box 配方（组件内复刻） */
+  background: var(--surface);
+  border: var(--px-border);
+  border-radius: var(--px-radius);
+  box-shadow: var(--px-shadow);
+}
+
+/* ✦ 已用时间 ✦ */
+.tm__cap {
+  display: flex;
+  align-items: center;
+}
+.tm__cap-star {
+  font-size: 26rpx;
+  color: var(--c-primary);
+}
+.tm__cap-text {
+  margin: 0 var(--sp-2);
+  font-size: 26rpx;
+  font-weight: 600;
+  letter-spacing: 4rpx;
+  color: var(--text-2);
+}
+
+/* 大计时数字（signature，像素感） */
+.tm__time {
+  margin-top: var(--sp-2);
+  font-size: 116rpx;
+  font-weight: 800;
+  color: var(--text-1);
+  line-height: 1;
+  letter-spacing: 6rpx;
+}
+
+/* 虚线分隔 */
+.tm__divider {
+  width: 100%;
+  height: 0;
+  margin: var(--sp-3) 0;
+  border-top: 4rpx dashed var(--c-ink);
+  opacity: 0.6;
+}
+
+/* 三栏统计 */
+.tm__stats {
+  display: flex;
+  align-items: stretch;
+  width: 100%;
+}
+.tm__stat {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.tm__stat-num {
+  font-size: 48rpx;
+  font-weight: 800;
+  line-height: 1;
+  color: var(--text-1);
+}
+.tm__stat-label {
+  margin-top: var(--sp-1);
+  font-size: 22rpx;
+  color: var(--text-2);
+}
+.tm__stat-sep {
+  width: 4rpx;
+  align-self: center;
+  height: 56rpx;
+  background: var(--c-ink);
+  opacity: 0.5;
+}

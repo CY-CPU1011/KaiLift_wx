@@ -1,0 +1,112 @@
+/* ExerciseCard（design §6.3-5 / §2.2）像素方块卡。组件内复刻 px-box 配方（描边+硬偏移阴影）。 */
+.ec {
+  position: relative;
+  display: flex;
+  align-items: center;
+  box-sizing: border-box;
+  padding: var(--sp-3);
+  background: var(--surface);
+  border: var(--px-border);
+  border-radius: var(--px-radius);
+  box-shadow: var(--px-shadow);
+}
+.ec--press {
+  box-shadow: var(--px-shadow-press);
+  transform: translate(4rpx, 4rpx);
+}
+
+/* 左：器材图标方块 */
+.ec__equip {
+  flex: none;
+  width: 96rpx;
+  height: 96rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  background: var(--c-primary-soft);
+  border: var(--px-border);
+  border-radius: var(--px-radius);
+}
+.ec__equip-img {
+  width: 72rpx;
+  height: 72rpx;
+  image-rendering: pixelated;
+}
+
+/* 中：动作名 + 组×次@重量 */
+.ec__main {
+  flex: 1;
+  min-width: 0;
+  margin-left: var(--sp-3);
+}
+.ec__name {
+  font-size: 32rpx;
+  font-weight: 700;
+  color: var(--text-1);
+}
+.ec__meta {
+  margin-top: var(--sp-1);
+  display: flex;
+  align-items: baseline;
+  font-size: 28rpx;
+}
+.ec__meta-text { color: var(--text-2); }
+.ec__meta-at { color: var(--text-3); }
+.ec__weight {
+  font-weight: 800;
+  color: var(--text-1);
+}
+
+/* 右上：状态徽标方块 */
+.ec__badge {
+  flex: none;
+  margin-left: var(--sp-2);
+  width: 56rpx;
+  height: 56rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  border: var(--px-border);
+  border-radius: var(--px-radius);
+}
+.ec__badge--done { background: var(--c-primary); }
+.ec__badge--todo { background: var(--c-blue); }
+
+/* 白色对勾（完成态） */
+.ec__check {
+  width: 24rpx;
+  height: 12rpx;
+  border-left: 5rpx solid var(--text-on);
+  border-bottom: 5rpx solid var(--text-on);
+  transform: rotate(-45deg) translate(2rpx, -3rpx);
+}
+
+/* 白色小钟（待做·进行中态） */
+.ec__clock {
+  position: relative;
+  width: 30rpx;
+  height: 30rpx;
+  box-sizing: border-box;
+  border: 4rpx solid var(--text-on);
+  border-radius: 50%;
+}
+.ec__clock-h,
+.ec__clock-m {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  background: var(--text-on);
+  transform-origin: left center;
+}
+.ec__clock-h {
+  width: 8rpx;
+  height: 3rpx;
+  transform: translate(0, -50%) rotate(-90deg);
+}
+.ec__clock-m {
+  width: 11rpx;
+  height: 3rpx;
+  transform: translate(0, -50%) rotate(30deg);
+}

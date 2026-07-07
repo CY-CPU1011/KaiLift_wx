@@ -1,0 +1,48 @@
+<!-- 贡献图（design §6.4）：周列 × 周一~周日行 + 月份 1–12 顶标 + 5 档绿格。
+     年份切换由父页负责（stats 的 year-switch），本组件只渲染整年网格。 -->
+<view class="hm">
+  <scroll-view class="hm__scroll" scroll-x scroll-left="{{scrollLeft}}" enhanced show-scrollbar="{{false}}">
+    <view class="hm__inner">
+      <!-- 月份标签行（让出左侧周几标签列宽度） -->
+      <view class="hm__months">
+        <view wx:for="{{months}}" wx:key="key" class="hm__month">{{item.label}}</view>
+      </view>
+
+      <view class="hm__grid-wrap">
+        <!-- 周几标签列（周一→周日） -->
+        <view class="hm__weekdays">
+          <text wx:for="{{weekdayLabels}}" wx:key="index" class="hm__weekday">{{item}}</text>
+        </view>
+
+        <!-- 周列网格 -->
+        <view class="hm__grid">
+          <view wx:for="{{weeks}}" wx:for-item="col" wx:for-index="ci" wx:key="ci" class="hm__col">
+            <view
+              wx:for="{{col}}"
+              wx:for-item="cell"
+              wx:for-index="ri"
+              wx:key="ri"
+              class="hm__cell hm__cell--lv{{cell.level}} {{cell.blank ? 'hm__cell--blank' : ''}} {{cell.isToday ? 'hm__cell--today' : ''}}"
+              data-date="{{cell.date}}"
+              data-level="{{cell.level}}"
+              bindtap="onCellTap"
+            ></view>
+          </view>
+        </view>
+      </view>
+    </view>
+  </scroll-view>
+
+  <!-- 空状态 -->
+  <view wx:if="{{weeks.length === 0}}" class="hm__empty">
+    <text>暂无打卡数据</text>
+  </view>
+
+  <!-- 图例：无训练 / 10分钟 / 半小时 / 1小时 / 1.5小时+（按单日训练时长分档） -->
+  <view class="hm__legend">
+    <view wx:for="{{legend}}" wx:key="level" class="hm__legend-item">
+      <view class="hm__cell hm__cell--lv{{item.level}} hm__legend-cell"></view>
+      <text class="hm__legend-text">{{item.text}}</text>
+    </view>
+  </view>
+</view>

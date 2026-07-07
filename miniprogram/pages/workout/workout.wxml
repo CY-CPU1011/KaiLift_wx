@@ -1,0 +1,312 @@
+<view class="workout">
+  <!-- 全屏像素风背景（铺底，沉到内容下方） -->
+  <image class="app-bg app-bg--tab" src="/images/bg/background.jpg" mode="aspectFit"></image>
+
+  <!-- 顶部状态栏避让（纯色底，无角落装饰，与其它 tab 页背景一致） -->
+  <view style="height: {{statusBarHeight}}px;"></view>
+
+  <!-- ============ 未开始训练（空态：standing_front + 开始按钮） ============ -->
+  <view wx:if="{{phase === 'empty'}}" class="empty-wrap">
+    <view class="empty-illu">
+      <image class="empty-illu-img" src="/images/characters/male_standing_front.png" mode="aspectFit"></image>
+    </view>
+    <view class="empty-title">还没有进行中的训练</view>
+    <view class="empty-sub">说一句，就把这一组记下来</view>
+    <view class="btn-px btn-px--primary btn-start" hover-class="btn-px--press" bindtap="onStartTraining">开始自由训练</view>
+  </view>
+
+  <!-- ============ 加载中 ============ -->
+  <view wx:elif="{{phase === 'loading'}}" class="loading-wrap">
+    <view class="loading-text">▰▰▰ 加载中… ▰▰▰</view>
+  </view>
+
+  <!-- ============ 加载失败 ============ -->
+  <view wx:elif="{{phase === 'error'}}" class="empty-wrap">
+    <view class="empty-title">训练数据加载失败</view>
+    <view class="empty-sub">{{errorMessage}}</view>
+    <view class="btn-px btn-px--primary btn-start" hover-class="btn-px--press" bindtap="_loadActive">重试</view>
+  </view>
+
+  <!-- ============ 训练中 ============ -->
+  <block wx:else>
+    <!-- 顶部栏：左 完成 小按钮（琥珀方块）+ 居中标题「记录中」 -->
+    <view class="topbar">
+      <view class="btn-done" hover-class="btn-done--press" bindtap="onTapFinish">完成</view>
+      <view class="topbar-title">记录中</view>
+      <view class="topbar-right"></view>
+    </view>
+
+    <!-- 计时卡（上沿露出角色探头，氛围） -->
+    <view class="timer-wrap">
+      <image class="timer-peek" src="/images/characters/male_face_happy.png" mode="aspectFit"></image>
+      <timer seconds="{{seconds}}" sets="{{totalSets}}" exercises="{{totalExercises}}" volume="{{totalVolume}}"></timer>
+    </view>
+
+    <!-- 当前动作上下文：当前动作 › 名称 + 绿点 -->
+    <view wx:if="{{currentExerciseName}}" class="ctx-bar">
+      <text class="ctx-label">当前动作</text>
+      <text class="ctx-arrow">›</text>
+      <text class="ctx-name">{{currentExerciseName}}</text>
+      <view class="ctx-dot"></view>
+    </view>
+
+    <!-- 动作卡列表 -->
+    <view class="cards">
+      <block wx:if="{{cards.length}}">
+        <view wx:for="{{cards}}" wx:key="id" class="card-block" data-card-index="{{index}}">
+          <exercise-card
+            name="{{item.name}}"
+            sets="{{item.sets}}"
+            reps="{{item.reps}}"
+            weight="{{item.weight}}"
+            tone="{{item.tone}}"
+            status="{{item.status}}"
+            equipmentSlug="{{item.equipmentSlug}}"
+            data-card-id="{{item.id}}"
+            bindedit="onCardEdit"
+            bindtap="onCardTap"
+          ></exercise-card>
+          <!-- 该动作的组明细（行首状态点，可点编辑/删除） -->
+          <view class="set-list px-box">
+            <view
+              wx:for="{{item.setList}}"
+              wx:for-item="s"
+              wx:for-index="si"
+              wx:key="id"
+              class="set-row"
+              data-card-index="{{index}}"
+              data-set-index="{{si}}"
+              bindtap="onSetTap"
+            >
+              <view class="set-statedot set-statedot--{{s.stateDot}}"></view>
+              <text class="set-idx">第{{si + 1}}组</text>
+              <text class="set-main">{{s.label}}</text>
+              <text class="set-type">{{s.typeLabel}}</text>
+            </view>
+          </view>
+        </view>
+      </block>
+      <view wx:else class="cards-empty px-box">
+        <view class="cards-empty-title">按住下方按钮，说出你的第一组</view>
+        <view class="cards-empty-sub">例如：「卧推 80 公斤 8 个」</view>
+      </view>
+    </view>
+
+    <!-- 底部录入条：全宽按住说话 + 提示 + 右侧 ··· 更多（手动加组） -->
+    <view class="bottom-bar">
+      <view class="bottom-inner">
+        <view class="voice-col">
+          <voice-button
+            status="{{voiceStatus}}"
+            bubble="{{voiceBubble}}"
+            variant="workout"
+            bindstart="onVoiceStart"
+            bindstop="onVoiceStop"
+          ></voice-button>
+        </view>
+        <view class="manual-add" hover-class="manual-add--press" bindtap="openManual">
+          <text class="manual-dots">···</text>
+        </view>
+      </view>
+    </view>
+  </block>
+
+  <!-- ============ 撤销 toast（新组高亮的反向操作 / 删除后撤销） ============ -->
+  <view wx:if="{{undoVisible}}" class="undo-toast">
+    <text class="undo-text">{{undoData.text}}</text>
+    <text class="undo-action" catchtap="onUndoDelete">撤销</text>
+  </view>
+
+  <!-- ============ ASR 文本录入（语音占位降级方案） ============ -->
+  <view wx:if="{{showAsrInput}}" class="mask" catchtap="onAsrCancel">
+    <view class="sheet" catchtap="noop">
+      <view class="sheet-handle"></view>
+      <view class="sheet-title">说出你这一组（识别文本）</view>
+      <view class="sheet-hint">例：今天先做深蹲 / 卧推 80 公斤 8 个 7 个 6 个</view>
+      <textarea
+        class="asr-input"
+        value="{{asrText}}"
+        placeholder="把你刚说的内容输入这里"
+        auto-height
+        focus
+        bindinput="onAsrInput"
+      ></textarea>
+      <view class="sheet-actions">
+        <view class="btn-px btn-px--ghost" hover-class="btn-px--press" bindtap="onAsrCancel">取消</view>
+        <view class="btn-px btn-px--primary" hover-class="btn-px--press" bindtap="onAsrConfirm">解析</view>
+      </view>
+    </view>
+  </view>
+
+  <!-- ============ 解析确认卡 ============ -->
+  <view wx:if="{{showConfirm}}" class="mask" catchtap="onConfirmDiscard">
+    <view class="sheet" catchtap="noop">
+      <view class="sheet-handle"></view>
+      <view class="sheet-title">{{confirmTitle}}</view>
+      <view class="sheet-hint">{{confirmReason}}</view>
+
+      <view wx:if="{{confirmIntent === 'record_sets'}}" class="field">
+        <text class="field-label">动作</text>
+        <input class="field-input" value="{{confirmExerciseName}}" placeholder="动作名" bindinput="onConfirmExerciseName" />
+      </view>
+
+      <view class="set-edit-list">
+        <view wx:for="{{confirmSets}}" wx:key="index" class="set-edit-row">
+          <view class="ser-head">
+            <text class="ser-idx">第{{index + 1}}组</text>
+          </view>
+          <view class="ser-line">
+            <picker class="ser-picker" mode="selector" range="{{loadTypeLabels}}" value="{{item.loadTypeIndex}}" data-index="{{index}}" bindchange="onConfirmLoadType">
+              <view class="picker-val">{{loadTypeLabels[item.loadTypeIndex]}}</view>
+            </picker>
+            <picker class="ser-picker" mode="selector" range="{{setTypeLabels}}" value="{{item.setTypeIndex}}" data-index="{{index}}" bindchange="onConfirmSetType">
+              <view class="picker-val">{{setTypeLabels[item.setTypeIndex]}}</view>
+            </picker>
+          </view>
+          <view class="ser-line">
+            <view class="num-field">
+              <input class="num-input" type="digit" value="{{item.weightInput}}" placeholder="重量" data-index="{{index}}" bindinput="onConfirmWeight" />
+              <text class="num-suffix">{{unit}}</text>
+            </view>
+            <view class="num-field">
+              <input class="num-input" type="number" value="{{item.reps}}" placeholder="次数" data-index="{{index}}" bindinput="onConfirmReps" />
+              <text class="num-suffix">次</text>
+            </view>
+          </view>
+        </view>
+      </view>
+
+      <view class="sheet-actions">
+        <view class="btn-px btn-px--ghost" hover-class="btn-px--press" bindtap="onConfirmDiscard">放弃</view>
+        <view class="btn-px btn-px--primary" hover-class="btn-px--press" bindtap="onConfirmSave">确认保存</view>
+      </view>
+    </view>
+  </view>
+
+  <!-- ============ 手动加组 ============ -->
+  <view wx:if="{{showManual}}" class="mask" catchtap="onManualClose">
+    <view class="sheet" catchtap="noop">
+      <view class="sheet-handle"></view>
+      <view class="sheet-title">手动加组</view>
+
+      <view class="field">
+        <text class="field-label">动作</text>
+        <view class="exercise-pick">
+          <input class="field-input" value="{{manualExerciseName}}" placeholder="输入或选择动作" bindinput="onManualExerciseInput" />
+          <view class="pick-btn" hover-class="btn-px--press" catchtap="onManualPickExercise">选择</view>
+        </view>
+      </view>
+
+      <view class="set-edit-list">
+        <view wx:for="{{manualRows}}" wx:key="index" class="set-edit-row">
+          <view class="ser-head">
+            <text class="ser-idx">第{{index + 1}}组</text>
+            <text wx:if="{{manualRows.length > 1}}" class="row-del" data-index="{{index}}" catchtap="onManualDelRow">删除</text>
+          </view>
+          <view class="ser-line">
+            <picker class="ser-picker" mode="selector" range="{{loadTypeLabels}}" value="{{item.loadTypeIndex}}" data-index="{{index}}" bindchange="onManualLoadType">
+              <view class="picker-val">{{loadTypeLabels[item.loadTypeIndex]}}</view>
+            </picker>
+            <picker class="ser-picker" mode="selector" range="{{setTypeLabels}}" value="{{item.setTypeIndex}}" data-index="{{index}}" bindchange="onManualSetType">
+              <view class="picker-val">{{setTypeLabels[item.setTypeIndex]}}</view>
+            </picker>
+          </view>
+          <view class="ser-line">
+            <view class="num-field">
+              <input class="num-input" type="digit" value="{{item.weightInput}}" placeholder="重量" data-index="{{index}}" bindinput="onManualWeight" />
+              <text class="num-suffix">{{unit}}</text>
+            </view>
+            <view class="num-field">
+              <input class="num-input" type="number" value="{{item.reps}}" placeholder="次数" data-index="{{index}}" bindinput="onManualReps" />
+              <text class="num-suffix">次</text>
+            </view>
+          </view>
+        </view>
+      </view>
+
+      <view class="add-row" hover-class="btn-px--press" catchtap="onManualAddRow">＋ 再加一组</view>
+
+      <view class="sheet-actions">
+        <view class="btn-px btn-px--ghost" hover-class="btn-px--press" bindtap="onManualClose">取消</view>
+        <view class="btn-px btn-px--primary" hover-class="btn-px--press" bindtap="onManualSave">保存</view>
+      </view>
+    </view>
+  </view>
+
+  <!-- ============ 编辑单组 ============ -->
+  <view wx:if="{{showEditSet}}" class="mask" catchtap="onEditClose">
+    <view class="sheet" catchtap="noop">
+      <view class="sheet-handle"></view>
+      <view class="sheet-title">编辑这一组</view>
+      <view class="set-edit-row">
+        <view class="ser-line">
+          <picker class="ser-picker" mode="selector" range="{{loadTypeLabels}}" value="{{editSet.loadTypeIndex}}" bindchange="onEditLoadType">
+            <view class="picker-val">{{loadTypeLabels[editSet.loadTypeIndex]}}</view>
+          </picker>
+          <picker class="ser-picker" mode="selector" range="{{setTypeLabels}}" value="{{editSet.setTypeIndex}}" bindchange="onEditSetType">
+            <view class="picker-val">{{setTypeLabels[editSet.setTypeIndex]}}</view>
+          </picker>
+        </view>
+        <view class="ser-line">
+          <view class="num-field">
+            <input class="num-input" type="digit" value="{{editSet.weightInput}}" placeholder="重量" bindinput="onEditWeight" />
+            <text class="num-suffix">{{unit}}</text>
+          </view>
+          <view class="num-field">
+            <input class="num-input" type="number" value="{{editSet.reps}}" placeholder="次数" bindinput="onEditReps" />
+            <text class="num-suffix">次</text>
+          </view>
+        </view>
+      </view>
+      <view class="sheet-actions">
+        <view class="btn-px btn-px--danger" hover-class="btn-px--press" bindtap="onEditDelete">删除</view>
+        <view class="btn-px btn-px--primary" hover-class="btn-px--press" bindtap="onEditSave">保存</view>
+      </view>
+    </view>
+  </view>
+
+  <!-- ============ 结束训练完成弹窗（庆祝） ============ -->
+  <view wx:if="{{showFinish}}" class="mask center" catchtap="onFinishCancel">
+    <!-- 像素彩带粒子：纯 CSS 下落+旋转，仅在弹窗显示时渲染（design §8 克制） -->
+    <view class="finish-confetti">
+      <view class="finish-particle finish-particle--1"></view>
+      <view class="finish-particle finish-particle--2"></view>
+      <view class="finish-particle finish-particle--3"></view>
+      <view class="finish-particle finish-particle--4"></view>
+      <view class="finish-particle finish-particle--5"></view>
+      <view class="finish-particle finish-particle--6"></view>
+      <view class="finish-particle finish-particle--7"></view>
+      <view class="finish-particle finish-particle--8"></view>
+    </view>
+    <view class="finish-card px-box" catchtap="noop">
+      <view class="finish-illu">
+        <image class="finish-illu-celebrate" src="/images/characters/male_celebrating.png" mode="aspectFit"></image>
+        <image class="finish-illu-trophy" src="/images/badges/badge_trophy_gold.png" mode="aspectFit"></image>
+      </view>
+      <view class="finish-title">恭喜您完成了此次训练！</view>
+      <view class="finish-summary">
+        本次记录 <text class="hl">{{finishSummary.exercises}}</text> 个动作，共
+        <text class="hl">{{finishSummary.sets}}</text> 组，总容量
+        <text class="hl">{{finishSummary.volume}}</text> kg
+      </view>
+      <view class="btn-px btn-px--primary block" hover-class="btn-px--press" bindtap="onFinishToShare">完成并生成分享图</view>
+      <view class="btn-px btn-px--ghost block" hover-class="btn-px--press" bindtap="onFinishToSummary">完成训练</view>
+      <view class="btn-px btn-px--text block" hover-class="btn-px--press" bindtap="onFinishCancel">取消</view>
+    </view>
+  </view>
+
+  <!-- ============ 空闲提醒（自定义浮层，可被自动结束主动关闭，避免系统 showModal 关不掉的残留/卡死） ============ -->
+  <view wx:if="{{showIdleRemind}}" class="mask center">
+    <view class="finish-card px-box" catchtap="noop">
+      <view class="finish-title">{{idleRemindTitle}}</view>
+      <view class="finish-summary">{{idleRemindContent}}</view>
+      <view class="sheet-actions">
+        <view class="btn-px btn-px--ghost" hover-class="btn-px--press" bindtap="onIdleEnd">结束训练</view>
+        <view class="btn-px btn-px--primary" hover-class="btn-px--press" bindtap="onIdleContinue">继续训练</view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 完赛庆祝覆盖层（仅首次完赛；点「继续」后再跳转） -->
+  <finish-reward reward="{{finishReward}}" visible="{{showReward}}" bind:close="onRewardClose" />
+</view>

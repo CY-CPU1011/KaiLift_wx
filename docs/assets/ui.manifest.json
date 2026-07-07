@@ -1,0 +1,754 @@
+[
+  {
+    "name": "ui_section_buttons",
+    "description_zh": "按钮分区标题",
+    "file": "ui_section_buttons.png",
+    "source": "UI控件.png",
+    "source_crop": [
+      16,
+      30,
+      229,
+      88
+    ],
+    "width": 213,
+    "height": 58,
+    "format": "PNG",
+    "transparent": true
+  },
+  {
+    "name": "ui_button_primary_hold_to_talk",
+    "description_zh": "主按钮-按住说话",
+    "file": "ui_button_primary_hold_to_talk.png",
+    "source": "UI控件.png",
+    "source_crop": [
+      29,
+      116,
+      413,
+      244
+    ],
+    "width": 384,
+    "height": 128,
+    "format": "PNG",
+    "transparent": true
+  },
+  {
+    "name": "ui_button_secondary_later",
+    "description_zh": "次要按钮-稍后再说",
+    "file": "ui_button_secondary_later.png",
+    "source": "UI控件.png",
+    "source_crop": [
+      430,
+      129,
+      735,
+      245
+    ],
+    "width": 305,
+    "height": 116,
+    "format": "PNG",
+    "transparent": true
+  },
+  {
+    "name": "ui_button_small_done",
+    "description_zh": "小按钮-完成",
+    "file": "ui_button_small_done.png",
+    "source": "UI控件.png",
+    "source_crop": [
+      757,
+      157,
+      886,
+      234
+    ],
+    "width": 129,
+    "height": 77,
+    "format": "PNG",
+    "transparent": true
+  },
+  {
+    "name": "ui_button_small_stop",
+    "description_zh": "小按钮-停止",
+    "file": "ui_button_small_stop.png",
+    "source": "UI控件.png",
+    "source_crop": [
+      904,
+      157,
+      1029,
+      234
+    ],
+    "width": 125,
+    "height": 75,
+    "format": "PNG",
+    "transparent": true
+  },
+  {
+    "name": "ui_section_cards",
+    "description_zh": "卡片面板分区标题",
+    "file": "ui_section_cards.png",
+    "source": "UI控件.png",
+    "source_crop": [
+      17,
+      331,
+      312,
+      386
+    ],
+    "width": 295,
+    "height": 55,
+    "format": "PNG",
+    "transparent": true
+  },
+  {
+    "name": "ui_card_blank",
+    "description_zh": "空白卡片",
+    "file": "ui_card_blank.png",
+    "source": "UI控件.png",
+    "source_crop": [
+      29,
+      409,
+      367,
+      570
+    ],
+    "width": 335,
+    "height": 161,
+    "format": "PNG",
+    "transparent": true
+  },
+  {
+    "name": "ui_card_calories_green",
+    "description_zh": "数据卡片-今日消耗",
+    "file": "ui_card_calories_green.png",
+    "source": "UI控件.png",
+    "source_crop": [
+      385,
+      420,
+      663,
+      578
+    ],
+    "width": 276,
+    "height": 158,
+    "format": "PNG",
+    "transparent": true
+  },
+  {
+    "name": "ui_segment_day_week_month",
+    "description_zh": "分段控件-日周月",
+    "file": "ui_segment_day_week_month.png",
+    "source": "UI控件.png",
+    "source_crop": [
+      685,
+      457,
+      1024,
+      548
+    ],
+    "width": 336,
+    "height": 91,
+    "format": "PNG",
+    "transparent": true
+  },
+  {
+    "name": "ui_tag_selected_strength",
+    "description_zh": "标签-力量训练-选中",
+    "file": "ui_tag_selected_strength.png",
+    "source": "UI控件.png",
+    "source_crop": [
+      30,
+      659,
+      188,
+      737
+    ],
+    "width": 158,
+    "height": 78,
+    "format": "PNG",
+    "transparent": true
+  },
+  {
+    "name": "ui_tag_unselected_aerobic",
+    "description_zh": "标签-有氧运动-未选中",
+    "file": "ui_tag_unselected_aerobic.png",
+    "source": "UI控件.png",
+    "source_crop": [
+      207,
+      658,
+      350,
+      735
+    ],
+    "width": 140,
+    "height": 76,
+    "format": "PNG",
+    "transparent": true
+  },
+  {
+    "name": "ui_level_star",
+    "description_zh": "经验星标",
+    "file": "ui_level_star.png",
+    "source": "UI控件.png",
+    "source_crop": [
+      394,
+      648,
+      475,
+      739
+    ],
+    "width": 81,
+    "height": 86,
+    "format": "PNG",
+    "transparent": true
+  },
+  {
+    "name": "ui_progress_experience",
+    "description_zh": "经验进度条",
+    "file": "ui_progress_experience.png",
+    "source": "UI控件.png",
+    "source_crop": [
+      476,
+      671,
+      941,
+      735
+    ],
+    "width": 464,
+    "height": 61,
+    "format": "PNG",
+    "transparent": true
+  },
+  {
+    "name": "ui_section_icons",
+    "description_zh": "图标分区标题",
+    "file": "ui_section_icons.png",
+    "source": "UI控件.png",
+    "source_crop": [
+      17,
+      815,
+      198,
+      875
+    ],
+    "width": 181,
+    "height": 58,
+    "format": "PNG",
+    "transparent": true
+  },
+  {
+    "name": "ui_nav_home_inactive",
+    "description_zh": "导航-首页-未激活",
+    "file": "ui_nav_home_inactive.png",
+    "source": "UI控件.png",
+    "source_crop": [
+      55,
+      939,
+      130,
+      1019
+    ],
+    "width": 67,
+    "height": 68,
+    "format": "PNG",
+    "transparent": true
+  },
+  {
+    "name": "ui_nav_home_active",
+    "description_zh": "导航-首页-激活",
+    "file": "ui_nav_home_active.png",
+    "source": "UI控件.png",
+    "source_crop": [
+      151,
+      939,
+      229,
+      1019
+    ],
+    "width": 67,
+    "height": 68,
+    "format": "PNG",
+    "transparent": true
+  },
+  {
+    "name": "ui_nav_dumbbell_inactive",
+    "description_zh": "导航-哑铃-未激活",
+    "file": "ui_nav_dumbbell_inactive.png",
+    "source": "UI控件.png",
+    "source_crop": [
+      300,
+      938,
+      389,
+      1017
+    ],
+    "width": 81,
+    "height": 53,
+    "format": "PNG",
+    "transparent": true
+  },
+  {
+    "name": "ui_nav_dumbbell_active",
+    "description_zh": "导航-哑铃-激活",
+    "file": "ui_nav_dumbbell_active.png",
+    "source": "UI控件.png",
+    "source_crop": [
+      402,
+      938,
+      489,
+      1017
+    ],
+    "width": 82,
+    "height": 53,
+    "format": "PNG",
+    "transparent": true
+  },
+  {
+    "name": "ui_nav_stats_inactive",
+    "description_zh": "导航-统计-未激活",
+    "file": "ui_nav_stats_inactive.png",
+    "source": "UI控件.png",
+    "source_crop": [
+      563,
+      937,
+      646,
+      1017
+    ],
+    "width": 68,
+    "height": 68,
+    "format": "PNG",
+    "transparent": true
+  },
+  {
+    "name": "ui_nav_stats_active",
+    "description_zh": "导航-统计-激活",
+    "file": "ui_nav_stats_active.png",
+    "source": "UI控件.png",
+    "source_crop": [
+      664,
+      937,
+      746,
+      1017
+    ],
+    "width": 63,
+    "height": 67,
+    "format": "PNG",
+    "transparent": true
+  },
+  {
+    "name": "ui_nav_profile_inactive",
+    "description_zh": "导航-我的-未激活",
+    "file": "ui_nav_profile_inactive.png",
+    "source": "UI控件.png",
+    "source_crop": [
+      833,
+      937,
+      907,
+      1019
+    ],
+    "width": 58,
+    "height": 68,
+    "format": "PNG",
+    "transparent": true
+  },
+  {
+    "name": "ui_nav_profile_active",
+    "description_zh": "导航-我的-激活",
+    "file": "ui_nav_profile_active.png",
+    "source": "UI控件.png",
+    "source_crop": [
+      925,
+      937,
+      1000,
+      1019
+    ],
+    "width": 58,
+    "height": 68,
+    "format": "PNG",
+    "transparent": true
+  },
+  {
+    "name": "ui_icon_microphone",
+    "description_zh": "语音图标-麦克风",
+    "file": "ui_icon_microphone.png",
+    "source": "UI控件.png",
+    "source_crop": [
+      39,
+      1120,
+      101,
+      1206
+    ],
+    "width": 52,
+    "height": 76,
+    "format": "PNG",
+    "transparent": true
+  },
+  {
+    "name": "ui_icon_speaker_on",
+    "description_zh": "语音图标-扬声器开启",
+    "file": "ui_icon_speaker_on.png",
+    "source": "UI控件.png",
+    "source_crop": [
+      120,
+      1119,
+      203,
+      1206
+    ],
+    "width": 74,
+    "height": 69,
+    "format": "PNG",
+    "transparent": true
+  },
+  {
+    "name": "ui_icon_speaker_muted",
+    "description_zh": "语音图标-扬声器静音",
+    "file": "ui_icon_speaker_muted.png",
+    "source": "UI控件.png",
+    "source_crop": [
+      213,
+      1119,
+      293,
+      1206
+    ],
+    "width": 73,
+    "height": 68,
+    "format": "PNG",
+    "transparent": true
+  },
+  {
+    "name": "ui_icon_add",
+    "description_zh": "操作图标-加",
+    "file": "ui_icon_add.png",
+    "source": "UI控件.png",
+    "source_crop": [
+      327,
+      1119,
+      402,
+      1206
+    ],
+    "width": 71,
+    "height": 75,
+    "format": "PNG",
+    "transparent": true
+  },
+  {
+    "name": "ui_icon_subtract",
+    "description_zh": "操作图标-减",
+    "file": "ui_icon_subtract.png",
+    "source": "UI控件.png",
+    "source_crop": [
+      419,
+      1119,
+      495,
+      1206
+    ],
+    "width": 71,
+    "height": 75,
+    "format": "PNG",
+    "transparent": true
+  },
+  {
+    "name": "ui_icon_arrow_right",
+    "description_zh": "操作图标-右箭头",
+    "file": "ui_icon_arrow_right.png",
+    "source": "UI控件.png",
+    "source_crop": [
+      508,
+      1119,
+      586,
+      1206
+    ],
+    "width": 73,
+    "height": 75,
+    "format": "PNG",
+    "transparent": true
+  },
+  {
+    "name": "ui_icon_edit_pencil",
+    "description_zh": "操作图标-编辑铅笔",
+    "file": "ui_icon_edit_pencil.png",
+    "source": "UI控件.png",
+    "source_crop": [
+      600,
+      1117,
+      681,
+      1207
+    ],
+    "width": 71,
+    "height": 79,
+    "format": "PNG",
+    "transparent": true
+  },
+  {
+    "name": "ui_icon_experience_star",
+    "description_zh": "状态图标-经验星标",
+    "file": "ui_icon_experience_star.png",
+    "source": "UI控件.png",
+    "source_crop": [
+      715,
+      1118,
+      798,
+      1207
+    ],
+    "width": 81,
+    "height": 87,
+    "format": "PNG",
+    "transparent": true
+  },
+  {
+    "name": "ui_icon_fire",
+    "description_zh": "状态图标-火焰",
+    "file": "ui_icon_fire.png",
+    "source": "UI控件.png",
+    "source_crop": [
+      808,
+      1117,
+      909,
+      1207
+    ],
+    "width": 89,
+    "height": 83,
+    "format": "PNG",
+    "transparent": true
+  },
+  {
+    "name": "ui_icon_calendar",
+    "description_zh": "状态图标-日历",
+    "file": "ui_icon_calendar.png",
+    "source": "UI控件.png",
+    "source_crop": [
+      929,
+      1118,
+      1013,
+      1207
+    ],
+    "width": 75,
+    "height": 82,
+    "format": "PNG",
+    "transparent": true
+  },
+  {
+    "name": "ui_equipment_barbell",
+    "description_zh": "器材图标-杠铃",
+    "file": "ui_equipment_barbell.png",
+    "source": "UI控件.png",
+    "source_crop": [
+      183,
+      1319,
+      375,
+      1405
+    ],
+    "width": 177,
+    "height": 78,
+    "format": "PNG",
+    "transparent": true
+  },
+  {
+    "name": "ui_equipment_dumbbell",
+    "description_zh": "器材图标-哑铃",
+    "file": "ui_equipment_dumbbell.png",
+    "source": "UI控件.png",
+    "source_crop": [
+      432,
+      1317,
+      594,
+      1405
+    ],
+    "width": 147,
+    "height": 68,
+    "format": "PNG",
+    "transparent": true
+  },
+  {
+    "name": "ui_equipment_bench",
+    "description_zh": "器材图标-训练椅",
+    "file": "ui_equipment_bench.png",
+    "source": "UI控件.png",
+    "source_crop": [
+      681,
+      1307,
+      838,
+      1407
+    ],
+    "width": 141,
+    "height": 93,
+    "format": "PNG",
+    "transparent": true
+  },
+  {
+    "name": "ui_heart_full_1",
+    "description_zh": "爱心-已填充-1",
+    "file": "ui_heart_full_1.png",
+    "source": "UI控件.png",
+    "source_crop": [
+      450,
+      1444,
+      493,
+      1492
+    ],
+    "width": 42,
+    "height": 39,
+    "format": "PNG",
+    "transparent": true
+  },
+  {
+    "name": "ui_heart_full_2",
+    "description_zh": "爱心-已填充-2",
+    "file": "ui_heart_full_2.png",
+    "source": "UI控件.png",
+    "source_crop": [
+      495,
+      1444,
+      540,
+      1492
+    ],
+    "width": 43,
+    "height": 39,
+    "format": "PNG",
+    "transparent": true
+  },
+  {
+    "name": "ui_heart_empty",
+    "description_zh": "爱心-未填充",
+    "file": "ui_heart_empty.png",
+    "source": "UI控件.png",
+    "source_crop": [
+      539,
+      1444,
+      588,
+      1492
+    ],
+    "width": 43,
+    "height": 39,
+    "format": "PNG",
+    "transparent": true
+  },
+  {
+    "name": "ui_decoration_cloud_top_center",
+    "description_zh": "装饰云-顶部中间",
+    "file": "ui_decoration_cloud_top_center.png",
+    "source": "UI控件.png",
+    "source_crop": [
+      266,
+      25,
+      366,
+      83
+    ],
+    "width": 90,
+    "height": 44,
+    "format": "PNG",
+    "transparent": true
+  },
+  {
+    "name": "ui_decoration_cloud_top_right",
+    "description_zh": "装饰云-顶部右侧",
+    "file": "ui_decoration_cloud_top_right.png",
+    "source": "UI控件.png",
+    "source_crop": [
+      892,
+      18,
+      1030,
+      90
+    ],
+    "width": 124,
+    "height": 65,
+    "format": "PNG",
+    "transparent": true
+  },
+  {
+    "name": "ui_decoration_cloud_right",
+    "description_zh": "装饰云-右侧",
+    "file": "ui_decoration_cloud_right.png",
+    "source": "UI控件.png",
+    "source_crop": [
+      943,
+      815,
+      1028,
+      880
+    ],
+    "width": 82,
+    "height": 43,
+    "format": "PNG",
+    "transparent": true
+  },
+  {
+    "name": "ui_decoration_cloud_bottom_left",
+    "description_zh": "装饰云-底部左侧",
+    "file": "ui_decoration_cloud_bottom_left.png",
+    "source": "UI控件.png",
+    "source_crop": [
+      13,
+      1305,
+      108,
+      1375
+    ],
+    "width": 84,
+    "height": 52,
+    "format": "PNG",
+    "transparent": true
+  },
+  {
+    "name": "ui_decoration_landscape_bottom_left",
+    "description_zh": "装饰景观-底部左侧",
+    "file": "ui_decoration_landscape_bottom_left.png",
+    "source": "UI控件.png",
+    "source_crop": [
+      0,
+      1390,
+      163,
+      1492
+    ],
+    "width": 157,
+    "height": 94,
+    "format": "PNG",
+    "transparent": true
+  },
+  {
+    "name": "ui_decoration_cloud_bottom_right",
+    "description_zh": "装饰云-底部右侧",
+    "file": "ui_decoration_cloud_bottom_right.png",
+    "source": "UI控件.png",
+    "source_crop": [
+      892,
+      1310,
+      1045,
+      1405
+    ],
+    "width": 128,
+    "height": 65,
+    "format": "PNG",
+    "transparent": true
+  },
+  {
+    "name": "ui_decoration_landscape_bottom_right",
+    "description_zh": "装饰景观-底部右侧",
+    "file": "ui_decoration_landscape_bottom_right.png",
+    "source": "UI控件.png",
+    "source_crop": [
+      875,
+      1395,
+      1054,
+      1492
+    ],
+    "width": 165,
+    "height": 85,
+    "format": "PNG",
+    "transparent": true
+  },
+  {
+    "name": "ui_decoration_plus_left",
+    "description_zh": "装饰加号-左",
+    "file": "ui_decoration_plus_left.png",
+    "source": "UI控件.png",
+    "source_crop": [
+      410,
+      1450,
+      440,
+      1490
+    ],
+    "width": 22,
+    "height": 23,
+    "format": "PNG",
+    "transparent": true
+  },
+  {
+    "name": "ui_decoration_plus_right",
+    "description_zh": "装饰加号-右",
+    "file": "ui_decoration_plus_right.png",
+    "source": "UI控件.png",
+    "source_crop": [
+      596,
+      1450,
+      626,
+      1490
+    ],
+    "width": 22,
+    "height": 23,
+    "format": "PNG",
+    "transparent": true
+  }
+]

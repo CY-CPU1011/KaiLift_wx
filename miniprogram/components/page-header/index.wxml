@@ -1,0 +1,16 @@
+<view class="ph" style="padding-top:{{statusBarHeight}}px;">
+  <view class="ph__bar {{mode === 'greeting' ? 'ph__bar--greeting' : (showCapsuleSpace ? 'ph__bar--capsule' : '')}}">
+    <block wx:if="{{mode === 'greeting'}}">
+      <view class="ph__greeting">
+        <text class="ph__hello">{{name}}</text>
+        <view class="ph__date-row">
+          <image class="ph__cal" src="/images/ui/icons/ui_icon_calendar_header.png" mode="aspectFit"></image>
+          <text class="ph__date">{{dateText}}</text>
+        </view>
+      </view>
+    </block>
+    <block wx:else>
+      <text class="ph__title">{{title}}</text>
+    </block>
+  </view>
+</view>

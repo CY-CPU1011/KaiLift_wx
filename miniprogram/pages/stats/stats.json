@@ -1,0 +1,13 @@
+{
+  "navigationStyle": "custom",
+  "usingComponents": {
+    "page-header": "/components/page-header/index",
+    "segmented": "/components/segmented/index",
+    "filter-chips": "/components/filter-chips/index",
+    "heatmap": "/components/heatmap/index",
+    "pr-card": "/components/pr-card/index",
+    "trend-chart": "/components/trend-chart/index",
+    "stat-card": "/components/stat-card/index",
+    "progress-bar": "/components/progress-bar/index"
+  }
+}

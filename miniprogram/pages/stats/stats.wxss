@@ -1,0 +1,327 @@
+/* 数据页 —— 像素风（design §6.4 / §2.2）。纯色底 + 描边硬阴影方块卡。全 token + rpx。 */
+
+.page {
+  position: relative;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  /* 像素风：透明底，透出全屏 .app-bg 像素背景 */
+  background: transparent;
+  box-sizing: border-box;
+}
+
+/* —— 标题 ✦ 训练数据 ✦：两侧像素 plus 装饰，标题居中、与装饰同行对齐 —— */
+.title-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--sp-2);
+  min-height: 88rpx;
+  padding: var(--sp-2) var(--sp-4);
+  box-sizing: border-box;
+}
+.title-text {
+  font-size: 44rpx;
+  font-weight: 800;
+  color: var(--text-1);
+  letter-spacing: 2rpx;
+}
+.title-deco {
+  flex: none;
+  width: 40rpx;
+  height: 40rpx;
+  image-rendering: pixelated;
+}
+
+.seg-wrap {
+  padding: var(--sp-2) var(--sp-4) var(--sp-3);
+}
+
+.body {
+  flex: 1;
+  min-height: 0;
+  padding: 0 var(--sp-4);
+  box-sizing: border-box;
+}
+
+/* 像素方块卡：描边 + 硬偏移阴影（无 blur） */
+.card {
+  background: var(--surface);
+  border: var(--px-border);
+  border-radius: var(--px-radius);
+  box-shadow: var(--px-shadow);
+  padding: var(--sp-4);
+  margin-bottom: var(--sp-4);
+}
+
+.section-title {
+  font-size: 32rpx;
+  font-weight: 700;
+  color: var(--text-1);
+}
+
+/* Signature 数字 + 单位（当日明细右侧总训练量） */
+.num-row {
+  display: flex;
+  align-items: baseline;
+}
+.num-row__label {
+  font-size: 22rpx;
+  font-weight: 600;
+  color: var(--text-2);
+  margin-right: var(--sp-1);
+}
+.num-row__num {
+  font-size: 56rpx;
+  font-weight: 800;
+  color: var(--c-primary-strong);
+  line-height: 1;
+}
+.num-row__unit {
+  font-size: 24rpx;
+  font-weight: 600;
+  color: var(--text-2);
+  margin-left: 4rpx;
+}
+
+/* ---- 年份切换（像素方块按钮） ---- */
+.year-switch {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--sp-4);
+  padding: var(--sp-1) 0 var(--sp-3);
+}
+.year-switch__arrow {
+  width: 64rpx;
+  height: 64rpx;
+  line-height: 56rpx;
+  text-align: center;
+  font-size: 40rpx;
+  font-weight: 800;
+  color: var(--text-1);
+  background: var(--surface);
+  border: var(--px-border);
+  border-radius: var(--px-radius);
+  box-shadow: var(--px-shadow);
+  box-sizing: border-box;
+}
+.year-switch__arrow--press {
+  box-shadow: var(--px-shadow-press);
+  transform: translate(4rpx, 4rpx);
+}
+.year-switch__year {
+  font-size: 40rpx;
+  font-weight: 800;
+  color: var(--text-1);
+  min-width: 120rpx;
+  text-align: center;
+}
+
+.heatmap-card {
+  overflow-x: auto;
+}
+
+/* ---- 当日明细绿卡 ---- */
+.day-card {
+  background: var(--c-primary-soft);
+}
+.day-card__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.day-card__date {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+}
+/* 日历图标方块（像素描边底） */
+.day-card__cal {
+  width: 64rpx;
+  height: 64rpx;
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--surface);
+  border: var(--px-border);
+  border-radius: var(--px-radius);
+  box-sizing: border-box;
+}
+.day-card__cal-img {
+  width: 44rpx;
+  height: 44rpx;
+  image-rendering: pixelated;
+}
+.day-card__title {
+  display: flex;
+  flex-direction: column;
+}
+.day-card__day {
+  font-size: 32rpx;
+  font-weight: 700;
+  color: var(--text-1);
+}
+.day-card__week {
+  font-size: 24rpx;
+  color: var(--text-2);
+  margin-top: 4rpx;
+}
+
+.day-card__list {
+  margin-top: var(--sp-3);
+}
+.day-row {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  padding: var(--sp-2) 0;
+  border-top: 3rpx solid rgba(15, 138, 67, 0.16);
+}
+/* 器材图标方块 */
+.day-row__equip {
+  width: 64rpx;
+  height: 64rpx;
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--surface);
+  border: var(--px-border);
+  border-radius: var(--px-radius);
+  box-sizing: border-box;
+}
+.day-row__equip-img {
+  width: 48rpx;
+  height: 48rpx;
+  image-rendering: pixelated;
+}
+.day-row__main {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+.day-row__name {
+  font-size: 28rpx;
+  font-weight: 700;
+  color: var(--text-1);
+}
+.day-row__sub {
+  font-size: 24rpx;
+  color: var(--text-2);
+  margin-top: 4rpx;
+}
+.day-row__vol {
+  flex: none;
+  display: flex;
+  align-items: baseline;
+}
+.day-row__vol-num {
+  font-size: 30rpx;
+  font-weight: 800;
+  color: var(--c-primary-strong);
+}
+.day-row__vol-unit {
+  font-size: 20rpx;
+  color: var(--text-2);
+  margin-left: 2rpx;
+}
+.day-row__arrow {
+  flex: none;
+  width: 32rpx;
+  height: 32rpx;
+  margin-left: var(--sp-1);
+  image-rendering: pixelated;
+}
+
+/* ---- 空状态（像素角色引导，design §7） ---- */
+.empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--sp-6) 0;
+}
+.empty__char {
+  width: 200rpx;
+  height: 200rpx;
+  image-rendering: pixelated;
+}
+.empty__text {
+  margin-top: var(--sp-3);
+  font-size: 28rpx;
+  color: var(--text-3);
+}
+
+/* ---- PR 墙 ---- */
+.chips-wrap {
+  margin-bottom: var(--sp-3);
+}
+.pr-grid {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+}
+.pr-grid__cell {
+  width: 48%;
+  margin-bottom: var(--sp-4);
+}
+
+/* ---- 趋势图 ---- */
+.range-wrap {
+  margin-bottom: var(--sp-3);
+}
+.trend-card {
+  padding: var(--sp-3);
+}
+.trend-empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 320rpx;
+}
+.trend-empty__text {
+  font-size: 28rpx;
+  color: var(--text-3);
+}
+
+.overview {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: var(--sp-4);
+}
+.overview__cell {
+  width: 31.5%;
+}
+
+.dist-card__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--sp-3);
+}
+.dist-row {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  margin-bottom: var(--sp-3);
+}
+.dist-row:last-child {
+  margin-bottom: 0;
+}
+.dist-row__label {
+  width: 48rpx;
+  font-size: 28rpx;
+  font-weight: 700;
+  color: var(--text-1);
+}
+.dist-row__bar {
+  flex: 1;
+}
+
+/* tab 底部安全留白 */
+.tab-safe {
+  height: calc(160rpx + env(safe-area-inset-bottom));
+}

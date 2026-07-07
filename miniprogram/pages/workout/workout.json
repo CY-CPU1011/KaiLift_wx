@@ -1,0 +1,9 @@
+{
+  "navigationStyle": "custom",
+  "usingComponents": {
+    "timer": "/components/timer/index",
+    "exercise-card": "/components/exercise-card/index",
+    "voice-button": "/components/voice-button/index",
+    "finish-reward": "/components/finish-reward/index"
+  }
+}

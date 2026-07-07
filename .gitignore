@@ -1,0 +1,25 @@
+# dependencies
+node_modules/
+
+# next.js
+.next/
+next-env.d.ts
+*.tsbuildinfo
+
+# env
+.env.local
+.env*.local
+
+# WeChat DevTools local/private artifacts
+project.private.config.json
+upload-info.json
+preview-info.json
+preview-qrcode.png
+simulator-smoke.png
+
+# local assistant/tooling state
+.claude/
+
+# misc
+.DS_Store
+node_modules

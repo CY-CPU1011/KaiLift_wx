@@ -1,0 +1,198 @@
+/* 成就墙页 —— 全 token，rpx，无硬编码颜色。像素风。 */
+
+.page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  /* 透明底，透出全屏 .app-bg 像素背景 */
+  background: transparent;
+  box-sizing: border-box;
+}
+
+/* ---- 自定义导航栏（与 session-detail 二级页一致） ---- */
+.nav {
+  position: relative;
+  height: 88rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 var(--sp-4);
+}
+.nav__back {
+  position: absolute;
+  left: var(--sp-4);
+  width: 64rpx;
+  height: 64rpx;
+  line-height: 60rpx;
+  text-align: center;
+  font-size: 48rpx;
+  color: var(--text-1);
+  background: var(--surface);
+  border-radius: var(--r-pill);
+  box-shadow: var(--shadow-card);
+}
+.nav__title {
+  font-size: 34rpx;
+  font-weight: 600;
+  color: var(--text-1);
+}
+.nav__cap {
+  position: absolute;
+  right: var(--sp-4);
+  width: 180rpx;
+}
+
+/* ---- 状态态（加载 / 错误重试） ---- */
+.state {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--sp-6) 0;
+}
+.state__text {
+  font-size: 28rpx;
+  color: var(--text-3);
+}
+.state__btn {
+  margin-top: var(--sp-4);
+  padding: 0 var(--sp-5);
+  height: 72rpx;
+  line-height: 72rpx;
+  font-size: 28rpx;
+  font-weight: 700;
+  color: var(--text-on);
+  background: var(--c-primary);
+  border: var(--px-border);
+  border-radius: var(--px-radius);
+  box-shadow: var(--px-shadow);
+}
+.state__btn:active {
+  box-shadow: var(--px-shadow-press);
+  transform: translate(4rpx, 4rpx);
+}
+
+/* ---- 区块统一左右安全边距（与 sec-head 同为 --sp-4） ---- */
+.block {
+  margin: 0 var(--sp-4) var(--sp-3);
+}
+
+/* ---- 资料卡（段位奖牌 + 等级 + EXP） ---- */
+.ac-card {
+  display: flex;
+  align-items: center;
+  padding: var(--sp-3);
+  background: var(--bg-mint);
+}
+
+/* 左：段位奖牌 */
+.ac-card__medal {
+  position: relative;
+  flex: none;
+  width: 120rpx;
+  height: 120rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.ac-card__medal-img {
+  width: 120rpx;
+  height: 120rpx;
+  image-rendering: pixelated;
+}
+
+/* 右：段位名 + Lv. + EXP + 进度条 + 距下一段位 */
+.ac-card__main {
+  flex: 1;
+  min-width: 0;
+  margin-left: var(--sp-3);
+}
+.ac-card__name-row {
+  display: flex;
+  align-items: center;
+}
+.ac-card__rank-name {
+  font-size: 36rpx;
+  font-weight: 800;
+  color: var(--text-1);
+  max-width: 240rpx;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.ac-card__lv {
+  margin-left: var(--sp-2);
+  flex: none;
+  padding: 2rpx 12rpx;
+  background: var(--c-primary);
+  color: var(--text-on);
+  font-size: 24rpx;
+  font-weight: 800;
+  border: var(--px-border);
+  border-radius: var(--px-radius);
+}
+.ac-card__exp-row {
+  display: flex;
+  align-items: center;
+  margin-top: var(--sp-2);
+}
+.ac-card__exp-star {
+  width: 30rpx;
+  height: 30rpx;
+  margin-right: 8rpx;
+  image-rendering: pixelated;
+}
+.ac-card__exp-text {
+  font-size: 24rpx;
+  font-weight: 700;
+  color: var(--text-2);
+}
+.ac-card__bar {
+  display: block;
+  margin-top: var(--sp-2);
+}
+.ac-card__next {
+  display: block;
+  margin-top: var(--sp-2);
+  font-size: 22rpx;
+  font-weight: 600;
+  color: var(--text-3);
+}
+
+/* ---- 一行计数 ---- */
+.ac-count {
+  padding: var(--sp-2) var(--sp-3);
+}
+.ac-count__text {
+  font-size: 28rpx;
+  font-weight: 600;
+  color: var(--text-2);
+}
+.ac-count__num {
+  font-size: 32rpx;
+  font-weight: 800;
+  color: var(--c-primary-strong);
+}
+
+/* ---- 区块标题行（分区标题） ---- */
+.sec-head {
+  display: flex;
+  align-items: baseline;
+  margin: var(--sp-3) var(--sp-4) var(--sp-2);
+}
+.sec-head__title {
+  font-size: 34rpx;
+  font-weight: 800;
+  color: var(--text-1);
+}
+
+/* ---- 徽章网格（flex wrap，徽章组件自带 150rpx 宽，每行约 4 枚自动换行） ---- */
+.ac-grid {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+}
+.ac-grid__item {
+  margin-bottom: var(--sp-3);
+}

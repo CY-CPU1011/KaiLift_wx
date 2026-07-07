@@ -1,0 +1,27 @@
+<!-- ExerciseCard（design §6.3-5 / §2.2）像素方块卡：器材图标 + 动作名 +「组×次@重量」+ 右上状态徽标 -->
+<!-- 根节点用 catchtap 拦截原生 tap，避免原生 tap 冒泡到宿主与 triggerEvent('tap') 重复触发 onCardTap（导致 ActionSheet 被打开两次，需点两次取消） -->
+<view class="ec px-box" catchtap="onTap" hover-class="ec--press">
+  <!-- 左：器材图标（§4.4 统一用 equipment/* 避免缺图） -->
+  <view class="ec__equip">
+    <image class="ec__equip-img" src="{{equipImg}}" mode="aspectFit"></image>
+  </view>
+
+  <!-- 中：动作名 + 组×次@重量 -->
+  <view class="ec__main">
+    <text class="ec__name">{{name}}</text>
+    <view class="ec__meta">
+      <text class="ec__meta-text">{{sets}}组 × {{reps}}次</text>
+      <text class="ec__meta-at"> @ </text>
+      <text class="ec__weight">{{weight}}</text>
+    </view>
+  </view>
+
+  <!-- 右上：状态徽标（绿勾=完成 / 蓝钟=待做·进行中） -->
+  <view class="ec__badge ec__badge--{{badge}}" catchtap="onEdit">
+    <view wx:if="{{badge === 'done'}}" class="ec__check"></view>
+    <view wx:else class="ec__clock">
+      <view class="ec__clock-h"></view>
+      <view class="ec__clock-m"></view>
+    </view>
+  </view>
+</view>

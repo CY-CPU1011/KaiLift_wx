@@ -1,0 +1,7 @@
+{
+  "navigationStyle": "custom",
+  "usingComponents": {
+    "img-ph": "/components/img-ph/index",
+    "filter-chips": "/components/filter-chips/index"
+  }
+}

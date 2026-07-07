@@ -1,0 +1,234 @@
+/* FinishReward —— 完赛庆祝覆盖层（像素风：硬描边 + 硬偏移阴影，禁 blur）。
+   组件样式隔离，故 --px-* 配方直接复刻；仅用 rpx + 现有 token。
+   层级高于固定 tabBar / 结束弹窗（参照 profile sheet-mask 的 1200，这里取 1300 更稳）。 */
+.fr-mask {
+  position: fixed;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  z-index: 1300;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--sp-4);
+  box-sizing: border-box;
+  background: rgba(20, 29, 31, 0);
+  transition: background 220ms ease;
+}
+.fr-mask--in {
+  background: rgba(20, 29, 31, 0.55);
+}
+
+/* 居中卡：入场缩放 + 淡入 */
+.fr-card {
+  width: 100%;
+  max-width: 560rpx;
+  box-sizing: border-box;
+  padding: var(--sp-4);
+  background: var(--surface);
+  border: var(--px-border);
+  border-radius: var(--px-radius);
+  box-shadow: var(--px-shadow);
+  opacity: 0;
+  transform: translateY(24rpx) scale(0.92);
+  transition: opacity 220ms ease, transform 260ms cubic-bezier(0.18, 0.89, 0.32, 1.28);
+}
+.fr-card--in {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+
+/* —— 标题 + 飘 EXP —— */
+.fr-head {
+  text-align: center;
+  margin-bottom: var(--sp-3);
+}
+.fr-head__title {
+  display: block;
+  font-size: 36rpx;
+  font-weight: 800;
+  color: var(--text-1);
+}
+.fr-exp {
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  margin-top: var(--sp-2);
+}
+.fr-exp__plus {
+  font-size: 72rpx;
+  font-weight: 800;
+  color: var(--c-primary-strong);
+  line-height: 1;
+}
+.fr-exp__unit {
+  margin-left: 8rpx;
+  font-size: 30rpx;
+  font-weight: 700;
+  color: var(--c-primary-strong);
+}
+
+/* —— EXP 明细三段 —— */
+.fr-breakdown {
+  display: flex;
+  gap: var(--sp-2);
+  margin-bottom: var(--sp-3);
+}
+.fr-bd__item {
+  flex: 1;
+  text-align: center;
+  padding: var(--sp-2) 0;
+  background: var(--c-primary-soft);
+  border: var(--px-border);
+  border-radius: var(--px-radius);
+}
+.fr-bd__label {
+  display: block;
+  font-size: 24rpx;
+  font-weight: 600;
+  color: var(--text-2);
+}
+.fr-bd__val {
+  display: block;
+  margin-top: 4rpx;
+  font-size: 30rpx;
+  font-weight: 800;
+  color: var(--text-1);
+}
+
+/* —— 等级 + 进度条 —— */
+.fr-level {
+  margin-bottom: var(--sp-3);
+}
+.fr-levelup {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: var(--sp-2);
+}
+.fr-levelup__text {
+  font-size: 34rpx;
+  font-weight: 800;
+  color: var(--text-1);
+}
+.fr-levelup__tag {
+  margin-left: var(--sp-2);
+  padding: 2rpx 12rpx;
+  background: var(--c-primary);
+  color: var(--text-on);
+  font-size: 22rpx;
+  font-weight: 800;
+  border: var(--px-border);
+  border-radius: var(--px-radius);
+}
+.fr-level__row {
+  text-align: center;
+  margin-bottom: var(--sp-2);
+}
+.fr-level__lv {
+  font-size: 30rpx;
+  font-weight: 800;
+  color: var(--text-1);
+}
+.fr-bar {
+  display: block;
+}
+
+/* —— 升段：奖牌晋升 —— */
+.fr-promo {
+  text-align: center;
+  margin-bottom: var(--sp-3);
+  padding: var(--sp-3) 0;
+  background: var(--c-amber-soft);
+  border: var(--px-border);
+  border-radius: var(--px-radius);
+}
+.fr-promo__medals {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.fr-promo__medal {
+  width: 96rpx;
+  height: 96rpx;
+  image-rendering: pixelated;
+}
+.fr-promo__medal--old {
+  opacity: 0.45;
+}
+.fr-promo__arrow {
+  margin: 0 var(--sp-2);
+  font-size: 40rpx;
+  font-weight: 800;
+  color: var(--c-amber);
+}
+.fr-promo__text {
+  display: block;
+  margin-top: var(--sp-2);
+  font-size: 30rpx;
+  font-weight: 800;
+  color: var(--text-1);
+}
+
+/* —— 新解锁成就：平铺 —— */
+.fr-unlocked {
+  margin-bottom: var(--sp-3);
+}
+.fr-unlocked__title {
+  display: block;
+  font-size: 26rpx;
+  font-weight: 700;
+  color: var(--text-2);
+  margin-bottom: var(--sp-2);
+  text-align: center;
+}
+.fr-unlocked__list {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--sp-2);
+}
+.fr-ulk {
+  width: 152rpx;
+  box-sizing: border-box;
+  padding: var(--sp-2) 8rpx;
+  text-align: center;
+  background: var(--surface);
+  border: var(--px-border);
+  border-radius: var(--px-radius);
+}
+.fr-ulk__art {
+  width: 88rpx;
+  height: 88rpx;
+  image-rendering: pixelated;
+}
+.fr-ulk__name {
+  display: block;
+  margin-top: 4rpx;
+  font-size: 22rpx;
+  font-weight: 700;
+  color: var(--text-1);
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+/* —— 继续按钮（像素主按钮，按下下沉） —— */
+.fr-go {
+  height: 88rpx;
+  line-height: 88rpx;
+  text-align: center;
+  font-size: 32rpx;
+  font-weight: 800;
+  box-sizing: border-box;
+  background: var(--c-primary);
+  color: var(--text-on);
+  border: var(--px-border);
+  border-radius: var(--px-radius);
+  box-shadow: var(--px-shadow);
+}
+.fr-go--press {
+  box-shadow: var(--px-shadow-press);
+  transform: translate(4rpx, 4rpx);
+}

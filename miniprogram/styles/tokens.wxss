@@ -1,0 +1,59 @@
+/* Design Tokens — 唯一真相源（design.md §2）。改这里即可全局换肤。 */
+page {
+  /* 颜色 · 品牌 */
+  --c-primary: #3DD16B;
+  --c-primary-strong: #0F8A43;
+  --c-primary-soft: #E9F7EE;
+  --c-pink: #F5285E;
+  --c-blue: #4E8DF5;
+  --c-purple: #8C7AE6;
+  --c-amber: #F5BE4B;
+  --c-leg: #3DD16B;
+
+  /* 彩色卡「浅底」 */
+  --c-amber-soft: #FBF3E0;
+  --c-blue-soft: #EAF1FD;
+  --c-purple-soft: #F0EDFB;
+  --c-pink-soft: #FDE6EC;
+
+  /* 背景 */
+  --bg-sky: #E6F1FA;
+  --bg-mint: #EEF6EF;
+  --bg-page: #F6F8F8;
+  --bg-scene: #EEEFF1;
+  --surface: #FFFFFF;
+  --bg-gradient: linear-gradient(180deg, var(--bg-sky), var(--bg-mint) 30%, var(--bg-page));
+
+  /* 文字 */
+  --text-1: #1A1D1F;
+  --text-2: #6E7378;
+  --text-3: #A8ACB0;
+  --text-on: #FFFFFF;
+
+  /* 像素描边色（design §2.1）——所有方块控件 2px 描边 */
+  --c-ink: #2B2B2B;
+
+  /* 圆角 */
+  --r-card: 32rpx;        /* 旧·模糊阴影卡片圆角，未改造页兼容用 */
+  --r-md: 24rpx;
+  --r-sm: 16rpx;
+  --r-pill: 999rpx;
+
+  /* 像素描边与硬阴影（design §2.2）——像素风「凸起」靠描边+硬偏移阴影，禁用 blur */
+  --px-border: 4rpx solid var(--c-ink);          /* 屏上≈2px 描边 */
+  --px-radius: 12rpx;                            /* 像素圆角，收紧 */
+  --px-shadow: 6rpx 6rpx 0 0 var(--c-ink);       /* 硬实心偏移阴影（无 blur） */
+  --px-shadow-press: 2rpx 2rpx 0 0 var(--c-ink); /* 按下：阴影变小+位移，模拟下沉 */
+
+  /* 间距（8rpx 网格） */
+  --sp-1: 8rpx;
+  --sp-2: 16rpx;
+  --sp-3: 24rpx;
+  --sp-4: 32rpx;
+  --sp-5: 48rpx;
+  --sp-6: 64rpx;
+
+  /* 阴影 */
+  --shadow-card: 0 8rpx 24rpx rgba(20, 29, 31, 0.06);
+  --shadow-float: 0 12rpx 32rpx rgba(61, 209, 107, 0.30);
+}

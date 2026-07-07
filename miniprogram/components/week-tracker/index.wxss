@@ -1,0 +1,62 @@
+/* 像素方块卡（design §5 / §2.2） */
+.wt {
+  background: var(--surface);
+  border: var(--px-border);
+  border-radius: var(--px-radius);
+  box-shadow: var(--px-shadow);
+  padding: var(--sp-4);
+}
+.wt__head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+}
+.wt__title { font-size: 32rpx; font-weight: 700; color: var(--text-1); }
+.wt__count { font-size: 24rpx; font-weight: 600; color: var(--text-2); }
+
+.wt__days {
+  display: flex;
+  justify-content: space-between;
+  margin-top: var(--sp-3);
+}
+.wt__day {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* 像素方块：未完成=白底描边 */
+.wt__cell {
+  width: 64rpx;
+  height: 64rpx;
+  box-sizing: border-box;
+  border: var(--px-border);
+  border-radius: var(--px-radius);
+  background: var(--surface);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+/* 今日=高亮描边（琥珀加粗） */
+.wt__cell--today { border-color: var(--c-amber); }
+/* 完成=绿底白勾 + 黑色像素描边；完成态优先于今日高亮 */
+.wt__cell--done {
+  background: var(--c-primary);
+  border-color: var(--c-ink);
+}
+
+/* 白色对勾 */
+.wt__check {
+  width: 26rpx;
+  height: 14rpx;
+  border-left: 5rpx solid var(--text-on);
+  border-bottom: 5rpx solid var(--text-on);
+  transform: rotate(-45deg) translate(2rpx, -3rpx);
+}
+
+.wt__label {
+  margin-top: var(--sp-1);
+  font-size: 24rpx;
+  color: var(--text-3);
+}
+.wt__label--today { color: var(--c-primary-strong); font-weight: 700; }

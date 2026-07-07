@@ -1,0 +1,75 @@
+<!-- 训练完赛庆祝覆盖层：reward 为空不渲染；visible 控制显隐 -->
+<view
+  wx:if="{{reward && visible}}"
+  class="fr-mask {{entered ? 'fr-mask--in' : ''}}"
+  catchtap="onClose"
+>
+  <!-- 居中卡（点卡片本身不关闭，留给「继续」按钮 / 遮罩） -->
+  <view class="fr-card {{entered ? 'fr-card--in' : ''}}" catchtap="noop">
+    <!-- 标题：完赛即得 EXP -->
+    <view class="fr-head">
+      <text class="fr-head__title">训练完成！</text>
+      <view class="fr-exp">
+        <text class="fr-exp__plus">+{{reward.expGained}}</text>
+        <text class="fr-exp__unit">EXP</text>
+      </view>
+    </view>
+
+    <!-- EXP 明细：完赛 / 容量 / 破纪录（值为 0 的项也展示，口径清晰） -->
+    <view class="fr-breakdown">
+      <view class="fr-bd__item">
+        <text class="fr-bd__label">完赛</text>
+        <text class="fr-bd__val">+{{reward.breakdown.base}}</text>
+      </view>
+      <view class="fr-bd__item">
+        <text class="fr-bd__label">容量</text>
+        <text class="fr-bd__val">+{{reward.breakdown.volume}}</text>
+      </view>
+      <view class="fr-bd__item">
+        <text class="fr-bd__label">破纪录</text>
+        <text class="fr-bd__val">+{{reward.breakdown.pr}}</text>
+      </view>
+    </view>
+
+    <!-- 等级 + 进度条（升级时从 0 滚到目标） -->
+    <view class="fr-level">
+      <view wx:if="{{reward.isLevelUp}}" class="fr-levelup">
+        <text class="fr-levelup__text">Lv.{{reward.levelBefore}} → {{reward.levelAfter}}</text>
+        <text class="fr-levelup__tag">升级！</text>
+      </view>
+      <view wx:else class="fr-level__row">
+        <text class="fr-level__lv">Lv.{{reward.levelAfter}}</text>
+      </view>
+      <progress-bar
+        class="fr-bar"
+        percent="{{barPercent}}"
+        segments="{{12}}"
+        show-label="{{false}}"
+      ></progress-bar>
+    </view>
+
+    <!-- 升段：奖牌晋升 -->
+    <view wx:if="{{reward.isPromotion}}" class="fr-promo">
+      <view class="fr-promo__medals">
+        <image class="fr-promo__medal fr-promo__medal--old" src="{{reward.rankBeforeIcon}}" mode="aspectFit"></image>
+        <text class="fr-promo__arrow">▸</text>
+        <image class="fr-promo__medal fr-promo__medal--new" src="{{reward.rank.icon}}" mode="aspectFit"></image>
+      </view>
+      <text class="fr-promo__text">晋升 {{reward.rank.name}}！</text>
+    </view>
+
+    <!-- 新解锁成就：逐个平铺 -->
+    <view wx:if="{{reward.unlocked.length}}" class="fr-unlocked">
+      <text class="fr-unlocked__title">解锁成就</text>
+      <view class="fr-unlocked__list">
+        <view class="fr-ulk" wx:for="{{reward.unlocked}}" wx:key="key">
+          <image class="fr-ulk__art" src="{{item.art}}" mode="aspectFit"></image>
+          <text class="fr-ulk__name">{{item.title}}</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 继续：通知页面动画结束，执行跳转 -->
+    <view class="fr-go" hover-class="fr-go--press" catchtap="onClose">继续</view>
+  </view>
+</view>

@@ -1,0 +1,12 @@
+<scroll-view class="chips" scroll-x enable-flex>
+  <view
+    wx:for="{{items}}"
+    wx:key="*this"
+    class="chip {{active === item ? 'chip--on' : ''}}"
+    hover-class="chip--press"
+    data-value="{{item}}"
+    bindtap="onSelect"
+  >
+    <text>{{item}}</text>
+  </view>
+</scroll-view>

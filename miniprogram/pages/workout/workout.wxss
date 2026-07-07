@@ -1,0 +1,470 @@
+/* pages/workout/workout.wxss —— 训练页像素风（design §6.3 / §2.2）
+   纯色底（统一 --bg-page，无角落装饰）；卡片/按钮统一描边 + 硬偏移阴影；禁用模糊阴影/大圆角。 */
+.workout {
+  position: relative;
+  min-height: 100vh;
+  /* 底部留白：避让 tabBar(100rpx) + 其上方的录入条，内容不被遮挡 */
+  padding-bottom: calc(300rpx + env(safe-area-inset-bottom));
+  box-sizing: border-box;
+}
+
+/* ============ 通用像素方块按钮（页面级） ============ */
+.btn-px {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  height: 88rpx;
+  border: var(--px-border);
+  border-radius: var(--px-radius);
+  box-shadow: var(--px-shadow);
+  font-size: 30rpx;
+  font-weight: 700;
+}
+.btn-px--press {
+  box-shadow: var(--px-shadow-press);
+  transform: translate(4rpx, 4rpx);
+}
+.btn-px--primary { background: var(--c-primary); color: var(--text-on); }
+.btn-px--ghost { background: var(--surface); color: var(--text-1); }
+.btn-px--danger { background: var(--c-pink); color: var(--text-on); }
+/* text：弱化的取消，仍保留方块描边以统一像素感 */
+.btn-px--text { background: var(--surface); color: var(--text-2); font-weight: 500; }
+
+/* ---------- 未开始 / 加载 ---------- */
+.empty-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: var(--sp-6) var(--sp-4);
+  margin-top: 100rpx;
+}
+.empty-illu { margin-bottom: var(--sp-4); }
+.empty-illu-img {
+  width: 300rpx;
+  height: 300rpx;
+  image-rendering: pixelated;
+}
+.empty-title { font-size: 40rpx; font-weight: 800; color: var(--text-1); }
+.empty-sub { font-size: 28rpx; color: var(--text-2); margin-top: var(--sp-2); }
+.btn-start {
+  margin-top: var(--sp-5);
+  width: 460rpx;
+  font-size: 32rpx;
+}
+
+.loading-wrap { padding-top: 200rpx; text-align: center; }
+.loading-text { color: var(--text-2); font-size: 28rpx; letter-spacing: 2rpx; }
+
+/* ---------- 顶部栏 ---------- */
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--sp-2) var(--sp-4);
+}
+/* 完成 小按钮：琥珀方块（small_done 风格） */
+.btn-done {
+  width: 132rpx;
+  height: 64rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  background: var(--c-amber);
+  color: var(--text-1);
+  border: var(--px-border);
+  border-radius: var(--px-radius);
+  box-shadow: var(--px-shadow);
+  font-size: 28rpx;
+  font-weight: 700;
+}
+.btn-done--press {
+  box-shadow: var(--px-shadow-press);
+  transform: translate(4rpx, 4rpx);
+}
+.topbar-title { font-size: 34rpx; font-weight: 800; color: var(--text-1); }
+.topbar-right { width: 132rpx; }
+
+/* ---------- 计时卡 + 角色探头 ---------- */
+.timer-wrap {
+  position: relative;
+  padding: var(--sp-4) var(--sp-4) 0;
+}
+.timer-peek {
+  position: absolute;
+  /* 底边与计时卡顶边对齐：卡顶在 wrap 的 32rpx 内边距处，故 top = 32 - 高100 = -68rpx */
+  top: -68rpx;
+  /* 往左避开微信右上角胶囊（胶囊左缘距屏右约 188rpx），整体落在胶囊左侧 */
+  right: 196rpx;
+  /* 88:100 ≈ 原图 271:307(0.883)，按原比例框，避免压扁 */
+  width: 88rpx;
+  height: 100rpx;
+  z-index: 2;
+  image-rendering: pixelated;
+  pointer-events: none;
+}
+
+/* ---------- 当前动作上下文 ---------- */
+.ctx-bar {
+  display: flex;
+  align-items: center;
+  margin: var(--sp-3) var(--sp-4) 0;
+  padding: var(--sp-2) var(--sp-3);
+  box-sizing: border-box;
+  background: var(--c-primary-soft);
+  border: var(--px-border);
+  border-radius: var(--px-radius);
+}
+.ctx-label { font-size: 24rpx; color: var(--text-2); }
+.ctx-arrow { margin: 0 var(--sp-1); font-size: 28rpx; color: var(--text-3); }
+.ctx-name { font-size: 28rpx; font-weight: 700; color: var(--c-primary-strong); }
+.ctx-dot {
+  width: 16rpx;
+  height: 16rpx;
+  margin-left: var(--sp-2);
+  border-radius: 50%;
+  background: var(--c-primary);
+  animation: ctx-blink 1400ms ease-in-out infinite;
+}
+@keyframes ctx-blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.35; }
+}
+
+/* ---------- 动作卡列表 ---------- */
+.cards { padding: var(--sp-3) var(--sp-4) 0; }
+.card-block { margin-bottom: var(--sp-4); }
+
+/* 组明细：像素方块卡（与上方动作卡分离，紧贴其下） */
+.set-list {
+  margin-top: var(--sp-2);
+  padding: var(--sp-1) var(--sp-3);
+  box-sizing: border-box;
+}
+.set-row {
+  display: flex;
+  align-items: center;
+  padding: var(--sp-2) 0;
+  border-bottom: 4rpx dashed var(--c-ink);
+}
+.set-row:last-child { border-bottom: none; }
+/* 行首状态点：绿勾=已记 / 蓝=当前组 */
+.set-statedot {
+  width: 18rpx;
+  height: 18rpx;
+  flex: none;
+  margin-right: var(--sp-2);
+  border: 3rpx solid var(--c-ink);
+  box-sizing: border-box;
+}
+.set-statedot--done { background: var(--c-primary); }
+.set-statedot--current { background: var(--c-blue); }
+.set-idx { font-size: 24rpx; color: var(--text-3); width: 96rpx; flex: none; }
+.set-main { flex: 1; font-size: 28rpx; font-weight: 600; color: var(--text-1); }
+.set-type { font-size: 24rpx; color: var(--text-2); }
+
+.cards-empty {
+  text-align: center;
+  padding: var(--sp-5) var(--sp-4);
+}
+.cards-empty-title { font-size: 30rpx; font-weight: 700; color: var(--text-1); }
+.cards-empty-sub { font-size: 26rpx; color: var(--text-3); margin-top: var(--sp-2); }
+
+/* ---------- 底部录入条 ---------- */
+.bottom-bar {
+  position: fixed;
+  left: 0;
+  right: 0;
+  /* 注入式自定义 tabBar 是框架独立合成图层，页面内 z-index 压不过它；
+     故把录入条用 bottom 偏移坐落在 tabBar（100rpx + 安全区）正上方，而非靠 z-index 叠上去。 */
+  bottom: calc(100rpx + env(safe-area-inset-bottom));
+  padding: var(--sp-3) var(--sp-4);
+  box-sizing: border-box;
+  background: var(--bg-page);
+  border-top: var(--px-border);
+  z-index: 1001;
+}
+.bottom-inner {
+  display: flex;
+  align-items: center;
+}
+.voice-col {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+/* ··· 更多（手动加组入口）：白底描边像素方块 */
+.manual-add {
+  flex: none;
+  margin-left: var(--sp-3);
+  width: 96rpx;
+  height: 96rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  background: var(--surface);
+  border: var(--px-border);
+  border-radius: var(--px-radius);
+  box-shadow: var(--px-shadow);
+}
+.manual-add--press {
+  box-shadow: var(--px-shadow-press);
+  transform: translate(4rpx, 4rpx);
+}
+.manual-dots {
+  font-size: 48rpx;
+  color: var(--c-primary-strong);
+  font-weight: 800;
+  line-height: 0.4;
+}
+
+/* ---------- 撤销 toast ---------- */
+.undo-toast {
+  position: fixed;
+  left: 50%;
+  /* 浮在录入条上方（录入条已上移到 tabBar 之上） */
+  bottom: calc(300rpx + env(safe-area-inset-bottom));
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  box-sizing: border-box;
+  background: var(--c-ink);
+  border: var(--px-border);
+  border-radius: var(--px-radius);
+  box-shadow: var(--px-shadow);
+  color: var(--text-on);
+  padding: var(--sp-2) var(--sp-3);
+  /* 高于录入条与 tabBar */
+  z-index: 1100;
+}
+.undo-text { font-size: 26rpx; margin-right: var(--sp-3); }
+.undo-action { font-size: 26rpx; color: var(--c-primary); font-weight: 700; }
+
+/* ---------- 通用弹层 / 底部 sheet ---------- */
+.mask {
+  position: fixed;
+  inset: 0;
+  background: rgba(20, 29, 31, 0.45);
+  z-index: 1200;
+  display: flex;
+  align-items: flex-end;
+  /* 注入式自定义 tabBar 是框架独立合成图层，页面内 z-index 压不过它；
+     底部 sheet 若贴屏幕底，其底部按钮会被 tabBar（100rpx + 安全区）遮住。
+     故用底部内边距把 sheet 顶到 tabBar 正上方，而非靠 z-index 叠上去。 */
+  padding-bottom: calc(100rpx + env(safe-area-inset-bottom));
+}
+/* 居中弹层（庆祝卡）位于屏幕中央，无需避让 tabBar，重置偏移 */
+.mask.center { align-items: center; justify-content: center; padding-bottom: 0; }
+.sheet {
+  width: 100%;
+  background: var(--surface);
+  border-top: var(--px-border);
+  border-left: var(--px-border);
+  border-right: var(--px-border);
+  border-top-left-radius: var(--px-radius);
+  border-top-right-radius: var(--px-radius);
+  /* sheet 已坐落在 tabBar（含自身安全区）之上，底部无需再叠加安全区 */
+  padding: var(--sp-3) var(--sp-4) var(--sp-4);
+  box-sizing: border-box;
+  max-height: 88vh;
+  overflow-y: auto;
+}
+.sheet-handle {
+  width: 72rpx;
+  height: 8rpx;
+  border-radius: var(--px-radius);
+  background: var(--c-ink);
+  opacity: 0.5;
+  margin: 0 auto var(--sp-3);
+}
+.sheet-title { font-size: 34rpx; font-weight: 800; color: var(--text-1); }
+.sheet-hint { font-size: 24rpx; color: var(--text-2); margin-top: var(--sp-1); }
+
+/* 字段 */
+.field { margin-top: var(--sp-3); }
+.field-label { font-size: 26rpx; color: var(--text-2); }
+.field-input {
+  margin-top: var(--sp-1);
+  height: 80rpx;
+  background: var(--bg-page);
+  border: var(--px-border);
+  border-radius: var(--px-radius);
+  padding: 0 var(--sp-3);
+  box-sizing: border-box;
+  font-size: 30rpx;
+  color: var(--text-1);
+}
+.exercise-pick { display: flex; align-items: center; margin-top: var(--sp-1); }
+.exercise-pick .field-input { flex: 1; margin-top: 0; }
+.pick-btn {
+  margin-left: var(--sp-2);
+  height: 80rpx;
+  line-height: 72rpx;
+  padding: 0 var(--sp-3);
+  box-sizing: border-box;
+  background: var(--c-primary);
+  color: var(--text-on);
+  border: var(--px-border);
+  border-radius: var(--px-radius);
+  box-shadow: var(--px-shadow);
+  font-size: 28rpx;
+  font-weight: 700;
+}
+
+/* ASR 文本框 */
+.asr-input {
+  margin-top: var(--sp-3);
+  width: 100%;
+  min-height: 140rpx;
+  background: var(--bg-page);
+  border: var(--px-border);
+  border-radius: var(--px-radius);
+  padding: var(--sp-3);
+  box-sizing: border-box;
+  font-size: 30rpx;
+  color: var(--text-1);
+}
+
+/* 组编辑行 */
+.set-edit-list { margin-top: var(--sp-3); }
+.set-edit-row {
+  background: var(--bg-page);
+  border: var(--px-border);
+  border-radius: var(--px-radius);
+  padding: var(--sp-3);
+  margin-bottom: var(--sp-2);
+}
+/* 头部行：左序号 + 右删除（与下方两列网格无关，保证主体列对齐） */
+.ser-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: var(--sp-2); }
+/* 主体两行：均为等宽两列，列分割点一致 → 负重↔重量、正式↔次数 上下对齐 */
+.ser-line { display: flex; align-items: center; gap: var(--sp-2); margin-bottom: var(--sp-2); }
+.ser-line:last-child { margin-bottom: 0; }
+.ser-idx { font-size: 26rpx; color: var(--text-2); }
+.ser-picker {
+  flex: 1;
+  height: 80rpx;
+}
+.picker-val {
+  height: 80rpx;
+  line-height: 72rpx;
+  background: var(--surface);
+  border: var(--px-border);
+  border-radius: var(--px-radius);
+  box-sizing: border-box;
+  text-align: center;
+  font-size: 28rpx;
+  color: var(--text-1);
+}
+.num-field {
+  flex: 1;
+  position: relative;
+  display: flex;
+  align-items: center;
+  background: var(--surface);
+  border: var(--px-border);
+  border-radius: var(--px-radius);
+  padding: 0 var(--sp-3);
+  box-sizing: border-box;
+  height: 80rpx;
+}
+/* 输入本体占满整框并居中（与负重/正式 picker 一致）；单位后缀绝对定位钉在右侧，不挤占居中空间 */
+.num-input { flex: 1; text-align: center; font-size: 32rpx; color: var(--text-1); }
+.num-suffix { position: absolute; right: var(--sp-3); font-size: 26rpx; color: var(--text-3); }
+.row-del { font-size: 26rpx; color: var(--c-pink); font-weight: 600; }
+
+.add-row {
+  margin-top: var(--sp-1);
+  text-align: center;
+  height: 80rpx;
+  line-height: 72rpx;
+  border: 4rpx dashed var(--c-primary);
+  border-radius: var(--px-radius);
+  box-sizing: border-box;
+  color: var(--c-primary-strong);
+  font-size: 28rpx;
+  font-weight: 600;
+}
+
+/* sheet 动作按钮 */
+.sheet-actions {
+  display: flex;
+  gap: var(--sp-2);
+  margin-top: var(--sp-4);
+}
+.sheet-actions .btn-px { flex: 1; }
+.block { width: 100%; margin-top: var(--sp-2); }
+
+/* ---------- 完成弹窗 ---------- */
+.finish-card {
+  width: 600rpx;
+  padding: var(--sp-5) var(--sp-4) var(--sp-4);
+  text-align: center;
+}
+.finish-illu {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  margin-bottom: var(--sp-3);
+}
+.finish-illu-celebrate {
+  width: 220rpx;
+  height: 220rpx;
+  image-rendering: pixelated;
+}
+.finish-illu-trophy {
+  position: absolute;
+  right: 96rpx;
+  top: -8rpx;
+  width: 96rpx;
+  height: 96rpx;
+  image-rendering: pixelated;
+}
+.finish-title { font-size: 36rpx; font-weight: 800; color: var(--text-1); }
+.finish-summary { font-size: 28rpx; color: var(--text-2); margin-top: var(--sp-3); line-height: 1.6; }
+.finish-summary .hl { color: var(--c-primary-strong); font-weight: 800; }
+
+/* 庆祝卡入场：弹入 + 轻微缩放（克制） */
+.finish-card {
+  animation: finish-pop 280ms steps(1, end);
+}
+@keyframes finish-pop {
+  0%   { transform: translateY(24rpx) scale(0.92); opacity: 0; }
+  60%  { transform: translateY(0) scale(1.03); opacity: 1; }
+  100% { transform: translateY(0) scale(1); opacity: 1; }
+}
+
+/* 像素彩带粒子：覆盖全屏的下落层，纯 CSS 方块 */
+.finish-confetti {
+  position: fixed;
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  pointer-events: none;
+  overflow: hidden;
+  z-index: 1;
+}
+.finish-particle {
+  position: absolute;
+  top: -40rpx;
+  width: 20rpx;
+  height: 20rpx;
+  border: var(--px-border);
+  animation: finish-fall 1600ms linear infinite;
+}
+.finish-particle--1 { left: 12%;  background: var(--c-primary); animation-delay: 0ms;    animation-duration: 1500ms; }
+.finish-particle--2 { left: 24%;  background: var(--c-amber);   animation-delay: 220ms;  animation-duration: 1700ms; }
+.finish-particle--3 { left: 38%;  background: var(--c-blue);    animation-delay: 120ms;  animation-duration: 1450ms; }
+.finish-particle--4 { left: 50%;  background: var(--c-pink);    animation-delay: 360ms;  animation-duration: 1650ms; }
+.finish-particle--5 { left: 62%;  background: var(--c-primary); animation-delay: 80ms;   animation-duration: 1550ms; }
+.finish-particle--6 { left: 74%;  background: var(--c-amber);   animation-delay: 300ms;  animation-duration: 1750ms; }
+.finish-particle--7 { left: 84%;  background: var(--c-blue);    animation-delay: 180ms;  animation-duration: 1500ms; }
+.finish-particle--8 { left: 92%;  background: var(--c-pink);    animation-delay: 420ms;  animation-duration: 1600ms; }
+@keyframes finish-fall {
+  0%   { transform: translateY(0) rotate(0deg);    opacity: 1; }
+  80%  { opacity: 1; }
+  100% { transform: translateY(110vh) rotate(360deg); opacity: 0; }
+}

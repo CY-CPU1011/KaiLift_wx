@@ -1,0 +1,12 @@
+{
+  "navigationStyle": "custom",
+  "usingComponents": {
+    "page-header": "/components/page-header/index",
+    "streak-banner": "/components/streak-banner/index",
+    "week-tracker": "/components/week-tracker/index",
+    "stat-card": "/components/stat-card/index",
+    "voice-button": "/components/voice-button/index",
+    "img-ph": "/components/img-ph/index",
+    "finish-reward": "/components/finish-reward/index"
+  }
+}

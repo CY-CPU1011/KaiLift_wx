@@ -1,0 +1,3211 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "开练 KaiLift 开放 API",
+    "version": "1.0.0",
+    "description": "供小程序与手机 APP 使用的 REST 接口。\n\n认证：除 `POST /api/v1/auth/login` 外，所有接口需在请求头携带 `Authorization: Bearer <token>`。\n\n统一响应信封：成功 `{ ok: true, data }`，失败 `{ ok: false, error: { code, message } }`。\n\n说明：语音 / 分享 / 奖励原为 CloudBase 云函数，2026-06-21 已合并进本 REST 服务（见 Voice / Share / Reward 分组）；成就墙见 Achievement 分组。本契约手维护，以后端路由代码为准。"
+  },
+  "servers": [
+    {
+      "url": "https://kailift.chenyi.uno",
+      "description": "线上自管服务器（阿里云 ECS + Nginx + HTTPS）"
+    },
+    {
+      "url": "http://localhost:20020",
+      "description": "本地 dev（next dev -p 20020）"
+    }
+  ],
+  "tags": [
+    {
+      "name": "Auth",
+      "description": "认证与登录"
+    },
+    {
+      "name": "User",
+      "description": "用户资料"
+    },
+    {
+      "name": "Exercise",
+      "description": "动作库"
+    },
+    {
+      "name": "Session",
+      "description": "训练记录"
+    },
+    {
+      "name": "Set",
+      "description": "训练组"
+    },
+    {
+      "name": "PersonalRecord",
+      "description": "个人记录 PR"
+    },
+    {
+      "name": "Challenge",
+      "description": "打卡挑战（已废弃，改用 GET /api/v1/stats/home 的 monthTrainedDays）"
+    },
+    {
+      "name": "Stats",
+      "description": "数据聚合（首页 / 热力图 / 趋势 / 当日 / 累计）"
+    },
+    {
+      "name": "Achievement",
+      "description": "成就墙 / 段位 / 等级（EXP，后端驱动）"
+    },
+    {
+      "name": "Voice",
+      "description": "语音解析与确认（2026-06-21 由云函数合并进 REST）"
+    },
+    {
+      "name": "Share",
+      "description": "分享小程序码（由云函数合并进 REST）"
+    },
+    {
+      "name": "Reward",
+      "description": "待领奖励（空闲自动结束后补放庆祝）"
+    }
+  ],
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    },
+    "schemas": {
+      "Error": {
+        "type": "object",
+        "properties": {
+          "ok": {
+            "type": "boolean",
+            "example": false
+          },
+          "error": {
+            "type": "object",
+            "properties": {
+              "code": {
+                "type": "string",
+                "example": "unauthorized"
+              },
+              "message": {
+                "type": "string",
+                "example": "缺少或无效的访问令牌"
+              }
+            },
+            "required": [
+              "code",
+              "message"
+            ]
+          }
+        },
+        "required": [
+          "ok",
+          "error"
+        ]
+      },
+      "User": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "openid": {
+            "type": "string"
+          },
+          "nickname": {
+            "type": "string",
+            "nullable": true
+          },
+          "avatarUrl": {
+            "type": "string",
+            "nullable": true
+          },
+          "unitWeight": {
+            "type": "string",
+            "enum": [
+              "kg",
+              "lb"
+            ],
+            "example": "kg"
+          },
+          "theme": {
+            "type": "string",
+            "nullable": true
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "Exercise": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "aliases": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "bodyPart": {
+            "type": "string",
+            "nullable": true
+          },
+          "equipment": {
+            "type": "string",
+            "nullable": true
+          },
+          "isSystem": {
+            "type": "boolean"
+          },
+          "userId": {
+            "type": "string",
+            "nullable": true
+          }
+        }
+      },
+      "SetInput": {
+        "type": "object",
+        "properties": {
+          "loadType": {
+            "type": "string",
+            "enum": [
+              "weighted",
+              "bodyweight",
+              "assisted",
+              "duration",
+              "unknown"
+            ],
+            "default": "weighted"
+          },
+          "weightKg": {
+            "type": "number",
+            "nullable": true,
+            "description": "kg；负重类必填"
+          },
+          "reps": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "setType": {
+            "type": "string",
+            "enum": [
+              "warmup",
+              "working",
+              "drop",
+              "failure",
+              "backoff",
+              "unknown"
+            ],
+            "default": "working"
+          },
+          "rpe": {
+            "type": "number",
+            "nullable": true,
+            "minimum": 0,
+            "maximum": 10
+          },
+          "note": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "required": [
+          "reps"
+        ]
+      },
+      "WorkoutSet": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "setOrder": {
+            "type": "integer"
+          },
+          "loadType": {
+            "type": "string"
+          },
+          "weightKg": {
+            "type": "number",
+            "nullable": true
+          },
+          "reps": {
+            "type": "integer"
+          },
+          "setType": {
+            "type": "string"
+          },
+          "rpe": {
+            "type": "number",
+            "nullable": true
+          },
+          "note": {
+            "type": "string",
+            "nullable": true
+          },
+          "isPersonalRecord": {
+            "type": "boolean"
+          }
+        }
+      },
+      "WorkoutExercise": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "exerciseId": {
+            "type": "string",
+            "nullable": true
+          },
+          "displayName": {
+            "type": "string"
+          },
+          "sortOrder": {
+            "type": "integer"
+          },
+          "sets": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/WorkoutSet"
+            }
+          }
+        }
+      },
+      "SessionSummary": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string",
+            "nullable": true
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "active",
+              "completed",
+              "cancelled"
+            ]
+          },
+          "startedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "finishedAt": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "currentWorkoutExerciseId": {
+            "type": "string",
+            "nullable": true
+          },
+          "totalSets": {
+            "type": "integer"
+          },
+          "totalExercises": {
+            "type": "integer"
+          },
+          "totalVolumeKg": {
+            "type": "number"
+          }
+        }
+      },
+      "SessionDetail": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/SessionSummary"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "workoutExercises": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/WorkoutExercise"
+                }
+              }
+            }
+          }
+        ]
+      },
+      "PersonalRecord": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "exerciseId": {
+            "type": "string"
+          },
+          "exerciseName": {
+            "type": "string",
+            "nullable": true
+          },
+          "recordType": {
+            "type": "string",
+            "enum": [
+              "max_weight",
+              "max_volume_set",
+              "estimated_1rm"
+            ]
+          },
+          "value": {
+            "type": "number"
+          },
+          "weightKg": {
+            "type": "number",
+            "nullable": true
+          },
+          "reps": {
+            "type": "integer",
+            "nullable": true
+          },
+          "achievedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "ChallengePlan": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string",
+            "nullable": true
+          },
+          "durationDays": {
+            "type": "integer"
+          },
+          "targetSessions": {
+            "type": "integer"
+          },
+          "isSystem": {
+            "type": "boolean"
+          }
+        }
+      },
+      "UserChallenge": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "challengePlanId": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "active",
+              "completed",
+              "paused",
+              "failed",
+              "cancelled"
+            ]
+          },
+          "startedOn": {
+            "type": "string",
+            "format": "date"
+          },
+          "endsOn": {
+            "type": "string",
+            "format": "date"
+          },
+          "targetSessions": {
+            "type": "integer"
+          },
+          "completedSessions": {
+            "type": "integer"
+          },
+          "challengePlan": {
+            "type": "object",
+            "nullable": true,
+            "properties": {
+              "name": {
+                "type": "string"
+              },
+              "description": {
+                "type": "string",
+                "nullable": true
+              },
+              "durationDays": {
+                "type": "integer"
+              }
+            }
+          }
+        }
+      }
+    },
+    "responses": {
+      "Unauthorized": {
+        "description": "未认证",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error"
+            }
+          }
+        }
+      },
+      "NotFound": {
+        "description": "资源不存在",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error"
+            }
+          }
+        }
+      },
+      "BadRequest": {
+        "description": "参数错误",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error"
+            }
+          }
+        }
+      }
+    }
+  },
+  "security": [
+    {
+      "bearerAuth": []
+    }
+  ],
+  "paths": {
+    "/api/v1/auth/login": {
+      "post": {
+        "tags": [
+          "Auth"
+        ],
+        "summary": "登录换取 JWT",
+        "description": "微信小程序传 code（code2session 换 openid），或 APP 直接传 openid。",
+        "security": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "code": {
+                    "type": "string",
+                    "description": "微信 wx.login 的 code（与 openid 二选一）"
+                  },
+                  "openid": {
+                    "type": "string",
+                    "description": "直接传入的 openid（与 code 二选一）"
+                  },
+                  "nickname": {
+                    "type": "string",
+                    "nullable": true
+                  },
+                  "avatarUrl": {
+                    "type": "string",
+                    "nullable": true
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "ok": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "token": {
+                          "type": "string"
+                        },
+                        "tokenType": {
+                          "type": "string",
+                          "example": "Bearer"
+                        },
+                        "expiresIn": {
+                          "type": "integer",
+                          "description": "令牌有效期（秒）"
+                        },
+                        "isNewUser": {
+                          "type": "boolean"
+                        },
+                        "user": {
+                          "$ref": "#/components/schemas/User"
+                        }
+                      }
+                    }
+                  },
+                  "required": [
+                    "ok",
+                    "data"
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          }
+        }
+      }
+    },
+    "/api/v1/auth/me": {
+      "get": {
+        "tags": [
+          "Auth"
+        ],
+        "summary": "获取当前登录用户",
+        "responses": {
+          "200": {
+            "description": "成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "ok": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "user": {
+                          "$ref": "#/components/schemas/User"
+                        }
+                      }
+                    }
+                  },
+                  "required": [
+                    "ok",
+                    "data"
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          }
+        }
+      }
+    },
+    "/api/v1/users/me": {
+      "get": {
+        "tags": [
+          "User"
+        ],
+        "summary": "获取用户资料",
+        "responses": {
+          "200": {
+            "description": "成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "ok": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "user": {
+                          "$ref": "#/components/schemas/User"
+                        }
+                      }
+                    }
+                  },
+                  "required": [
+                    "ok",
+                    "data"
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          }
+        }
+      },
+      "patch": {
+        "tags": [
+          "User"
+        ],
+        "summary": "更新用户资料",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "nickname": {
+                    "type": "string",
+                    "nullable": true
+                  },
+                  "avatarUrl": {
+                    "type": "string",
+                    "nullable": true
+                  },
+                  "unitWeight": {
+                    "type": "string",
+                    "enum": [
+                      "kg",
+                      "lb"
+                    ]
+                  },
+                  "theme": {
+                    "type": "string",
+                    "nullable": true
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "ok": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "user": {
+                          "$ref": "#/components/schemas/User"
+                        }
+                      }
+                    }
+                  },
+                  "required": [
+                    "ok",
+                    "data"
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          }
+        }
+      }
+    },
+    "/api/v1/exercises": {
+      "get": {
+        "tags": [
+          "Exercise"
+        ],
+        "summary": "动作库列表（系统 + 本人自定义）",
+        "parameters": [
+          {
+            "name": "search",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            },
+            "description": "按名称模糊搜索"
+          },
+          {
+            "name": "bodyPart",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            },
+            "description": "按部位过滤"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "ok": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "items": {
+                          "type": "array",
+                          "items": {
+                            "$ref": "#/components/schemas/Exercise"
+                          }
+                        }
+                      },
+                      "required": [
+                        "items"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "ok",
+                    "data"
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Exercise"
+        ],
+        "summary": "创建自定义动作",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  },
+                  "aliases": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "bodyPart": {
+                    "type": "string",
+                    "nullable": true
+                  },
+                  "equipment": {
+                    "type": "string",
+                    "nullable": true
+                  }
+                },
+                "required": [
+                  "name"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "已创建",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "ok": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "exercise": {
+                          "$ref": "#/components/schemas/Exercise"
+                        }
+                      }
+                    }
+                  },
+                  "required": [
+                    "ok",
+                    "data"
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          }
+        }
+      }
+    },
+    "/api/v1/exercises/{id}": {
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "get": {
+        "tags": [
+          "Exercise"
+        ],
+        "summary": "动作详情",
+        "responses": {
+          "200": {
+            "description": "成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "ok": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "exercise": {
+                          "$ref": "#/components/schemas/Exercise"
+                        }
+                      }
+                    }
+                  },
+                  "required": [
+                    "ok",
+                    "data"
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          }
+        }
+      },
+      "patch": {
+        "tags": [
+          "Exercise"
+        ],
+        "summary": "更新自定义动作",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  },
+                  "aliases": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "bodyPart": {
+                    "type": "string",
+                    "nullable": true
+                  },
+                  "equipment": {
+                    "type": "string",
+                    "nullable": true
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "ok": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "exercise": {
+                          "$ref": "#/components/schemas/Exercise"
+                        }
+                      }
+                    }
+                  },
+                  "required": [
+                    "ok",
+                    "data"
+                  ]
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "系统动作或他人动作不可修改",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Exercise"
+        ],
+        "summary": "删除自定义动作（软删）",
+        "responses": {
+          "200": {
+            "description": "成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "ok": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  },
+                  "required": [
+                    "ok",
+                    "data"
+                  ]
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "不可删除",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          }
+        }
+      }
+    },
+    "/api/v1/exercises/{id}/history": {
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "get": {
+        "tags": [
+          "Exercise"
+        ],
+        "summary": "动作的个人历史与 PR",
+        "description": "当前用户在该动作上的历史训练组与个人记录（PR），供浏览页详情展示「我练这个动作的进步」。",
+        "responses": {
+          "200": {
+            "description": "成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "ok": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "data": {
+                      "$ref": "#/components/schemas/ExerciseHistory"
+                    }
+                  },
+                  "required": [
+                    "ok",
+                    "data"
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          }
+        }
+      }
+    },
+    "/api/v1/sessions": {
+      "get": {
+        "tags": [
+          "Session"
+        ],
+        "summary": "训练记录列表（分页）",
+        "parameters": [
+          {
+            "name": "status",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "active",
+                "completed",
+                "cancelled"
+              ]
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "default": 1
+            }
+          },
+          {
+            "name": "pageSize",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "default": 20,
+              "maximum": 100
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "ok": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "items": {
+                          "type": "array",
+                          "items": {
+                            "$ref": "#/components/schemas/SessionSummary"
+                          }
+                        },
+                        "total": {
+                          "type": "integer"
+                        },
+                        "page": {
+                          "type": "integer"
+                        },
+                        "pageSize": {
+                          "type": "integer"
+                        }
+                      }
+                    }
+                  },
+                  "required": [
+                    "ok",
+                    "data"
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Session"
+        ],
+        "summary": "开始 / 恢复训练",
+        "description": "单 active 约束：若已有 status=active 的训练，不新建、直接返回该训练（HTTP 200，data.resumed=true，语义为恢复）；否则新建（HTTP 201，data.resumed=false）。",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "nullable": true
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "已有进行中训练，返回该训练（恢复）",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "ok": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "session": {
+                          "$ref": "#/components/schemas/SessionSummary"
+                        },
+                        "resumed": {
+                          "type": "boolean",
+                          "example": true
+                        }
+                      }
+                    }
+                  },
+                  "required": [
+                    "ok",
+                    "data"
+                  ]
+                }
+              }
+            }
+          },
+          "201": {
+            "description": "已创建新训练",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "ok": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "session": {
+                          "$ref": "#/components/schemas/SessionSummary"
+                        },
+                        "resumed": {
+                          "type": "boolean",
+                          "example": false
+                        }
+                      }
+                    }
+                  },
+                  "required": [
+                    "ok",
+                    "data"
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          }
+        }
+      }
+    },
+    "/api/v1/sessions/{id}": {
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "get": {
+        "tags": [
+          "Session"
+        ],
+        "summary": "训练详情（含动作与组）",
+        "responses": {
+          "200": {
+            "description": "成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "ok": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "session": {
+                          "$ref": "#/components/schemas/SessionDetail"
+                        }
+                      }
+                    }
+                  },
+                  "required": [
+                    "ok",
+                    "data"
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          }
+        }
+      },
+      "patch": {
+        "tags": [
+          "Session"
+        ],
+        "summary": "更新训练（改名 / 结束 / 取消）",
+        "description": "status 改为 completed 或 cancelled 时，自动重算总组数/动作数/总容量并写入结束时间。",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "nullable": true
+                  },
+                  "status": {
+                    "type": "string",
+                    "enum": [
+                      "active",
+                      "completed",
+                      "cancelled"
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "ok": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "session": {
+                          "$ref": "#/components/schemas/SessionSummary"
+                        }
+                      }
+                    }
+                  },
+                  "required": [
+                    "ok",
+                    "data"
+                  ]
+                }
+              }
+            }
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Session"
+        ],
+        "summary": "删除训练（软删）",
+        "responses": {
+          "200": {
+            "description": "成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "ok": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  },
+                  "required": [
+                    "ok",
+                    "data"
+                  ]
+                }
+              }
+            }
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          }
+        }
+      }
+    },
+    "/api/v1/sessions/{id}/sets": {
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "post": {
+        "tags": [
+          "Set"
+        ],
+        "summary": "手动加组",
+        "description": "走与语音一致的写库链路：动作归一化 + 归组 + PR 重算。session 必须为 active。",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "exerciseName": {
+                    "type": "string"
+                  },
+                  "sets": {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/components/schemas/SetInput"
+                    },
+                    "minItems": 1
+                  }
+                },
+                "required": [
+                  "exerciseName",
+                  "sets"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "已写入",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "ok": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "createdSetIds": {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          }
+                        },
+                        "currentExerciseName": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  },
+                  "required": [
+                    "ok",
+                    "data"
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "409": {
+            "description": "训练已结束",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/sessions/{id}/exercises/{workoutExerciseId}": {
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string"
+          },
+          "description": "训练记录 id"
+        },
+        {
+          "name": "workoutExerciseId",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string"
+          },
+          "description": "会话内动作（WorkoutExercise）id"
+        }
+      ],
+      "patch": {
+        "tags": [
+          "Session"
+        ],
+        "summary": "换动作 / 改名（整体重新指向另一个动作，组 id 不变）",
+        "description": "走与 `POST /sessions/{id}/sets` 一致的动作名归一化（exerciseName 精确/别名匹配，匹配不到则记原名、exerciseId 置空）；重新指向新动作并重算旧、新两侧动作的 PR。session 必须为 active。",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "exerciseName": {
+                    "type": "string",
+                    "description": "新动作名（走归一化）"
+                  }
+                },
+                "required": [
+                  "exerciseName"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "ok": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "workoutExercise": {
+                          "$ref": "#/components/schemas/WorkoutExercise"
+                        }
+                      }
+                    }
+                  },
+                  "required": [
+                    "ok",
+                    "data"
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "409": {
+            "description": "训练已结束",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Session"
+        ],
+        "summary": "删除整个动作（连同其名下所有组，软删，自动重算 PR）",
+        "description": "软删该动作及其名下所有未删的组（同一删除批次标识，供恢复精确还原）。若它正是当前动作，当前指针移到剩余最后一个动作或置空。session 必须为 active。",
+        "responses": {
+          "200": {
+            "description": "成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "ok": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  },
+                  "required": [
+                    "ok",
+                    "data"
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "409": {
+            "description": "训练已结束",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/sessions/{id}/exercises/{workoutExerciseId}/restore": {
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string"
+          },
+          "description": "训练记录 id"
+        },
+        {
+          "name": "workoutExerciseId",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string"
+          },
+          "description": "会话内动作（WorkoutExercise）id"
+        }
+      ],
+      "post": {
+        "tags": [
+          "Session"
+        ],
+        "summary": "恢复刚删除的动作（撤销删除，自动重算 PR）",
+        "description": "与 DELETE 对称：清空软删标记并重算该动作 PR。只还原与本动作同一删除批次的组（不复活用户先前单独删的组）。仅当该动作确为已删状态、且所属训练未被删除时可恢复；否则 404。",
+        "responses": {
+          "200": {
+            "description": "已恢复",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "ok": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "workoutExercise": {
+                          "$ref": "#/components/schemas/WorkoutExercise"
+                        }
+                      }
+                    }
+                  },
+                  "required": [
+                    "ok",
+                    "data"
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          }
+        }
+      }
+    },
+    "/api/v1/sets/{id}": {
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "patch": {
+        "tags": [
+          "Set"
+        ],
+        "summary": "修改训练组（自动重算 PR）",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SetInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "ok": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "set": {
+                          "$ref": "#/components/schemas/WorkoutSet"
+                        }
+                      }
+                    }
+                  },
+                  "required": [
+                    "ok",
+                    "data"
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Set"
+        ],
+        "summary": "删除训练组（软删，自动重算 PR）",
+        "responses": {
+          "200": {
+            "description": "成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "ok": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  },
+                  "required": [
+                    "ok",
+                    "data"
+                  ]
+                }
+              }
+            }
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          }
+        }
+      }
+    },
+    "/api/v1/sets/{id}/restore": {
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "post": {
+        "tags": [
+          "Set"
+        ],
+        "summary": "恢复已删除的训练组（撤销删除，自动重算 PR）",
+        "description": "保留原 id、清空软删标记并重算该动作 PR。仅当该组确为已删状态、且所属训练未被删除时可恢复；否则 404。",
+        "responses": {
+          "200": {
+            "description": "已恢复",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "ok": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "set": {
+                          "$ref": "#/components/schemas/WorkoutSet"
+                        }
+                      }
+                    }
+                  },
+                  "required": [
+                    "ok",
+                    "data"
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          }
+        }
+      }
+    },
+    "/api/v1/personal-records": {
+      "get": {
+        "tags": [
+          "PersonalRecord"
+        ],
+        "summary": "个人记录 PR 列表",
+        "parameters": [
+          {
+            "name": "exerciseId",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            },
+            "description": "按动作过滤"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "ok": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "items": {
+                          "type": "array",
+                          "items": {
+                            "$ref": "#/components/schemas/PersonalRecord"
+                          }
+                        }
+                      },
+                      "required": [
+                        "items"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "ok",
+                    "data"
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          }
+        }
+      }
+    },
+    "/api/v1/challenges/plans": {
+      "get": {
+        "tags": [
+          "Challenge"
+        ],
+        "deprecated": true,
+        "summary": "可参与的挑战计划",
+        "responses": {
+          "200": {
+            "description": "成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "ok": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "items": {
+                          "type": "array",
+                          "items": {
+                            "$ref": "#/components/schemas/ChallengePlan"
+                          }
+                        }
+                      },
+                      "required": [
+                        "items"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "ok",
+                    "data"
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          }
+        }
+      }
+    },
+    "/api/v1/challenges": {
+      "get": {
+        "tags": [
+          "Challenge"
+        ],
+        "deprecated": true,
+        "summary": "我的挑战进度列表",
+        "parameters": [
+          {
+            "name": "status",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "active",
+                "completed",
+                "paused",
+                "failed",
+                "cancelled"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "ok": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "items": {
+                          "type": "array",
+                          "items": {
+                            "$ref": "#/components/schemas/UserChallenge"
+                          }
+                        }
+                      },
+                      "required": [
+                        "items"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "ok",
+                    "data"
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Challenge"
+        ],
+        "deprecated": true,
+        "summary": "参与某挑战计划",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "challengePlanId": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "challengePlanId"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "已参与",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "ok": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "challenge": {
+                          "$ref": "#/components/schemas/UserChallenge"
+                        }
+                      }
+                    }
+                  },
+                  "required": [
+                    "ok",
+                    "data"
+                  ]
+                }
+              }
+            }
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "409": {
+            "description": "已有进行中的同一挑战",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/challenges/{id}": {
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "get": {
+        "tags": [
+          "Challenge"
+        ],
+        "deprecated": true,
+        "summary": "挑战进度详情",
+        "responses": {
+          "200": {
+            "description": "成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "ok": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "challenge": {
+                          "$ref": "#/components/schemas/UserChallenge"
+                        }
+                      }
+                    }
+                  },
+                  "required": [
+                    "ok",
+                    "data"
+                  ]
+                }
+              }
+            }
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          }
+        }
+      },
+      "patch": {
+        "tags": [
+          "Challenge"
+        ],
+        "deprecated": true,
+        "summary": "更新挑战进度（状态 / 已完成次数）",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "status": {
+                    "type": "string",
+                    "enum": [
+                      "active",
+                      "completed",
+                      "paused",
+                      "failed",
+                      "cancelled"
+                    ]
+                  },
+                  "completedSessions": {
+                    "type": "integer",
+                    "minimum": 0
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "ok": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "challenge": {
+                          "$ref": "#/components/schemas/UserChallenge"
+                        }
+                      }
+                    }
+                  },
+                  "required": [
+                    "ok",
+                    "data"
+                  ]
+                }
+              }
+            }
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          }
+        }
+      }
+    },
+    "/api/v1/stats/home": {
+      "get": {
+        "tags": [
+          "Stats"
+        ],
+        "summary": "首页聚合（本周概览 / 轨迹 / 最近训练 / 本月训练天数）",
+        "description": "只统计 completed 训练；本周按北京时间周一~周日；monthTrainedDays 为当前自然月（北京时间）有训练的去重天数。",
+        "responses": {
+          "200": {
+            "description": "成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "ok": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "week": {
+                          "type": "object",
+                          "properties": {
+                            "sessionCount": {
+                              "type": "integer"
+                            },
+                            "totalVolumeKg": {
+                              "type": "number"
+                            },
+                            "totalDurationMin": {
+                              "type": "integer"
+                            },
+                            "days": {
+                              "type": "array",
+                              "items": {
+                                "type": "object",
+                                "properties": {
+                                  "date": {
+                                    "type": "string",
+                                    "format": "date"
+                                  },
+                                  "trained": {
+                                    "type": "boolean"
+                                  },
+                                  "isToday": {
+                                    "type": "boolean"
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        },
+                        "lastWorkout": {
+                          "type": "object",
+                          "nullable": true,
+                          "properties": {
+                            "sessionId": {
+                              "type": "string"
+                            },
+                            "title": {
+                              "type": "string"
+                            },
+                            "date": {
+                              "type": "string",
+                              "format": "date"
+                            },
+                            "durationMin": {
+                              "type": "integer",
+                              "nullable": true
+                            },
+                            "exerciseCount": {
+                              "type": "integer"
+                            },
+                            "setCount": {
+                              "type": "integer"
+                            },
+                            "totalVolumeKg": {
+                              "type": "number"
+                            }
+                          }
+                        },
+                        "monthTrainedDays": {
+                          "type": "integer",
+                          "description": "当前自然月（北京时间）内有 completed 训练的去重天数；同一天多次只算 1 天，无数据返回 0。",
+                          "example": 7
+                        }
+                      }
+                    }
+                  },
+                  "required": [
+                    "ok",
+                    "data"
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          }
+        }
+      }
+    },
+    "/api/v1/stats/heatmap": {
+      "get": {
+        "tags": [
+          "Stats"
+        ],
+        "summary": "训练日历热力图（按年）",
+        "description": "只统计 completed；只返回有训练的北京日，无训练由前端补空。色深指标由前端选，setCount/volumeKg/sessionCount/durationMin 四项均返回。durationMin=当日各次(finished_at-started_at)之和取整分钟，实时派生不落库。",
+        "parameters": [
+          {
+            "name": "year",
+            "in": "query",
+            "schema": {
+              "type": "integer"
+            },
+            "description": "默认当前北京年"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "ok": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "year": {
+                          "type": "integer"
+                        },
+                        "availableYears": {
+                          "type": "array",
+                          "items": {
+                            "type": "integer"
+                          }
+                        },
+                        "days": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "date": {
+                                "type": "string",
+                                "format": "date"
+                              },
+                              "setCount": {
+                                "type": "integer"
+                              },
+                              "volumeKg": {
+                                "type": "number"
+                              },
+                              "sessionCount": {
+                                "type": "integer"
+                              },
+                              "durationMin": {
+                                "type": "integer",
+                                "description": "当日训练时长合计（分钟，≥0）；前端按此分档"
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "required": [
+                    "ok",
+                    "data"
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          }
+        }
+      }
+    },
+    "/api/v1/stats/day": {
+      "get": {
+        "tags": [
+          "Stats"
+        ],
+        "summary": "当日明细（按动作聚合，可跨多次训练）",
+        "parameters": [
+          {
+            "name": "date",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "date"
+            },
+            "description": "YYYY-MM-DD（北京日）"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "ok": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "date": {
+                          "type": "string",
+                          "format": "date"
+                        },
+                        "totalVolumeKg": {
+                          "type": "number"
+                        },
+                        "sessionCount": {
+                          "type": "integer"
+                        },
+                        "items": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "exerciseName": {
+                                "type": "string"
+                              },
+                              "equipmentSlug": {
+                                "type": "string",
+                                "nullable": true
+                              },
+                              "setCount": {
+                                "type": "integer"
+                              },
+                              "topWeightKg": {
+                                "type": "number",
+                                "nullable": true
+                              },
+                              "volumeKg": {
+                                "type": "number"
+                              },
+                              "sessionId": {
+                                "type": "string"
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "required": [
+                    "ok",
+                    "data"
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          }
+        }
+      }
+    },
+    "/api/v1/stats/trend": {
+      "get": {
+        "tags": [
+          "Stats"
+        ],
+        "summary": "训练容量趋势（周 / 月）",
+        "description": "只统计 completed；按北京时间、周以周一为界。points 时间升序。",
+        "parameters": [
+          {
+            "name": "granularity",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "week",
+                "month"
+              ],
+              "default": "week"
+            }
+          },
+          {
+            "name": "range",
+            "in": "query",
+            "schema": {
+              "type": "integer"
+            },
+            "description": "返回最近多少期，默认 week=12 / month=6"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "ok": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "granularity": {
+                          "type": "string",
+                          "enum": [
+                            "week",
+                            "month"
+                          ]
+                        },
+                        "points": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "periodKey": {
+                                "type": "string",
+                                "example": "2026-W20"
+                              },
+                              "label": {
+                                "type": "string",
+                                "example": "5/12"
+                              },
+                              "volumeKg": {
+                                "type": "number"
+                              },
+                              "sessionCount": {
+                                "type": "integer"
+                              },
+                              "setCount": {
+                                "type": "integer"
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "required": [
+                    "ok",
+                    "data"
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          }
+        }
+      }
+    },
+    "/api/v1/stats/lifetime": {
+      "get": {
+        "tags": [
+          "Stats"
+        ],
+        "summary": "累计统计（我的页）",
+        "responses": {
+          "200": {
+            "description": "成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "ok": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "totalSessions": {
+                          "type": "integer"
+                        },
+                        "totalVolumeKg": {
+                          "type": "number"
+                        },
+                        "exerciseTypeCount": {
+                          "type": "integer"
+                        }
+                      }
+                    }
+                  },
+                  "required": [
+                    "ok",
+                    "data"
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          }
+        }
+      }
+    },
+    "/api/v1/sessions/{id}/voice": {
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "post": {
+        "tags": [
+          "Voice"
+        ],
+        "summary": "语音解析（替代原 voiceParse 云函数）",
+        "description": "音频或文本 → ASR → LLM 四 intent → 动作归一化 → 智能确认。可选 voiceEntryId（重试幂等）、currentExerciseName（延续上下文）。auto_saved 直接写库；needs_confirmation 返回确认卡数据待 /confirm；unknown 提示重说。失败走 HTTP 4xx/5xx（502 asr_failed/llm_failed）。",
+        "requestBody": {
+          "description": "二选一：①文本路径（JSON rawText，跳过 ASR）；②音频路径（前端读为 base64 以 JSON 字段 audioBase64 发送，亦兼容 multipart 字段 audio）。",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "rawText": {
+                    "type": "string",
+                    "description": "文本路径：跳过 ASR 直接解析"
+                  },
+                  "audioBase64": {
+                    "type": "string",
+                    "description": "音频路径：录音文件的 base64（mp3/16k/单声道）"
+                  },
+                  "voiceFormat": {
+                    "type": "string",
+                    "nullable": true
+                  },
+                  "voiceEntryId": {
+                    "type": "string",
+                    "nullable": true,
+                    "description": "重试/续传幂等键"
+                  },
+                  "currentExerciseName": {
+                    "type": "string",
+                    "nullable": true,
+                    "description": "延续当前动作上下文"
+                  }
+                }
+              }
+            },
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "audio": {
+                    "type": "string",
+                    "format": "binary"
+                  },
+                  "voiceFormat": {
+                    "type": "string"
+                  },
+                  "voiceEntryId": {
+                    "type": "string"
+                  },
+                  "currentExerciseName": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "解析完成（含 auto_saved / needs_confirmation / unknown）",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "ok": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "voiceEntryId": {
+                          "type": "string"
+                        },
+                        "status": {
+                          "type": "string",
+                          "enum": [
+                            "auto_saved",
+                            "needs_confirmation",
+                            "unknown"
+                          ]
+                        },
+                        "intent": {
+                          "type": "string",
+                          "description": "record_sets / set_current_exercise / modify_last_set / unknown"
+                        },
+                        "rawText": {
+                          "type": "string",
+                          "description": "识别/传入的文本"
+                        },
+                        "needsConfirmation": {
+                          "type": "boolean"
+                        },
+                        "confirmationReason": {
+                          "type": "string",
+                          "nullable": true
+                        },
+                        "createdSetIds": {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          },
+                          "description": "status=auto_saved 时已写库的组 id"
+                        },
+                        "parsed": {
+                          "type": "object",
+                          "nullable": true,
+                          "description": "解析出的组，供确认卡渲染"
+                        },
+                        "currentExerciseName": {
+                          "type": "string",
+                          "nullable": true
+                        }
+                      }
+                    }
+                  },
+                  "required": [
+                    "ok",
+                    "data"
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "409": {
+            "description": "训练已结束",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "502": {
+            "description": "ASR / LLM 失败（asr_failed / llm_failed）",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/voice-entries/{voiceEntryId}/confirm": {
+      "parameters": [
+        {
+          "name": "voiceEntryId",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "post": {
+        "tags": [
+          "Voice"
+        ],
+        "summary": "语音确认卡「确认/放弃」（替代原 setsConfirm 云函数）",
+        "description": "以 voiceEntryId 幂等。editedSets 用 ParsedSet(snake_case)，区别于手动加组 /sets 的 SetInput(camelCase)。",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "action": {
+                    "type": "string",
+                    "enum": [
+                      "confirm",
+                      "reject"
+                    ]
+                  },
+                  "editedSets": {
+                    "type": "array",
+                    "nullable": true,
+                    "items": {
+                      "type": "object"
+                    },
+                    "description": "确认前可编辑的组（ParsedSet，snake_case 字段如 weight_kg / reps / set_type / load_type）"
+                  },
+                  "editedExerciseName": {
+                    "type": "string",
+                    "nullable": true
+                  }
+                },
+                "required": [
+                  "action"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "已确认 / 已放弃",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "ok": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "voiceEntryId": {
+                          "type": "string"
+                        },
+                        "status": {
+                          "type": "string",
+                          "enum": [
+                            "confirmed",
+                            "rejected"
+                          ]
+                        },
+                        "createdSetIds": {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          }
+                        },
+                        "currentExerciseName": {
+                          "type": "string",
+                          "nullable": true
+                        }
+                      }
+                    }
+                  },
+                  "required": [
+                    "ok",
+                    "data"
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          }
+        }
+      }
+    },
+    "/api/v1/share/qrcode": {
+      "get": {
+        "tags": [
+          "Share"
+        ],
+        "summary": "分享小程序码（替代原 shareQrcode 云函数）",
+        "description": "后端用 appid/secret 取 access_token，调 wxacode.getUnlimited 生成带 scene 的可扫小程序码。失败返回 4xx，前端画「生成中」占位、不阻塞分享图合成。",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            },
+            "description": "默认 pages/home/home"
+          },
+          {
+            "name": "scene",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            },
+            "description": "默认 from=share"
+          },
+          {
+            "name": "envVersion",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "release",
+                "trial",
+                "develop"
+              ]
+            },
+            "description": "扫码打开的版本"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "ok": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "image": {
+                          "type": "string",
+                          "description": "https 链接或 data:image/png;base64,…"
+                        }
+                      }
+                    }
+                  },
+                  "required": [
+                    "ok",
+                    "data"
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          }
+        }
+      }
+    },
+    "/api/v1/rewards/pending": {
+      "get": {
+        "tags": [
+          "Reward"
+        ],
+        "summary": "取待领奖励（进 App 时调）",
+        "description": "空闲自动结束的训练把升级/升段/解锁存为待领，进 App 拉取补放庆祝。多条按 finishedAt 倒序；没有则 items:[]。reward 结构与手动结束的 achievement 同构。",
+        "responses": {
+          "200": {
+            "description": "成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "ok": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "items": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "sessionId": {
+                                "type": "string"
+                              },
+                              "name": {
+                                "type": "string"
+                              },
+                              "finishedAt": {
+                                "type": "string",
+                                "format": "date-time"
+                              },
+                              "autoFinished": {
+                                "type": "boolean"
+                              },
+                              "reward": {
+                                "type": "object",
+                                "description": "与 PATCH /sessions/{id} 首次完成返回的 achievement 同构（expGained / trickleBreakdown / level / rank / unlocked）"
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "required": [
+                    "ok",
+                    "data"
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          }
+        }
+      }
+    },
+    "/api/v1/rewards/ack": {
+      "post": {
+        "tags": [
+          "Reward"
+        ],
+        "summary": "确认已展示，清除待领",
+        "description": "庆祝渲染完成后调，传 GET /rewards/pending 拿到的 sessionId。与 GET 分离防丢庆祝；幂等。",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "sessionIds": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "required": [
+                  "sessionIds"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "ok": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "cleared": {
+                          "type": "integer"
+                        }
+                      }
+                    }
+                  },
+                  "required": [
+                    "ok",
+                    "data"
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          }
+        }
+      }
+    },
+    "/api/v1/achievements": {
+      "get": {
+        "tags": [
+          "Achievement"
+        ],
+        "summary": "成就墙 / 段位 / 等级（一次拉全）",
+        "description": "返回资料卡（等级 Lv / EXP 进度 / 段位奖牌）+ 成就墙（5 类 23 枚）。训练完成的结算（升级/升段/解锁）走 PATCH /sessions/{id} 返回的 achievement 字段，不在此接口。嵌套字段以后端路由代码为准。",
+        "responses": {
+          "200": {
+            "description": "成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "ok": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "exp": {
+                          "type": "object",
+                          "description": "经验进度（如 totalExp / expIntoLevel / levelSpanExp）"
+                        },
+                        "level": {
+                          "type": "object",
+                          "description": "等级（如 level，范围 1–100）"
+                        },
+                        "rank": {
+                          "type": "object",
+                          "description": "段位（key / name / color / icon，8 档）"
+                        },
+                        "unlockedCount": {
+                          "type": "integer"
+                        },
+                        "totalCount": {
+                          "type": "integer",
+                          "description": "成就总数（23）"
+                        },
+                        "categories": {
+                          "type": "array",
+                          "description": "5 类成就（milestone / streak / pr / explore / fun），每类含成就项与解锁态",
+                          "items": {
+                            "type": "object"
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "required": [
+                    "ok",
+                    "data"
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,51 @@
+.tabbar {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  /* 固定置顶，遮挡其下方页面内容 */
+  z-index: 1000;
+  /* 注入式自定义 tabBar 不一定能继承 page{} 上的 CSS 变量，
+     故所有 var() 都带兜底值，确保背景始终为不透明白底（修复滚动时穿透/透明） */
+  background: var(--surface, #FFFFFF);
+  /* 像素风：顶部硬描边（替代旧的细灰线） */
+  border-top: var(--px-border, 4rpx solid #2B2B2B);
+}
+.tabbar__row {
+  display: flex;
+  align-items: center;
+  height: 100rpx;
+}
+.tab {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+}
+.tab__cap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 88rpx;
+  height: 56rpx;
+  border-radius: var(--px-radius, 12rpx);
+  transition: background 150ms ease;
+}
+.tab__icon {
+  width: 44rpx;
+  height: 44rpx;
+  image-rendering: pixelated;
+}
+.tab__text {
+  margin-top: 4rpx;
+  font-size: 24rpx;
+  font-weight: 600;
+  color: var(--text-3, #A8ACB0);
+  transition: color 150ms ease;
+}
+.tab--on .tab__text { color: var(--c-primary, #3DD16B); }
+
+/* 安全区也必须不透明，否则手势条区域同样会穿透 */
+.safe-area { height: env(safe-area-inset-bottom); background: var(--surface, #FFFFFF); }

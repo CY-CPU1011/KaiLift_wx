@@ -1,0 +1,29 @@
+<!-- Timer（design §6.3-3）像素方块卡：✦ 已用时间 ✦ + 大计时 + 虚线分隔 + 三栏统计 -->
+<view class="tm px-box">
+  <view class="tm__cap">
+    <text class="tm__cap-star">✦</text>
+    <text class="tm__cap-text">已用时间</text>
+    <text class="tm__cap-star">✦</text>
+  </view>
+
+  <text class="tm__time">{{timeText}}</text>
+
+  <view class="tm__divider"></view>
+
+  <view class="tm__stats">
+    <view class="tm__stat">
+      <text class="tm__stat-num">{{sets}}</text>
+      <text class="tm__stat-label">组数</text>
+    </view>
+    <view class="tm__stat-sep"></view>
+    <view class="tm__stat">
+      <text class="tm__stat-num">{{exercises}}</text>
+      <text class="tm__stat-label">动作数</text>
+    </view>
+    <view class="tm__stat-sep"></view>
+    <view class="tm__stat">
+      <text class="tm__stat-num">{{volume}}</text>
+      <text class="tm__stat-label">总负荷(kg)</text>
+    </view>
+  </view>
+</view>

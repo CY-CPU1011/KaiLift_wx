@@ -1,0 +1,29 @@
+<!-- home 变体：全宽主绿方块按钮（design §5 / §6.2#6）。描边 + 硬阴影 + 按下下沉。 -->
+<view wx:if="{{variant === 'home'}}" class="vb vb--home">
+  <view class="vb__bar" hover-class="vb__bar--press" bindtap="onTap">
+    <image class="vb__bar-mic" src="/images/ui/icons/ui_icon_microphone.png" mode="aspectFit"></image>
+    <text class="vb__bar-label">{{label || '按住说话'}}</text>
+  </view>
+  <text wx:if="{{hint}}" class="vb__hint">{{hint}}</text>
+</view>
+
+<!-- workout 变体：全宽主绿方块按钮（design §6.3-6）。像素感与 home 统一；按住录音，全程可取消。 -->
+<view wx:else class="vb vb--workout">
+  <view
+    class="vb__bar vb__bar--{{status}}"
+    hover-class="vb__bar--press"
+    bindtouchstart="onStart"
+    bindtouchend="onStop"
+    bindtouchcancel="onStop"
+  >
+    <view wx:if="{{status === 'recording'}}" class="vb__wave">
+      <view class="vb__wave-bar"></view>
+      <view class="vb__wave-bar"></view>
+      <view class="vb__wave-bar"></view>
+      <view class="vb__wave-bar"></view>
+    </view>
+    <view wx:elif="{{status === 'processing'}}" class="vb__spinner"></view>
+    <image wx:else class="vb__bar-mic" src="/images/ui/icons/ui_icon_microphone.png" mode="aspectFit"></image>
+    <text class="vb__bar-label">{{bubble || '按住说话'}}</text>
+  </view>
+</view>

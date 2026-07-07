@@ -1,0 +1,142 @@
+/* 卡片左右间距由外层 .block（margin: 0 var(--sp-4)）统一提供，
+   此处不再叠加内距，保证与首页其它卡片左右边缘齐平对齐。 */
+.sb { padding: 0; }
+
+/* 薄荷底像素方块（design §5 / §2.2）：描边 + 硬偏移阴影，无 blur */
+.sb__banner {
+  position: relative;
+  display: flex;
+  align-items: center;
+  background: var(--bg-mint);
+  border: var(--px-border);
+  border-radius: var(--px-radius);
+  box-shadow: var(--px-shadow);
+  padding: var(--sp-3);
+  min-height: 260rpx;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+/* 左：参考图中的独立人物框 */
+.sb__hero-frame {
+  position: relative;
+  flex: none;
+  width: 210rpx;
+  height: 220rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  margin-right: var(--sp-3);
+  background: rgba(255, 255, 255, 0.46);
+  border: 4rpx solid rgba(15, 138, 67, 0.35);
+  border-radius: var(--px-radius);
+}
+.sb__hero-img {
+  width: 180rpx;
+  height: 190rpx;
+  image-rendering: pixelated;
+}
+.sb__hero-deco {
+  position: absolute;
+  width: 28rpx;
+  height: 28rpx;
+  opacity: 0.48;
+}
+.sb__hero-deco--top { top: 16rpx; right: 14rpx; }
+.sb__hero-deco--bottom { left: 14rpx; bottom: 12rpx; }
+
+/* 右：标题、进度和按钮形成三层结构 */
+.sb__content {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.sb__header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 58rpx;
+}
+.sb__fire {
+  width: 56rpx;
+  height: 56rpx;
+  margin-right: var(--sp-2);
+  flex: none;
+  image-rendering: pixelated;
+}
+.sb__caption {
+  font-size: 34rpx;
+  font-weight: 800;
+  color: var(--text-1);
+}
+.sb__divider {
+  width: 100%;
+  margin: var(--sp-1) 0;
+  border-top: 4rpx dashed rgba(15, 138, 67, 0.32);
+}
+
+/* 中层进度：说明 + signature 数字 */
+.sb__progress {
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: var(--sp-2);
+  width: 100%;
+  min-height: 90rpx;
+}
+.sb__progress-label {
+  font-size: 27rpx;
+  font-weight: 700;
+  color: var(--text-2);
+}
+.sb__count {
+  display: flex;
+  align-items: baseline;
+}
+.sb__num-big {
+  font-size: 80rpx;
+  font-weight: 800;
+  line-height: 1;
+  color: var(--c-primary-strong);
+}
+.sb__num-sub {
+  margin-left: 8rpx;
+  font-size: 28rpx;
+  font-weight: 600;
+  color: var(--text-2);
+}
+
+/* 底层行动按钮 */
+.sb__cta {
+  position: relative;
+  width: 100%;
+  min-height: 58rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  padding: 8rpx 12rpx 8rpx var(--sp-3);
+  background: var(--surface);
+  color: var(--text-1);
+  font-size: 25rpx;
+  font-weight: 700;
+  border: var(--px-border);
+  border-radius: var(--px-radius);
+  box-shadow: 4rpx 6rpx 0 rgba(15, 138, 67, 0.55);
+}
+.sb__cta--press {
+  transform: translate(4rpx, 4rpx);
+  box-shadow: 1rpx 2rpx 0 rgba(15, 138, 67, 0.55);
+}
+.sb__cta-arrow {
+  position: absolute;
+  right: 12rpx;
+  flex: none;
+  width: 38rpx;
+  height: 38rpx;
+  margin-left: var(--sp-2);
+  image-rendering: pixelated;
+}

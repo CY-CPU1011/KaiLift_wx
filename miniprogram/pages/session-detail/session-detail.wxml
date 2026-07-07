@@ -1,0 +1,95 @@
+<!-- 训练详情 —— 头部 + 概览 + 动作/组列表，可删除 -->
+<view class="page" style="padding-top: {{statusBarHeight}}px;">
+  <!-- 全屏像素风背景（铺底，沉到内容下方） -->
+  <image class="app-bg" src="/images/bg/background.jpg" mode="aspectFit"></image>
+
+  <!-- 自定义导航栏 -->
+  <view class="nav">
+    <view class="nav__back" bindtap="onBack">‹</view>
+    <text class="nav__title">训练详情</text>
+    <view class="nav__cap"></view>
+  </view>
+
+  <!-- 加载态 -->
+  <view wx:if="{{loading}}" class="state">
+    <text class="state__text">加载中…</text>
+  </view>
+
+  <!-- 错误态 -->
+  <view wx:elif="{{error}}" class="state">
+    <img-ph src="" w="200" h="200" label="加载失败"></img-ph>
+    <text class="state__text">找不到这次训练记录</text>
+    <view class="state__btn" bindtap="onRetry">重试</view>
+  </view>
+
+  <scroll-view wx:else scroll-y class="body" enhanced show-scrollbar="{{false}}">
+    <!-- 头部 -->
+    <view class="card head-card">
+      <view class="head-card__top">
+        <text class="head-card__name">{{header.name}}</text>
+        <view class="badge badge--{{header.status}}">{{header.statusText}}</view>
+      </view>
+      <text class="head-card__day">{{header.relativeDay}}</text>
+    </view>
+
+    <!-- 概览 -->
+    <view class="card summary">
+      <view class="summary__cell">
+        <view class="num-row">
+          <text class="num-row__num">{{summary.totalExercises}}</text>
+          <text class="num-row__unit">个</text>
+        </view>
+        <text class="summary__label">动作</text>
+      </view>
+      <view class="summary__divider"></view>
+      <view class="summary__cell">
+        <view class="num-row">
+          <text class="num-row__num">{{summary.totalSets}}</text>
+          <text class="num-row__unit">组</text>
+        </view>
+        <text class="summary__label">总组数</text>
+      </view>
+      <view class="summary__divider"></view>
+      <view class="summary__cell">
+        <view class="num-row">
+          <text class="num-row__num">{{summary.totalVolume}}</text>
+          <text class="num-row__unit">{{summary.unit}}</text>
+        </view>
+        <text class="summary__label">总容量</text>
+      </view>
+    </view>
+
+    <!-- 动作列表 -->
+    <view wx:if="{{exercises.length}}">
+      <view wx:for="{{exercises}}" wx:key="id" class="card ex-card">
+        <view class="ex-card__head">
+          <img-ph src="" w="72" h="72" label="器械" round="16rpx"></img-ph>
+          <view class="ex-card__title">
+            <text class="ex-card__name">{{item.name}}</text>
+            <text class="ex-card__sub">{{item.setCount}} 组</text>
+          </view>
+        </view>
+        <view class="ex-card__sets">
+          <view wx:for="{{item.sets}}" wx:for-item="s" wx:key="id" class="set-row">
+            <text class="set-row__order">{{s.setOrder}}.</text>
+            <text class="set-row__load">{{s.loadText}}</text>
+            <text class="set-row__type">{{s.setTypeText}}</text>
+            <view wx:if="{{s.isPersonalRecord}}" class="set-row__pr">PR</view>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <view wx:else class="state state--inline">
+      <text class="state__text">这次训练还没有记录任何组</text>
+    </view>
+
+    <!-- 生成分享图（仅已完成训练可分享） -->
+    <view wx:if="{{header.status === 'completed'}}" class="share-btn" hover-class="share-btn--press" bindtap="onShareCard">生成分享图</view>
+
+    <!-- 删除 -->
+    <view class="delete-btn {{deleting ? 'is-disabled' : ''}}" bindtap="onDelete">删除这次训练</view>
+
+    <view class="safe-bottom"></view>
+  </scroll-view>
+</view>

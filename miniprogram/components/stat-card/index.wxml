@@ -1,0 +1,32 @@
+<view class="sc sc--{{tone}} {{watermark ? 'sc--wm' : ''}}">
+  <!-- 顶部小图标：优先真图 iconSrc，其次 CSS 形状 iconShape，最后 img-ph 占位 -->
+  <view wx:if="{{iconSrc}}" class="sc__icon">
+    <image class="sc__icon-img" src="{{iconSrc}}" mode="aspectFit"></image>
+  </view>
+  <view wx:elif="{{iconShape === 'clock'}}" class="sc__icon">
+    <view class="sc__clock">
+      <view class="sc__clock-h"></view>
+      <view class="sc__clock-m"></view>
+    </view>
+  </view>
+  <view wx:elif="{{icon}}" class="sc__icon">
+    <img-ph w="64" h="64" label="{{icon}}" round="12rpx"></img-ph>
+  </view>
+
+  <view class="sc__main">
+    <view class="sc__num">
+      <text class="sc__num-big">{{value}}</text>
+      <text wx:if="{{unit}}" class="sc__num-unit">{{unit}}</text>
+    </view>
+    <text class="sc__label">{{label}}</text>
+  </view>
+
+  <view wx:if="{{hasProgress}}" class="sc__progress">
+    <view class="sc__progress-fill" style="width:{{percent}}%;"></view>
+  </view>
+
+  <!-- 水印（趋势图概览卡变体，stats 页用）：右下低透明度大图 -->
+  <view wx:if="{{watermark}}" class="sc__watermark">
+    <img-ph w="140" h="140" label="{{icon}}" round="16rpx"></img-ph>
+  </view>
+</view>
