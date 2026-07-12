@@ -28,14 +28,19 @@ const CLOUD_SERVICE = 'kailift';
 //   - 开发/联调：先在开发者工具「上传」一个版本并在 mp 后台设为体验版 → 这里填 'trial'（扫码打开体验版）。
 //   - 正式上线：填 'release'（默认）。
 // 注意：只影响「扫码打开哪个版本」；图片生成本身用 checkPath:false，不受发布状态影响。
-const SHARE_QR_ENV = 'trial';
+const SHARE_QR_ENV = 'release';
 
 // 开发者工具模拟器使用稳定测试 openid，避开模拟器 wx.login code 偶发 invalid code。
 // 真机（含真机调试、体验版、正式版）自动关闭，始终走真实 wx.login。
+function isLocalDevelopmentApi(base) {
+  return /^http:\/\/(?:localhost|127(?:\.\d+){3}|10(?:\.\d+){3}|192\.168(?:\.\d+){2}|172\.(?:1[6-9]|2\d|3[01])(?:\.\d+){2})(?::\d+)?(?:\/|$)/i.test(base || '');
+}
+
 function resolveDevLogin() {
   try {
     const info = (wx.getDeviceInfo ? wx.getDeviceInfo() : wx.getSystemInfoSync()) || {};
-    return info.platform === 'devtools';
+    // 开发者工具指向线上域名时也必须走真实 wx.login；只有明确指向本机/局域网 HTTP API 才直登。
+    return info.platform === 'devtools' && isLocalDevelopmentApi(API_BASE);
   } catch (e) {
     return false;
   }
@@ -102,9 +107,6 @@ const RECORDER_OPTIONS = {
   format: 'mp3',
 };
 
-// 智能确认：自动保存置信度阈值（PRD §3.5）
-const AUTO_SAVE_CONFIDENCE = 0.8;
-
 // sets/{id}/restore 端点就绪开关（计划 §4 第5轮）。
 // 后端已上线 POST /sets/{id}/restore（api.json 已含），置 true 走软删恢复（保留原 id/组序/PR）。
 // 若对接的后端未到最新，restore 会 404，onUndoDelete 会优雅回退到「重新加组」。
@@ -119,6 +121,7 @@ exports.CLOUD_SERVICE = CLOUD_SERVICE;
 exports.SHARE_QR_ENV = SHARE_QR_ENV;
 exports.DEV_LOGIN = DEV_LOGIN;
 exports.DEV_OPENID = DEV_OPENID;
+exports.isLocalDevelopmentApi = isLocalDevelopmentApi;
 exports.KG_TO_LB = KG_TO_LB;
 exports.LOAD_TYPES = LOAD_TYPES;
 exports.SET_TYPES = SET_TYPES;
@@ -129,6 +132,5 @@ exports.EXERCISE_PART_QUERY = EXERCISE_PART_QUERY;
 exports.PR_TYPE_LABELS = PR_TYPE_LABELS;
 exports.PART_TONE = PART_TONE;
 exports.RECORDER_OPTIONS = RECORDER_OPTIONS;
-exports.AUTO_SAVE_CONFIDENCE = AUTO_SAVE_CONFIDENCE;
 exports.SETS_RESTORE_READY = SETS_RESTORE_READY;
 exports.HEATMAP_LEVELS = HEATMAP_LEVELS;

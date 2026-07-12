@@ -395,7 +395,7 @@
 **调用协议：**
 
 - **语音解析** `POST /sessions/{sessionId}/voice`：音频走 multipart（字段 `audio`，可选 `voiceFormat`）或读为 base64 的 JSON；联调/降级传 `{ rawText }`。可选 `voiceEntryId`(幂等/重试)、`currentExerciseName`(延续上下文)。成功 `data`：`{ voiceEntryId, status: auto_saved|needs_confirmation|unknown, intent, rawText, needsConfirmation, confirmationReason, createdSetIds[], parsed, currentExerciseName }`；失败 HTTP 4xx/5xx（502 `asr_failed`/`llm_failed`、404、409）。
-- **语音确认** `POST /voice-entries/{voiceEntryId}/confirm`：入参 `{ action: confirm|reject, editedSets?, editedExerciseName? }`（`editedSets` 用 **ParsedSet(snake_case)**，区别于 `/sets` 的 SetInput(camelCase)）；成功 `data`：`{ voiceEntryId, status: confirmed|rejected, createdSetIds, currentExerciseName }`。
+- **语音确认** `POST /voice-entries/{voiceEntryId}/confirm`：入参 `{ action: confirm|reject, editedSets?, editedExerciseName?, targetSetId? }`（`editedSets` 用 **ParsedSet(snake_case)**，区别于 `/sets` 的 SetInput(camelCase)；`modify_last_set` 应传确认卡展示的 `targetSetId`）；成功 `data`：`{ voiceEntryId, status: confirmed|rejected, createdSetIds, currentExerciseName }`。
 - **分享小程序码** `GET /share/qrcode`：query `page`(默认 `pages/home/home`)、`scene`(默认 `from=share`)、可选 `envVersion`；成功 `data`：`{ image }`（https 链接或 `data:image/png;base64`）；失败 4xx（前端拿不到画「生成中」占位，不阻塞合成）。
 
 ### 4.3.3 原语音云函数部署链路（已停用）

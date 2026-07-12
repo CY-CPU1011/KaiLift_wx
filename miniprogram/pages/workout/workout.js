@@ -2,7 +2,7 @@
 const { Session, Set, Voice } = require('../../service/api');
 const { displayWeight } = require('../../utils/format');
 const { SET_TYPES, LOAD_TYPES, RECORDER_OPTIONS, SETS_RESTORE_READY } = require('../../utils/constants');
-const { findLatestSet, isResumedStart, setInputFromRaw, mapWithConcurrency } = require('../../utils/data');
+const { findLatestSet, isResumedStart, setInputFromRaw, groupParsedSetsForUndo } = require('../../utils/data');
 const { buildFinishReward } = require('../../utils/achievement');
 const { withSharePage } = require('../../utils/share-page');
 
@@ -574,18 +574,22 @@ Page(withSharePage({
       this._resetIdle();
       wx.showToast({ title: '已记录 ' + ids.length + ' 组', icon: 'success' });
       // 撤销：优先软删恢复（按 id），未就绪回退重新加组（按 parsed 还原 SetInput）
-      const setInputs = ((res.parsed && res.parsed.sets) || []).map((s) => ({
-        loadType: s.load_type || s.loadType || 'weighted',
-        weightKg: pick(s.weight_kg, s.weightKg),
-        reps: s.reps,
-        setType: s.set_type || s.setType || 'working',
-        rpe: null,
-        note: null,
-      }));
+      const setGroups = groupParsedSetsForUndo(
+        (res.parsed && res.parsed.sets) || [],
+        res.currentExerciseName || this.data.currentExerciseName
+      );
+      const setInputs = [];
+      for (let i = 0; i < setGroups.length; i++) {
+        for (let j = 0; j < setGroups[i].sets.length; j++) {
+          setInputs.push(setGroups[i].sets[j]);
+        }
+      }
       this._showUndo({
+        sessionId: d.session.id,
         setIds: ids,
         exerciseName: res.currentExerciseName || this.data.currentExerciseName,
         setInputs,
+        setGroups,
         text: '已记录 ' + ids.length + ' 组',
       });
       return;
@@ -815,6 +819,7 @@ Page(withSharePage({
         action: 'confirm',
         editedSets,
         editedExerciseName,
+        targetSetId: d.confirmIntent === 'modify_last_set' ? d.modifyTargetSetId : undefined,
       });
       wx.hideLoading();
       if (res && res.currentExerciseName) this.setData({ currentExerciseName: res.currentExerciseName });
@@ -962,20 +967,58 @@ Page(withSharePage({
     // 组级删除：优先走 restore 端点（软删恢复，保留原组序/PR）；未就绪或失败时回退为重新加组
     if (SETS_RESTORE_READY && ids.length) {
       wx.showLoading({ title: '恢复中…' });
+      let restoredCount = 0;
       try {
-        await mapWithConcurrency(ids, 3, (id) => Set.restore(id));
+        // 顺序恢复才能判断是否已有部分成功；部分成功或网络错误时绝不重新加组，避免重复数据。
+        for (let i = 0; i < ids.length; i++) {
+          await Set.restore(ids[i]);
+          restoredCount += 1;
+        }
         await this._refresh();
         wx.hideLoading();
         wx.showToast({ title: '已恢复', icon: 'success' });
         return;
       } catch (e) {
         wx.hideLoading();
-        // 落到重新加组回退
+        // 只有第一条即返回无信封 404（旧后端没有 restore 路由）才走重新加组。
+        // 业务 404、超时或已有部分恢复都保留原状态并提示，避免不确定写入后再造一份。
+        if (restoredCount > 0 || !e || e.code !== 'http_404') {
+          await this._refresh();
+          wx.showToast({ title: '恢复失败，请重试', icon: 'none' });
+          return;
+        }
       }
     }
-    // 回退 = 在该动作名下重新加回这些组（restore 端点未就绪时）
-    if (inputs.length) {
-      await this._addSets(undo.exerciseName, inputs);
+    await this._reAddUndoGroups(undo, inputs);
+  },
+
+  async _reAddUndoGroups(undo, legacyInputs) {
+    const groups = (undo.setGroups && undo.setGroups.length)
+      ? undo.setGroups
+      : (legacyInputs.length ? [{ exerciseName: undo.exerciseName, sets: legacyInputs }] : []);
+    const sessionId = undo.sessionId || (this.data.session && this.data.session.id);
+    if (!sessionId || !groups.length) return;
+
+    wx.showLoading({ title: '恢复中…' });
+    const createdIds = [];
+    try {
+      for (let i = 0; i < groups.length; i++) {
+        const group = groups[i];
+        const result = await this._writeSets(sessionId, group.exerciseName, group.sets);
+        const ids = (result && result.createdSetIds) || [];
+        for (let j = 0; j < ids.length; j++) createdIds.push(ids[j]);
+      }
+      const lastGroup = groups[groups.length - 1];
+      const nextData = { currentExerciseName: lastGroup.exerciseName };
+      if (createdIds.length) nextData.lastRecordedSetId = createdIds[createdIds.length - 1];
+      this.setData(nextData);
+      await this._refresh();
+      wx.hideLoading();
+      wx.showToast({ title: '已恢复', icon: 'success' });
+    } catch (e) {
+      await this._refresh();
+      wx.hideLoading();
+      wx.showToast({ title: '恢复失败，请重试', icon: 'none' });
     }
   },
 

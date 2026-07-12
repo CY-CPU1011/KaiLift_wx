@@ -188,11 +188,14 @@
           "weightKg": {
             "type": "number",
             "nullable": true,
+            "minimum": 0,
+            "maximum": 2000,
             "description": "kg；负重类必填"
           },
           "reps": {
             "type": "integer",
-            "minimum": 1
+            "minimum": 1,
+            "maximum": 1000
           },
           "setType": {
             "type": "string",
@@ -499,7 +502,7 @@
           "Auth"
         ],
         "summary": "登录换取 JWT",
-        "description": "微信小程序传 code（code2session 换 openid），或 APP 直接传 openid。",
+        "description": "微信小程序传 code（code2session 换 openid）。openid 直传仅限非生产环境且需显式开启 ALLOW_OPENID_LOGIN，并只接受 dev_/seed_ 测试账号。",
         "security": [],
         "requestBody": {
           "content": {
@@ -513,7 +516,7 @@
                   },
                   "openid": {
                     "type": "string",
-                    "description": "直接传入的 openid（与 code 二选一）"
+                    "description": "本地调试测试 openid（dev_/seed_ 前缀，与 code 二选一）"
                   },
                   "nickname": {
                     "type": "string",
@@ -576,6 +579,16 @@
           },
           "401": {
             "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "description": "openid 直登未启用",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
           }
         }
       }
@@ -2189,7 +2202,8 @@
           "Challenge"
         ],
         "deprecated": true,
-        "summary": "更新挑战进度（状态 / 已完成次数）",
+        "summary": "更新挑战状态（暂停 / 继续 / 取消）",
+        "description": "completedSessions 与 completed 状态由完成训练时的服务端结算维护，客户端不可写。",
         "requestBody": {
           "content": {
             "application/json": {
@@ -2200,15 +2214,9 @@
                     "type": "string",
                     "enum": [
                       "active",
-                      "completed",
                       "paused",
-                      "failed",
                       "cancelled"
                     ]
-                  },
-                  "completedSessions": {
-                    "type": "integer",
-                    "minimum": 0
                   }
                 }
               }
@@ -2535,7 +2543,7 @@
           "Stats"
         ],
         "summary": "训练容量趋势（周 / 月）",
-        "description": "只统计 completed；按北京时间、周以周一为界。points 时间升序。",
+        "description": "只统计 completed；按北京时间、周以周一为界。points 为连续自然周期、时间升序，无训练周期补零。",
         "parameters": [
           {
             "name": "granularity",
@@ -2878,6 +2886,11 @@
                   "editedExerciseName": {
                     "type": "string",
                     "nullable": true
+                  },
+                  "targetSetId": {
+                    "type": "string",
+                    "nullable": true,
+                    "description": "modify_last_set 确认卡实际展示的目标组 id；新客户端应传，旧客户端可省略"
                   }
                 },
                 "required": [

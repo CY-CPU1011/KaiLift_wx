@@ -4,15 +4,12 @@ const fs = require('node:fs');
 const path = require('node:path');
 const zlib = require('node:zlib');
 
-const voiceParser = require('../miniprogram/utils/voice-parser');
 const {
   unwrapSessionDetail,
-  listAllPages,
-  mapWithConcurrency,
   findLatestSet,
   isResumedStart,
   setInputFromRaw,
-  countDistinctExercises,
+  groupParsedSetsForUndo,
 } = require('../miniprogram/utils/data');
 const { buildHomeViewModelFromStats } = require('../miniprogram/utils/home-data');
 const {
@@ -156,19 +153,6 @@ test('Session.detail exposes SessionDetail instead of the response envelope', as
   assert.equal(requestedCall.header.Authorization, 'Bearer test-token');
 });
 
-test('listAllPages fetches every page instead of truncating at 100 rows', async () => {
-  const calls = [];
-  const result = await listAllPages(async ({ page, pageSize }) => {
-    calls.push(page);
-    const all = ['a', 'b', 'c', 'd', 'e'];
-    const start = (page - 1) * pageSize;
-    return { items: all.slice(start, start + pageSize), total: all.length };
-  }, {}, 2);
-
-  assert.deepEqual(result, ['a', 'b', 'c', 'd', 'e']);
-  assert.deepEqual(calls, [1, 2, 3]);
-});
-
 test('data utilities avoid array spread that requires Babel runtime helpers', () => {
   const source = fs.readFileSync(
     require.resolve('../miniprogram/utils/data'),
@@ -177,18 +161,18 @@ test('data utilities avoid array spread that requires Babel runtime helpers', ()
   assert.doesNotMatch(source, /items\.push\(\.\.\./);
 });
 
-test('mapWithConcurrency preserves input order', async () => {
-  const result = await mapWithConcurrency([3, 1, 2], 2, async (value) => {
-    await new Promise((resolve) => setTimeout(resolve, value));
-    return value * 10;
-  });
-  assert.deepEqual(result, [30, 10, 20]);
-});
+test('voice undo data keeps sets grouped under their original exercises', () => {
+  const groups = groupParsedSetsForUndo([
+    { exercise_name: '深蹲', load_type: 'weighted', weight_kg: 100, reps: 5, set_type: 'working' },
+    { exercise_name: '深蹲', load_type: 'weighted', weight_kg: 100, reps: 4, set_type: 'working' },
+    { exercise_name: '卧推', load_type: 'weighted', weight_kg: 80, reps: 8, set_type: 'working' },
+  ], '默认动作');
 
-test('numeric-only voice input uses the current exercise context', () => {
-  const result = voiceParser.parse('100 公斤 5 个', '深蹲');
-  assert.equal(result.exerciseName, '深蹲');
-  assert.equal(result.needsConfirmation, false);
+  assert.equal(groups.length, 2);
+  assert.equal(groups[0].exerciseName, '深蹲');
+  assert.deepEqual(groups[0].sets.map((set) => set.reps), [5, 4]);
+  assert.equal(groups[1].exerciseName, '卧推');
+  assert.equal(groups[1].sets[0].weightKg, 80);
 });
 
 test('findLatestSet prefers the last created server set id', () => {
@@ -205,24 +189,6 @@ test('findLatestSet falls back to the current exercise last set', () => {
     { name: '卧推', setList: [{ id: 'set-2' }] },
   ];
   assert.equal(findLatestSet(cards, '深蹲', null).id, 'set-3');
-});
-
-test('countDistinctExercises counts exercises actually present in workout details', () => {
-  const details = [
-    {
-      workoutExercises: [
-        { exerciseId: 'squat', displayName: '深蹲' },
-        { exerciseId: 'bench', displayName: '卧推' },
-      ],
-    },
-    {
-      workoutExercises: [
-        { exerciseId: 'squat', displayName: '深蹲' },
-        { exerciseId: null, displayName: '自定义动作' },
-      ],
-    },
-  ];
-  assert.equal(countDistinctExercises(details), 3);
 });
 
 test('buildHomeViewModelFromStats maps the /stats/home payload into the home view model', () => {
@@ -304,9 +270,10 @@ test('undo delete prefers the restore endpoint with a re-add fallback', () => {
     'utf8'
   );
   assert.match(source, /SETS_RESTORE_READY && ids\.length/);
-  assert.match(source, /Set\.restore\(id\)/);
-  // 回退是在该动作名下重新加回这些组（restore 端点未就绪时）
-  assert.match(source, /await this\._addSets\(undo\.exerciseName, inputs\)/);
+  assert.match(source, /Set\.restore\(ids\[i\]\)/);
+  assert.match(source, /restoredCount > 0 \|\| !e \|\| e\.code !== 'http_404'/);
+  assert.match(source, /await this\._reAddUndoGroups\(undo, inputs\)/);
+  assert.match(source, /undo\.setGroups && undo\.setGroups\.length/);
 });
 
 test('setInputFromRaw normalizes a WorkoutSet raw into write-ready SetInput', () => {
@@ -677,13 +644,19 @@ test('month-days banner follows the reference layout with framed hero, divider, 
   assert.match(styles, /\.sb__cta\s*\{[^}]*box-shadow:\s*4rpx 6rpx/s);
 });
 
-test('DEV_LOGIN is enabled only in DevTools', () => {
+test('production API disables direct openid login even in DevTools', () => {
   global.wx = {
     getDeviceInfo: () => ({ platform: 'devtools' }),
     getSystemInfoSync: () => ({ platform: 'devtools' }),
   };
   delete require.cache[require.resolve('../miniprogram/utils/constants')];
-  assert.equal(require('../miniprogram/utils/constants').DEV_LOGIN, true);
+  const constants = require('../miniprogram/utils/constants');
+  assert.equal(constants.DEV_LOGIN, false);
+  assert.equal(constants.DEV_OPENID, '');
+  assert.equal(constants.SHARE_QR_ENV, 'release');
+  assert.equal(constants.isLocalDevelopmentApi('http://127.0.0.1:20020'), true);
+  assert.equal(constants.isLocalDevelopmentApi('http://192.168.1.7:20020'), true);
+  assert.equal(constants.isLocalDevelopmentApi('https://kailift.chenyi.uno'), false);
 
   global.wx = {
     getDeviceInfo: () => ({ platform: 'ios' }),
@@ -691,6 +664,55 @@ test('DEV_LOGIN is enabled only in DevTools', () => {
   };
   delete require.cache[require.resolve('../miniprogram/utils/constants')];
   assert.equal(require('../miniprogram/utils/constants').DEV_LOGIN, false);
+});
+
+test('login request never retries the same one-time wx code', () => {
+  const source = fs.readFileSync(
+    require.resolve('../miniprogram/utils/request.js'),
+    'utf8'
+  );
+  assert.match(source, /const idempotent = method === 'GET';/);
+  assert.doesNotMatch(source, /isLoginPath/);
+  assert.match(source, /sc === 503 && idempotent && within\(\)/);
+});
+
+test('profile overview uses the lifetime aggregate instead of per-session details', () => {
+  const source = fs.readFileSync(
+    require.resolve('../miniprogram/pages/profile/profile.js'),
+    'utf8'
+  );
+  assert.match(source, /const \{ Achievement, Stats \} = require/);
+  assert.match(source, /await Stats\.lifetime\(\)/);
+  assert.doesNotMatch(source, /Session\.detail|mapWithConcurrency|listAllPages/);
+});
+
+test('modify-last-set confirmation sends the exact displayed target set id', () => {
+  const workoutSource = fs.readFileSync(
+    require.resolve('../miniprogram/pages/workout/workout.js'),
+    'utf8'
+  );
+  const apiSource = fs.readFileSync(
+    require.resolve('../miniprogram/service/api.js'),
+    'utf8'
+  );
+  assert.match(workoutSource, /modifyTargetSetId: last\.id/);
+  assert.match(
+    workoutSource,
+    /targetSetId: d\.confirmIntent === 'modify_last_set' \? d\.modifyTargetSetId : undefined/
+  );
+  assert.match(apiSource, /targetSetId\?/);
+});
+
+test('obsolete local voice parser and confidence constant are removed', () => {
+  assert.equal(
+    fs.existsSync(path.join(__dirname, '../miniprogram/utils/voice-parser.js')),
+    false
+  );
+  const constantsSource = fs.readFileSync(
+    require.resolve('../miniprogram/utils/constants.js'),
+    'utf8'
+  );
+  assert.doesNotMatch(constantsSource, /AUTO_SAVE_CONFIDENCE/);
 });
 
 test('CloudBase container config points at the deployed kailift service', () => {

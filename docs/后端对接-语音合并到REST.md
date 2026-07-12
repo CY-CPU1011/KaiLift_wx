@@ -50,9 +50,10 @@
 
 body：
 ```json
-{ "action": "confirm | reject", "editedSets": [/*ParsedSet snake_case*/], "editedExerciseName": "string" }
+{ "action": "confirm | reject", "editedSets": [/*ParsedSet snake_case*/], "editedExerciseName": "string", "targetSetId": "string" }
 ```
 > `editedSets` 用 **ParsedSet(snake_case)**，区别于手动加组 `/sets` 的 SetInput(camelCase)——沿用云函数原约定。
+> `modify_last_set` 时新客户端同时传确认卡实际展示的 `targetSetId`，避免确认期间当前动作变化后误改另一组；旧客户端不传时后端兼容回退到当前动作最后一组。
 
 成功响应 `data`：
 ```json

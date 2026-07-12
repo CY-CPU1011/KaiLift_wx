@@ -67,18 +67,15 @@ function resolveEnvelope(res, method, url, resolve, reject) {
 
 // 自动重试：扛住云托管「容器冷启动 / 数据库连接抖动」造成的瞬时失败，让登录与数据加载自愈，
 // 不再「一次失败就报错」。分两类，安全第一：
-//  - 503（网关层无健康容器=冷启动中，请求根本没到达应用、无副作用）→ 任何方法都能重试，
-//    指数退避轮询直到容器起来（覆盖 ~20s 冷启动窗口）。
-//  - 超时 / 网络失败 / 其它 5xx → 只重试「幂等」请求：GET，以及登录（code 5 分钟有效、
-//    失败时未被微信消费，重试安全）。加组/改组等写操作绝不重试，避免重复写库。
+//  - 503 / 超时 / 网络失败 / 其它 5xx → 只重试 GET。
+//  - 登录 code 是一次性凭证：超时时后端可能已经消费，不能拿同一个 code 自动重试；
+//    其余写操作也不自动重试，避免响应丢失后重复产生副作用。
 const RETRY_BUDGET_MS = 25000; // 重试总预算，覆盖容器冷启动窗口（~15-25s）
-function isLoginPath(url) { return String(url).indexOf('/api/v1/auth/login') === 0; }
 function backoffMs(n) { return Math.min(Math.round(800 * Math.pow(1.6, n)), 4000); }
 
 function request(opts) {
   const { url, method = 'GET', data, auth = true, header = {} } = opts;
-  // 幂等：GET 任意；POST 仅登录（重试不产生重复副作用）
-  const idempotent = method === 'GET' || (method === 'POST' && isLoginPath(url));
+  const idempotent = method === 'GET';
   const startedAt = Date.now();
   return new Promise((resolve, reject) => {
     const attempt = (n) => {
@@ -99,8 +96,8 @@ function request(opts) {
         timeout: 15000,
         success(res) {
           const sc = res.statusCode;
-          // 503：容器冷启动中，请求未执行 → 任何方法都安全重试，轮询到它起来（预算内）
-          if (sc === 503 && within()) return retryLater();
+          // 503 也只重试幂等请求；不能假设所有 503 都发生在应用执行之前。
+          if (sc === 503 && idempotent && within()) return retryLater();
           // 其它 5xx（含数据库瞬时错误）→ 仅幂等请求重试
           if (sc >= 500 && sc !== 501 && idempotent && within()) return retryLater();
           resolveEnvelope(res, method, url, resolve, reject);

@@ -5,43 +5,6 @@ function unwrapSessionDetail(payload) {
   return payload || null;
 }
 
-async function listAllPages(fetchPage, params = {}, pageSize = 100) {
-  const items = [];
-  let page = 1;
-  let total = null;
-
-  while (true) {
-    const data = await fetchPage(Object.assign({}, params, { page, pageSize }));
-    const batch = (data && data.items) || [];
-    for (let i = 0; i < batch.length; i++) items.push(batch[i]);
-    if (total === null && data && Number.isFinite(Number(data.total))) {
-      total = Number(data.total);
-    }
-    if (batch.length < pageSize || (total !== null && items.length >= total)) break;
-    page += 1;
-  }
-
-  return total === null ? items : items.slice(0, total);
-}
-
-async function mapWithConcurrency(items, concurrency, mapper) {
-  const source = items || [];
-  const output = new Array(source.length);
-  let cursor = 0;
-  const workerCount = Math.max(1, Math.min(Number(concurrency) || 1, source.length || 1));
-
-  async function worker() {
-    while (cursor < source.length) {
-      const index = cursor;
-      cursor += 1;
-      output[index] = await mapper(source[index], index);
-    }
-  }
-
-  await Promise.all(Array.from({ length: workerCount }, worker));
-  return output;
-}
-
 function findLatestSet(cards, currentExerciseName, lastRecordedSetId) {
   const list = cards || [];
   if (lastRecordedSetId) {
@@ -79,6 +42,31 @@ function setInputFromRaw(raw) {
   };
 }
 
+// 语音解析的 ParsedSet(snake_case) 按原动作连续分组，供撤销无法 restore 时逐动作重新加组。
+function groupParsedSetsForUndo(parsedSets, fallbackExerciseName) {
+  const groups = [];
+  const source = parsedSets || [];
+  for (let i = 0; i < source.length; i++) {
+    const raw = source[i] || {};
+    const exerciseName = String(
+      raw.exercise_name || raw.exerciseName || fallbackExerciseName || ''
+    ).trim();
+    const input = {
+      loadType: raw.load_type || raw.loadType || 'weighted',
+      weightKg: raw.weight_kg !== undefined ? raw.weight_kg
+        : (raw.weightKg !== undefined ? raw.weightKg : null),
+      reps: raw.reps,
+      setType: raw.set_type || raw.setType || 'working',
+      rpe: raw.rpe == null ? null : raw.rpe,
+      note: raw.note == null ? null : raw.note,
+    };
+    const last = groups[groups.length - 1];
+    if (last && last.exerciseName === exerciseName) last.sets.push(input);
+    else groups.push({ exerciseName, sets: [input] });
+  }
+  return groups;
+}
+
 // POST /sessions 响应是否表示「恢复了已有进行中训练」
 // 兼容后端单 active 约束的两种回包形态：顶层 resumed 或 session.resumed。
 function isResumedStart(data) {
@@ -87,23 +75,8 @@ function isResumedStart(data) {
   return !!(data.session && data.session.resumed);
 }
 
-function countDistinctExercises(details) {
-  const keys = new Set();
-  (details || []).forEach((detail) => {
-    ((detail && detail.workoutExercises) || []).forEach((exercise) => {
-      const id = exercise.exerciseId;
-      const name = String(exercise.displayName || '').trim().toLowerCase();
-      if (id) keys.add('id:' + id);
-      else if (name) keys.add('name:' + name);
-    });
-  });
-  return keys.size;
-}
-
 exports.unwrapSessionDetail = unwrapSessionDetail;
-exports.listAllPages = listAllPages;
-exports.mapWithConcurrency = mapWithConcurrency;
 exports.findLatestSet = findLatestSet;
 exports.setInputFromRaw = setInputFromRaw;
+exports.groupParsedSetsForUndo = groupParsedSetsForUndo;
 exports.isResumedStart = isResumedStart;
-exports.countDistinctExercises = countDistinctExercises;

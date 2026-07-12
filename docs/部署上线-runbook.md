@@ -37,7 +37,8 @@
   - `DEEPSEEK_API_KEY` / `DEEPSEEK_MODEL` / `DEEPSEEK_BASE_URL`
   - `TENCENT_SECRET_ID` / `TENCENT_SECRET_KEY` / `TENCENT_ASR_REGION` / `TENCENT_ASR_ENGINE`
   - `WECHAT_APPID` / `WECHAT_SECRET`（登录 code2session + 分享 wxacode 取 access_token）
-  - JWT 密钥等后端原有项
+  - 独立 `API_JWT_SECRET` + `SESSION_SECRET`（生产不可共用）；确认未设置 `ALLOW_OPENID_LOGIN`
+  - API 文档生产默认关闭；不要设置 `API_DOCS_ENABLED=1`（临时排障用完即撤）
 - [x] 自测：`GET https://kailift.chenyi.uno/api/v1/auth/me` 返回 401（服务通）
 - [ ] 进程守护（pm2 / systemd / docker）+ 开机自启 + 日志留存，按你的 ECS 习惯配
 
@@ -50,8 +51,8 @@
 ## 4️⃣ 前端配置切换 🤖（部分已就位）
 
 - [x] `miniprogram/utils/constants.js`：`API_BASE` 已指向 `https://kailift.chenyi.uno`（真机 `LAN_HOST` 与开发者工具 `LOCAL_HOST` 现同址线上域名；本地联调时再临时改回局域网 dev server `http://<IP>:20020`）
-- [ ] 提审 / 发布前：`DEV_LOGIN` → `false`、`DEV_OPENID` → 置空（走真实 wx.login，不再用种子用户 Alex）
-- [ ] `SHARE_QR_ENV`：`'trial'`（提审前扫体验版）/ `'release'`（发布后）
+- [x] `DEV_OPENID` 已置空；`DEV_LOGIN` 仅在 DevTools **且 API_BASE 为本机/局域网 HTTP** 时开启，指向生产域名时强制走真实 `wx.login`
+- [x] `SHARE_QR_ENV` 已切为 `'release'`（正式版）；体验版扫码联调时可临时改 `'trial'`，提交代码前恢复
 
 ## 5️⃣ 发布 🧑（待备案过审）
 
@@ -69,7 +70,7 @@
 | 真机 `request:fail url not in domain list` | 域名没登记(③，备案未过) 或 `API_BASE` 还指本地(④) |
 | 开发者工具能调、真机不行（或反之） | `constants.js` 的 `LAN_HOST`(真机)/`LOCAL_HOST`(开发者工具) 分支；联调期在开发者工具勾「不校验合法域名」 |
 | 分享码不显示 | image 是 https 但 downloadFile 域名没登记(③)，或后端 wxacode 失败 |
-| 接口偶发超时 / 冷启动 | `utils/request.js` 已对 503/超时做指数退避重试；持续超时查 ECS 后端进程 / Nginx / PG 是否健康 |
+| 接口偶发超时 / 冷启动 | `utils/request.js` 仅对幂等 GET 做指数退避；登录与写请求不会复用一次性 code/自动重放，失败后重新操作。持续超时查 ECS 后端进程 / Nginx / PG 是否健康 |
 | 后端连库失败 | ECS 自建 PG 未启动 / `DATABASE_URL` 指错 / PG 未监听对应地址 |
 | 语音 502 `asr_failed`/`llm_failed` | 后端环境变量没配齐 DeepSeek / 腾讯 ASR(②)，或服务器外呼被网络挡 |
 

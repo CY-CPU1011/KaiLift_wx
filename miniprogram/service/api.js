@@ -81,7 +81,7 @@ const Voice = {
   // 音频路径（callContainer JSON，字段名 audioBase64）：filePath + 可选 formData { voiceFormat, voiceEntryId, currentExerciseName }
   parseAudio: (sessionId, filePath, formData = {}) =>
     upload({ url: `/api/v1/sessions/${sessionId}/voice`, filePath, name: 'audio', formData }),
-  // 确认卡「确认/放弃」，以 voiceEntryId 幂等：{ action: confirm|reject, editedSets?, editedExerciseName? }
+  // 确认卡「确认/放弃」，以 voiceEntryId 幂等：{ action, editedSets?, editedExerciseName?, targetSetId? }
   // -> { voiceEntryId, status: confirmed|rejected, createdSetIds, currentExerciseName }
   confirm: (voiceEntryId, body) =>
     post(`/api/v1/voice-entries/${voiceEntryId}/confirm`, body),
