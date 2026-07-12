@@ -175,6 +175,20 @@ test('voice undo data keeps sets grouped under their original exercises', () => 
   assert.equal(groups[1].sets[0].weightKg, 80);
 });
 
+test('auto-saved voice result uses the active session when building undo data', () => {
+  const source = fs.readFileSync(
+    require.resolve('../miniprogram/pages/workout/workout.js'),
+    'utf8'
+  );
+  const start = source.indexOf('async _handleVoiceResult(res)');
+  const end = source.indexOf('_openVoiceConfirm(res)', start);
+  const handler = source.slice(start, end);
+
+  assert.match(handler, /const sessionId = this\.data\.session && this\.data\.session\.id/);
+  assert.match(handler, /this\._showUndo\(\{\s*sessionId,/s);
+  assert.doesNotMatch(handler, /\bd\.session\b/);
+});
+
 test('findLatestSet prefers the last created server set id', () => {
   const cards = [
     { name: '深蹲', setList: [{ id: 'set-1' }, { id: 'set-3' }] },

@@ -565,6 +565,7 @@ Page(withSharePage({
   // 处理 /voice 返回（status: auto_saved / needs_confirmation / unknown）
   async _handleVoiceResult(res) {
     const status = res && res.status;
+    const sessionId = this.data.session && this.data.session.id;
 
     if (status === 'auto_saved') {
       const ids = (res && res.createdSetIds) || [];
@@ -585,7 +586,7 @@ Page(withSharePage({
         }
       }
       this._showUndo({
-        sessionId: d.session.id,
+        sessionId,
         setIds: ids,
         exerciseName: res.currentExerciseName || this.data.currentExerciseName,
         setInputs,
