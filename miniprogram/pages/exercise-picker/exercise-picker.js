@@ -3,6 +3,7 @@
 // 选中后写 storage（kl_picked_exercise），由上一页 onShow 读取。
 const { Exercise } = require('../../service/api');
 const { BODY_PARTS } = require('../../utils/constants');
+const exVM = require('../../utils/exercise');
 const mock = require('../../mock/workout');
 const { withSharePage } = require('../../utils/share-page');
 
@@ -42,7 +43,7 @@ Page(withSharePage({
     this.setData({ loading: true, error: '' });
     const params = {};
     if (keyword) params.search = keyword;
-    if (activePart && activePart !== '全部') params.bodyPart = activePart;
+    if (activePart && activePart !== '全部') params.bodyPart = exVM.toQueryPart(activePart);
     try {
       const data = await Exercise.list(params);
       this.setData({ items: data.items || [], loading: false, usingMock: false });
@@ -50,7 +51,10 @@ Page(withSharePage({
       // 兜底：mock 本地过滤
       let items = mock.exercises.slice();
       if (keyword) items = items.filter((x) => x.name.includes(keyword) || (x.aliases || []).some((a) => a.includes(keyword)));
-      if (activePart && activePart !== '全部') items = items.filter((x) => x.bodyPart === activePart);
+      if (activePart && activePart !== '全部') {
+        const queryPart = exVM.toQueryPart(activePart);
+        items = items.filter((x) => exVM.toQueryPart(x.bodyPart) === queryPart);
+      }
       this.setData({ items, loading: false, usingMock: true });
     }
   },
@@ -88,7 +92,9 @@ Page(withSharePage({
     wx.showLoading({ title: '创建中…' });
     try {
       const body = { name };
-      if (this.data.activePart && this.data.activePart !== '全部') body.bodyPart = this.data.activePart;
+      if (this.data.activePart && this.data.activePart !== '全部') {
+        body.bodyPart = exVM.toQueryPart(this.data.activePart);
+      }
       await Exercise.create(body);
       wx.hideLoading();
       this._returnName(name);

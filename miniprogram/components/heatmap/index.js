@@ -136,7 +136,7 @@ Component({
       query.select('.hm__scroll').boundingClientRect((rect) => {
         let windowWidth = 375;
         try {
-          const info = wx.getWindowInfo ? wx.getWindowInfo() : wx.getSystemInfoSync();
+          const info = wx.getWindowInfo();
           windowWidth = (info && info.windowWidth) || windowWidth;
         } catch (e) {}
         const rpxPerPx = 750 / windowWidth;

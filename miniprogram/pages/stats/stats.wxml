@@ -50,7 +50,7 @@
           <view class="num-row">
             <text class="num-row__label">总训练量</text>
             <text class="num-row__num">{{dayDetail.volumeText}}</text>
-            <text class="num-row__unit">kg</text>
+            <text class="num-row__unit">{{unit}}</text>
           </view>
         </view>
         <view class="day-card__list">
@@ -70,7 +70,7 @@
             </view>
             <view class="day-row__vol">
               <text class="day-row__vol-num">{{item.volumeText}}</text>
-              <text class="day-row__vol-unit">kg</text>
+              <text class="day-row__vol-unit">{{unit}}</text>
             </view>
             <image class="day-row__arrow" src="/images/ui/icons/ui_icon_arrow_right.png" mode="aspectFit"></image>
           </view>
@@ -120,7 +120,7 @@
         <trend-chart
           points="{{trendPoints}}"
           x-labels="{{trendXLabels}}"
-          unit="kg"
+          unit="{{unit}}"
           delta-text="{{trendDeltaText}}"
         ></trend-chart>
       </view>
@@ -131,10 +131,10 @@
       <!-- 三张概览卡（stat-card 已是像素组件，直接用） -->
       <view class="overview">
         <view class="overview__cell">
-          <stat-card iconSrc="/images/ui/equipment/ui_equipment_dumbbell.png" value="{{overview.avg}}" unit="kg" label="周均训练量" tone="green"></stat-card>
+          <stat-card iconSrc="/images/ui/equipment/ui_equipment_dumbbell.png" value="{{overview.avg}}" unit="{{unit}}" label="周均训练量" tone="green"></stat-card>
         </view>
         <view class="overview__cell">
-          <stat-card iconSrc="/images/badges/badge_trophy_gold.png" value="{{overview.peak}}" unit="kg" label="最高单周" tone="amber"></stat-card>
+          <stat-card iconSrc="/images/badges/badge_trophy_gold.png" value="{{overview.peak}}" unit="{{unit}}" label="最高单周" tone="amber"></stat-card>
         </view>
         <view class="overview__cell">
           <stat-card iconSrc="/images/ui/icons/ui_icon_experience_star.png" value="{{overview.delta}}" unit="" label="环比" tone="blue"></stat-card>

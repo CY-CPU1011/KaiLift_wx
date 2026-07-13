@@ -12,17 +12,12 @@ const LOCAL_HOST = 'https://kailift.chenyi.uno';
 // 真机（ios/android）用 LAN_HOST，开发者工具用 LOCAL_HOST。
 function resolveApiBase() {
   try {
-    const info = (wx.getDeviceInfo ? wx.getDeviceInfo() : wx.getSystemInfoSync()) || {};
+    const info = wx.getDeviceInfo() || {};
     if (info.platform && info.platform !== 'devtools') return LAN_HOST;
   } catch (e) {}
   return LOCAL_HOST;
 }
 const API_BASE = resolveApiBase();
-
-// 微信云托管 callContainer 配置。环境 ID 必须与 kailift 服务所在环境完全一致。
-// 该通道无需配置小程序 request 合法域名，也无需自购域名或 ICP 备案。
-const CLOUD_ENV = 'prod-d2gk135v6be9ec84f';
-const CLOUD_SERVICE = 'kailift';
 
 // 分享小程序码「扫码打开的版本」（传给后端 /share/qrcode 的 envVersion，PRD §3.7）。
 //   - 开发/联调：先在开发者工具「上传」一个版本并在 mp 后台设为体验版 → 这里填 'trial'（扫码打开体验版）。
@@ -38,7 +33,7 @@ function isLocalDevelopmentApi(base) {
 
 function resolveDevLogin() {
   try {
-    const info = (wx.getDeviceInfo ? wx.getDeviceInfo() : wx.getSystemInfoSync()) || {};
+    const info = wx.getDeviceInfo() || {};
     // 开发者工具指向线上域名时也必须走真实 wx.login；只有明确指向本机/局域网 HTTP API 才直登。
     return info.platform === 'devtools' && isLocalDevelopmentApi(API_BASE);
   } catch (e) {
@@ -116,8 +111,6 @@ const SETS_RESTORE_READY = true;
 const HEATMAP_LEVELS = 5;
 
 exports.API_BASE = API_BASE;
-exports.CLOUD_ENV = CLOUD_ENV;
-exports.CLOUD_SERVICE = CLOUD_SERVICE;
 exports.SHARE_QR_ENV = SHARE_QR_ENV;
 exports.DEV_LOGIN = DEV_LOGIN;
 exports.DEV_OPENID = DEV_OPENID;

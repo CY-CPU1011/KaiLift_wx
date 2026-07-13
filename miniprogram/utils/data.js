@@ -42,6 +42,13 @@ function setInputFromRaw(raw) {
   };
 }
 
+// 次数输入只接受 API 契约允许的 1–1000 整数；无效值保留为 null，交页面阻止提交。
+function normalizeReps(value) {
+  const reps = Number(value);
+  if (!Number.isInteger(reps) || reps < 1 || reps > 1000) return null;
+  return reps;
+}
+
 // 语音解析的 ParsedSet(snake_case) 按原动作连续分组，供撤销无法 restore 时逐动作重新加组。
 function groupParsedSetsForUndo(parsedSets, fallbackExerciseName) {
   const groups = [];
@@ -78,5 +85,6 @@ function isResumedStart(data) {
 exports.unwrapSessionDetail = unwrapSessionDetail;
 exports.findLatestSet = findLatestSet;
 exports.setInputFromRaw = setInputFromRaw;
+exports.normalizeReps = normalizeReps;
 exports.groupParsedSetsForUndo = groupParsedSetsForUndo;
 exports.isResumedStart = isResumedStart;

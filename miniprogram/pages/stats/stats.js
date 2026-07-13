@@ -5,7 +5,8 @@
 // ⚠ 微信 babel 坑：禁数组解构/展开，一律索引访问 / .apply / for 循环。
 const { PR, Stats } = require('../../service/api');
 const { BODY_PARTS, PART_TONE } = require('../../utils/constants');
-const { formatVolume, formatMonthDay } = require('../../utils/format');
+const { formatVolume, formatMonthDay, displayWeight } = require('../../utils/format');
+const auth = require('../../utils/auth');
 const { withSharePage } = require('../../utils/share-page');
 
 const SUBVIEWS = [
@@ -95,13 +96,22 @@ function buildYears(availableYears, currentYear) {
   return arr;
 }
 
-// 当日某动作行的副标题：N 组（有重量再带"最重 X kg"）。
-function buildDaySummary(item) {
+function valueInUnit(valueKg, unit) {
+  const displayed = displayWeight(valueKg, unit);
+  return Number(displayed.value) || 0;
+}
+
+function formatVolumeInUnit(volumeKg, unit) {
+  return formatVolume(valueInUnit(volumeKg, unit));
+}
+
+// 当日某动作行的副标题：N 组（有重量再带"最重 X kg/lb"）。
+function buildDaySummary(item, unit) {
   const setCount = Number(item.setCount) || 0;
   let s = setCount + ' 组';
   const top = Number(item.topWeightKg);
   if (item.topWeightKg !== null && item.topWeightKg !== undefined && top > 0) {
-    s += ' · 最重 ' + Math.round(top) + ' kg';
+    s += ' · 最重 ' + displayWeight(top, unit).value + ' ' + unit;
   }
   return s;
 }
@@ -110,6 +120,7 @@ Page(withSharePage({
   data: {
     statusBarHeight: 20,
     isGuest: true,
+    unit: 'kg',
     loading: true,
     error: false,
 
@@ -146,24 +157,27 @@ Page(withSharePage({
   onLoad() {
     const app = getApp();
     const isGuest = !(app && app.isLoggedIn());
+    const user = auth.getUser() || {};
+    const unit = user.unitWeight === 'lb' ? 'lb' : 'kg';
     const sys = app && app.globalData && app.globalData.systemInfo;
     if (sys && sys.statusBarHeight) this.setData({ statusBarHeight: sys.statusBarHeight });
 
     const thisYear = new Date().getFullYear();
-    this.setData({ isGuest, years: [thisYear], year: thisYear, yearIndex: 0 });
+    this.setData({ isGuest, unit, years: [thisYear], year: thisYear, yearIndex: 0 });
 
     this._heatLatestDate = '';
     if (isGuest) {
       this.applyGuestStats();
-      return;
     }
-    this.loadStats();
   },
 
   onShow() {
     const app = getApp();
     const isGuest = !(app && app.isLoggedIn());
-    this.setData({ isGuest });
+    const user = auth.getUser() || {};
+    const unit = user.unitWeight === 'lb' ? 'lb' : 'kg';
+    const unitChanged = unit !== this.data.unit;
+    this.setData({ isGuest, unit });
     if (typeof this.getTabBar === 'function' && this.getTabBar()) {
       this.getTabBar().setData({ selected: 2 });
     }
@@ -171,7 +185,7 @@ Page(withSharePage({
       this.applyGuestStats();
       return;
     }
-    if (!this._loaded) this.loadStats();
+    if (!this._loaded || unitChanged) this.loadStats();
   },
 
   // 初次取数：热力图(当前年) + PR + 趋势(当前粒度) 并行；成功后再取默认当日明细。
@@ -337,6 +351,7 @@ Page(withSharePage({
 
   applyDayDetail(date, data) {
     const rows = (data && data.items) || [];
+    const unit = this.data.unit;
     const items = [];
     for (let i = 0; i < rows.length; i++) {
       const it = rows[i];
@@ -344,8 +359,8 @@ Page(withSharePage({
       items.push({
         id: it.sessionId,
         name: it.exerciseName || '动作',
-        summary: buildDaySummary(it),
-        volumeText: formatVolume(it.volumeKg),
+        summary: buildDaySummary(it, unit),
+        volumeText: formatVolumeInUnit(it.volumeKg, unit),
         equipmentSrc: equipmentSrcFromSlug(it.equipmentSlug, it.exerciseName),
       });
     }
@@ -358,7 +373,7 @@ Page(withSharePage({
       dayDetail: {
         dateText: formatMonthDay(d),
         weekText: WEEK_CN[d.getDay()],
-        volumeText: formatVolume((data && data.totalVolumeKg) || 0),
+        volumeText: formatVolumeInUnit((data && data.totalVolumeKg) || 0, unit),
         items,
       },
     });
@@ -366,14 +381,15 @@ Page(withSharePage({
 
   /* ---------------- PR 墙 ---------------- */
   buildPr(prs) {
+    const unit = this.data.unit;
     const items = (prs || []).map((p) => {
       const part = inferPart(p.exerciseName);
       const d = new Date(p.achievedAt);
       return {
         id: p.id,
         name: p.exerciseName || '动作',
-        value: Math.round(Number(p.value) || 0),
-        unit: 'kg',
+        value: displayWeight(Number(p.value) || 0, unit).value,
+        unit,
         date: formatMonthDay(d) + ' 创建',
         part,
         tone: PART_TONE[part] || 'pink',
@@ -424,12 +440,13 @@ Page(withSharePage({
   // 应用 /stats/trend：points(时间升序) → 折线 + 概览（环比在小数组上本地算）。
   applyTrend(data) {
     const range = this.data.trendRange;
+    const unit = this.data.unit;
     const pts = (data && data.points) || [];
     const points = [];
     const xLabels = [];
     for (let i = 0; i < pts.length; i++) {
       const p = pts[i] || {};
-      points.push(Math.round(Number(p.volumeKg) || 0));
+      points.push(Math.round(valueInUnit(p.volumeKg, unit)));
       xLabels.push(p.label || '');
     }
     if (!points.length) {

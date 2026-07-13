@@ -78,7 +78,7 @@ const Voice = {
   // 文本路径（跳过 ASR，联调/降级）：rawText + 可选 { voiceEntryId, currentExerciseName }
   parseText: (sessionId, rawText, opts = {}) =>
     post(`/api/v1/sessions/${sessionId}/voice`, Object.assign({ rawText }, opts)),
-  // 音频路径（callContainer JSON，字段名 audioBase64）：filePath + 可选 formData { voiceFormat, voiceEntryId, currentExerciseName }
+  // 音频路径（REST base64 JSON，字段名 audioBase64）：filePath + 可选 formData { voiceFormat, voiceEntryId, currentExerciseName }
   parseAudio: (sessionId, filePath, formData = {}) =>
     upload({ url: `/api/v1/sessions/${sessionId}/voice`, filePath, name: 'audio', formData }),
   // 确认卡「确认/放弃」，以 voiceEntryId 幂等：{ action, editedSets?, editedExerciseName?, targetSetId? }
