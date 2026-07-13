@@ -8,7 +8,7 @@
 > - **全部能力**（登录/用户/动作/session/set/PR/统计/成就/**语音**/**分享**/**奖励**）统一走 **REST API**（`/api/v1/*`，Next.js 提供，**JWT Bearer**；小程序用 `wx.request` 调用，需配 request 合法域名）。
 > - 基址：dev `http://localhost:20020`；线上自管服务器 `https://kailift.chenyi.uno`（阿里云 ECS + Nginx + HTTPS）。
 >
-> （架构演进：v2→v2.1 曾误判"全部 REST"；v2.2–v2.3 为**混合架构**——语音/分享走 CloudBase 云函数（`voiceParse`/`setsConfirm`/`setsCreate`/`shareQrcode`，OPENID）；**2026-06-21 起云函数全部并入 REST、移除云函数那条链路**，回归单一 REST，详见 §4.3 与 `docs/后端对接-语音合并到REST.md`。原 `cloudfunctions/` 目录已停用、仅留备份。）
+> （架构演进：v2→v2.1 曾误判"全部 REST"；v2.2–v2.3 为**混合架构**——语音/分享走 CloudBase 云函数（`voiceParse`/`setsConfirm`/`setsCreate`/`shareQrcode`，OPENID）；**2026-06-21 起云函数全部并入 REST、移除云函数那条链路**，回归单一 REST，详见 §4.3 与 `docs/后端对接-语音合并到REST.md`。原 `cloudfunctions/` 目录已从当前仓库删除，历史实现可从 Git 追溯。）
 
 与 v1 的主要差异：补全 AI 解析协议（四 intent）、动作归一化算法、当前动作上下文与 session 生命周期、PR 计算规则、置信度判定、录音与音频工程细节、异常/离线/手动录入、后台鉴权、分享图渲染方案、更新验收标准。
 
@@ -22,7 +22,7 @@
 |---|---|---|
 | 阶段 0 准备 / 阶段 1 数据层 | ✅ 已完成 | `prisma/schema.prisma` 落地全部 MVP 模型（User / Exercise / WorkoutSession / WorkoutExercise / WorkoutSet / VoiceEntry / PersonalRecord / **PersonalRecordEvent** / **UserAchievement** / **UserLevelState** / ShareCard / ParseCorrection / AdminPromptVersion）。迁移：`init` → `enrich_schema` → `add_challenge_tables`（已废弃）→ `add_achievement_tables` → `achievements_decouple_points`，+ seed（测试用户 Alex、系统动作库、一次完整训练、PR、分享图、提示词 v1）。本地双库：主库 `KaiLift` + 影子库 `KaiLift_shadow`。 |
 | 阶段 2 训练核心（无 AI） | ✅ 已完成 | REST 训练 CRUD 全量上线（auth/users/exercises/sessions/sets/personal-records），含**单 active 约束**（`POST /sessions` 已有 active 返回 200+`resumed:true`）、`POST /sets/{id}/restore` 撤销恢复、PR 整动作重算；小程序训练页闭环（开始/恢复、手动加组、编辑/撤销/删除、结束、计时器/汇总）已跑通。 |
-| 阶段 3 语音解析 | ✅ 已完成 | 四 intent + resolveExercise 归一化 + 智能确认；**已从 CloudBase 云函数合并进 REST**（`POST /sessions/{id}/voice`、`POST /voice-entries/{id}/confirm`，2026-06-21），鉴权统一 JWT、错误统一走 HTTP 4xx/5xx，不再用 `wx.cloud.callFunction`；小程序录音 / 确认卡 / 一键改手动已接。原云函数与打包脚本 `build:cf` 停用、留备份。 |
+| 阶段 3 语音解析 | ✅ 已完成 | 四 intent + resolveExercise 归一化 + 智能确认；**已从 CloudBase 云函数合并进 REST**（`POST /sessions/{id}/voice`、`POST /voice-entries/{id}/confirm`，2026-06-21），鉴权统一 JWT、错误统一走 HTTP 4xx/5xx，不再用 `wx.cloud.callFunction`；小程序录音 / 确认卡 / 一键改手动已接。原云函数与打包脚本 `build:cf` 已删除，历史实现可从 Git 追溯。 |
 | 阶段 4 训练后反馈 | ✅ 基本完成 | 结束训练弹窗 + 分享图：小程序 `share-card` 页 canvas 2d 合成（核心数据 / 主要动作 / 激励行）+ 分享小程序码 REST 接口 `GET /share/qrcode`（已从 `shareQrcode` 云函数合并进 REST，`wxacode.getUnlimited` 生成可扫小程序码）+ 保存相册。另已上线「训练空闲自动结束 + 待领奖励」（§3.10 / §4.6）。训练总结页与模板细节继续打磨。 |
 | 阶段 5 数据页与激励 | ✅ 已完成 | 5 个聚合接口 `GET /stats/{home,heatmap,day,trend,lifetime}`（首页含 `monthTrainedDays`）；数据页热力图 / PR 墙 / 趋势图；**新增「等级 Lv / 段位 / 成就墙」后端驱动激励体系**（`GET /achievements`，详见 §2.5）。 |
 | 阶段 6 管理后台 | ✅ 已完成 | Next.js 16（Turbopack，dev 端口 20020）+ Antd v6 + Prisma 7。登录鉴权、仪表盘、用户、训练记录、动作库、语音解析日志、提示词管理、分享图（只读视图）均上线。鉴权方案与 §4.7 原计划不同（自研 jose，详见该节）。 |
@@ -400,7 +400,7 @@
 
 ### 4.3.3 原语音云函数部署链路（已停用）
 
-> 历史记录：合并前语音/分享靠 CloudBase 云函数，需「后端 `cloudfunctions/` 源码 → 构建脚本 `build:cf` 打包 → 前端 `cloudfunctionRoot` → 微信开发者工具上传 → CloudBase 配 env」整条链路。**2026-06-21 合并进 REST 后该链路整体停用**：不再需要 `wx.cloud.init`、云开发环境、`build:cf` 打包与上传。原 `cloudfunctions/` 目录已停用、仅留备份。
+> 历史记录：合并前语音/分享靠 CloudBase 云函数，需「后端 `cloudfunctions/` 源码 → 构建脚本 `build:cf` 打包 → 前端 `cloudfunctionRoot` → 微信开发者工具上传 → CloudBase 配 env」整条链路。**2026-06-21 合并进 REST 后该链路整体停用**：不再需要 `wx.cloud.init`、云开发环境、`build:cf` 打包与上传。原 `cloudfunctions/` 目录已从当前仓库删除，历史实现可从 Git 追溯。
 >
 > 原云函数的环境变量（`DEEPSEEK_*`、`TENCENT_SECRET_*`/`TENCENT_ASR_*`、微信 `APPID`/`APP_SECRET`）改配在 REST 后端进程上，部署见 `docs/部署上线-runbook.md`。
 

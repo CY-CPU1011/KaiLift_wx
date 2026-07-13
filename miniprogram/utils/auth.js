@@ -10,7 +10,7 @@ const DEV_OPENID_KEY = 'kl_dev_openid';
 
 // 开发登录：生成并持久化一个稳定的测试 openid（每台设备一个测试账号）
 function getDevOpenid() {
-  // 联调对齐：优先用 constants.DEV_OPENID（与云函数本地调试看到的真实 openid 对齐）
+  // 联调对齐：优先用 constants.DEV_OPENID，便于多端复用同一个本地测试账号。
   if (DEV_OPENID) return DEV_OPENID;
   let id = wx.getStorageSync(DEV_OPENID_KEY);
   if (!id) {

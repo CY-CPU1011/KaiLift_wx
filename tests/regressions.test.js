@@ -729,15 +729,26 @@ test('obsolete local voice parser and confidence constant are removed', () => {
   assert.doesNotMatch(constantsSource, /AUTO_SAVE_CONFIDENCE/);
 });
 
-test('CloudBase container config points at the deployed kailift service', () => {
-  global.wx = {
-    getDeviceInfo: () => ({ platform: 'devtools' }),
-    getSystemInfoSync: () => ({ platform: 'devtools' }),
-  };
-  delete require.cache[require.resolve('../miniprogram/utils/constants')];
-  const constants = require('../miniprogram/utils/constants');
-  assert.equal(constants.CLOUD_ENV, 'prod-d2gk135v6be9ec84f');
-  assert.equal(constants.CLOUD_SERVICE, 'kailift');
+test('REST-only frontend has no CloudBase runtime or publish config', () => {
+  const projectConfig = JSON.parse(fs.readFileSync(
+    path.join(__dirname, '../project.config.json'),
+    'utf8'
+  ));
+  const appSource = fs.readFileSync(
+    path.join(__dirname, '../miniprogram/app.js'),
+    'utf8'
+  );
+  const constantsSource = fs.readFileSync(
+    path.join(__dirname, '../miniprogram/utils/constants.js'),
+    'utf8'
+  );
+
+  assert.equal(projectConfig.cloudfunctionRoot, undefined);
+  assert.equal(projectConfig.cloudfunctionTemplateRoot, undefined);
+  assert.doesNotMatch(appSource, /wx\.cloud/);
+  assert.doesNotMatch(constantsSource, /CLOUD_(?:ENV|SERVICE|ENABLED)/);
+  assert.equal(fs.existsSync(path.join(__dirname, '../cloudfunctions')), false);
+  assert.equal(fs.existsSync(path.join(__dirname, '../miniprogram/envList.js')), false);
 });
 
 /* ========== 第 7 轮：训练后反馈与分享图（PRD §3.6/§3.7） ========== */

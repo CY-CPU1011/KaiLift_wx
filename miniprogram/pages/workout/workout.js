@@ -2,7 +2,13 @@
 const { Session, Set, Voice } = require('../../service/api');
 const { displayWeight } = require('../../utils/format');
 const { SET_TYPES, LOAD_TYPES, RECORDER_OPTIONS, SETS_RESTORE_READY } = require('../../utils/constants');
-const { findLatestSet, isResumedStart, setInputFromRaw, groupParsedSetsForUndo } = require('../../utils/data');
+const {
+  findLatestSet,
+  isResumedStart,
+  setInputFromRaw,
+  normalizeReps,
+  groupParsedSetsForUndo,
+} = require('../../utils/data');
 const { buildFinishReward } = require('../../utils/achievement');
 const { withSharePage } = require('../../utils/share-page');
 
@@ -23,7 +29,7 @@ const IDLE_REMAIN_TEXT = IDLE_REMAIN_MS >= 60 * 1000
   ? Math.round(IDLE_REMAIN_MS / 60000) + ' 分钟'
   : Math.round(IDLE_REMAIN_MS / 1000) + ' 秒';
 
-// 取第一个「有定义」的值（云函数 parsed 兼容 snake_case / camelCase）
+// 取第一个「有定义」的值（语音解析结果兼容 snake_case / camelCase）
 function pick(...vals) {
   for (let i = 0; i < vals.length; i++) {
     if (vals[i] !== undefined && vals[i] !== null) return vals[i];
@@ -783,6 +789,7 @@ Page(withSharePage({
     if (d.confirmIntent === 'modify_last_set') {
       const row = d.confirmSets[0];
       const body = this._rowToSetInput(row);
+      if (!this._validateSetInputs([body])) return;
       await this._updateSet(d.modifyTargetSetId, body);
       this.setData({ showConfirm: false });
       return;
@@ -794,10 +801,7 @@ Page(withSharePage({
       return;
     }
     const sets = d.confirmSets.map((r) => this._rowToSetInput(r));
-    if (sets.some((s) => !s.reps || s.reps < 1)) {
-      wx.showToast({ title: '次数需≥1', icon: 'none' });
-      return;
-    }
+    if (!this._validateSetInputs(sets)) return;
     this.setData({ showConfirm: false });
     await this._addSets(name, sets);
   },
@@ -809,10 +813,7 @@ Page(withSharePage({
     const editedExerciseName = (d.confirmExerciseName || '').trim() || d.currentExerciseName || undefined;
     // confirm 的 editedSets 用 ParsedSet（snake_case），区别于手动加组 /sets 的 SetInput（camelCase）
     const editedSets = d.confirmSets.map((r) => this._rowToParsedSet(r, editedExerciseName));
-    if (d.confirmIntent === 'record_sets' && editedSets.some((s) => !s.reps || s.reps < 1)) {
-      wx.showToast({ title: '次数需≥1', icon: 'none' });
-      return;
-    }
+    if (!this._validateSetInputs(editedSets)) return;
     this.setData({ showConfirm: false });
     wx.showLoading({ title: '保存中…' });
     try {
@@ -850,11 +851,18 @@ Page(withSharePage({
     return {
       loadType,
       weightKg,
-      reps: parseInt(row.reps, 10) || 1,
+      reps: normalizeReps(row.reps),
       setType: SET_TYPE_KEYS[row.setTypeIndex] || 'working',
       rpe: null,
       note: null,
     };
+  },
+
+  _validateSetInputs(sets) {
+    const invalid = (sets || []).some((s) => !s || !Number.isInteger(s.reps) || s.reps < 1 || s.reps > 1000);
+    if (!invalid) return true;
+    wx.showToast({ title: '次数需为 1–1000 的整数', icon: 'none' });
+    return false;
   },
 
   // 确认卡行 → ParsedSet（snake_case，confirm.editedSets 用）
@@ -1116,10 +1124,7 @@ Page(withSharePage({
       return;
     }
     const sets = d.manualRows.map((r) => this._rowToSetInput(r));
-    if (sets.some((s) => !s.reps || s.reps < 1)) {
-      wx.showToast({ title: '次数需≥1', icon: 'none' });
-      return;
-    }
+    if (!this._validateSetInputs(sets)) return;
     this.setData({ showManual: false });
     await this._addSets(name, sets);
   },
@@ -1302,6 +1307,7 @@ Page(withSharePage({
     const es = this.data.editSet;
     if (!es) return;
     const body = this._rowToSetInput(es);
+    if (!this._validateSetInputs([body])) return;
     this.setData({ showEditSet: false });
     await this._updateSet(es.id, body);
   },

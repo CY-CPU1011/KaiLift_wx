@@ -3,7 +3,6 @@
   white-space: nowrap;
   width: 100%;
 }
-.chips ::-webkit-scrollbar { display: none; width: 0; height: 0; }
 .chip {
   display: inline-flex;
   align-items: center;

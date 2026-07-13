@@ -47,7 +47,7 @@ function handleUnauthorized() {
  * @param {object} [opts.header]
  * @returns {Promise<any>} resolve 为信封中的 data
  */
-// 信封解包：callContainer 的 res.data 通常已是对象；个别情况下是字符串，做一次兜底 parse。
+// 信封解包：wx.request 的 res.data 通常已是对象；个别情况下是字符串，做一次兜底 parse。
 function resolveEnvelope(res, method, url, resolve, reject) {
   if (res.statusCode === 401) {
     handleUnauthorized();
@@ -116,7 +116,7 @@ function request(opts) {
 }
 
 /**
- * 文件上传（语音音频）—— callContainer 不支持 multipart，读取为 base64 后通过 JSON 发送。
+ * 文件上传（语音音频）—— REST 接口接收 base64 JSON，避免额外维护 multipart 请求分支。
  * @param {object} opts
  * @param {string} opts.url       以 /api/v1 开头的路径
  * @param {string} opts.filePath  本地临时文件路径

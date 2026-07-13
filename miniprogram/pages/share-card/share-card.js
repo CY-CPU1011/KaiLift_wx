@@ -154,7 +154,7 @@ Page(withSharePage({
         const ctx = canvas.getContext('2d');
         let dpr = 2;
         try {
-          dpr = wx.getSystemInfoSync().pixelRatio || 2;
+          dpr = wx.getWindowInfo().pixelRatio || 2;
         } catch (e) {
           dpr = 2;
         }
